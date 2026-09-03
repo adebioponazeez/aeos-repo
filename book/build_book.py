@@ -81,8 +81,8 @@ VOL3_PARTS = ["00-v3-full.md"]
 VOL3_TITLES = {
     "title": "10,000,000&times; AI ENGINEERING",
     "sub1": "Volume III &mdash; The Arc Completed",
-    "sub2": "The Horizon March, the Mirror/Bridges/Colony, the Vault and the Storm (v15&ndash;v27) &middot; the System at v27.0.0",
-    "vol": "Storm printing (v27) &middot; 338 tests &middot; 50 modules &middot; 36 ADRs &middot; zero dependencies",
+    "sub2": "The Vault and the Storm, the Shipyard and the schema law (v26&ndash;v28) &middot; the System at v28.0.0",
+    "vol": "Shipyard printing (v28) &middot; 351 tests &middot; 51 modules &middot; 37 ADRs &middot; zero dependencies",
 }
 
 VOL2_TITLES = {

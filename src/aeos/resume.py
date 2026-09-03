@@ -34,7 +34,8 @@ class PlanCheckpoint:
     def save(self, plan_id: str, tasks: list, done: list) -> None:
         from .vault import durable_write
         durable_write(self.path, json.dumps(
-            {"plan_id": plan_id,
+            {"aeos_schema": 1,
+             "plan_id": plan_id,
              "tasks": [{"id": t.id, "kind": t.kind, "detail": t.detail}
                        for t in tasks],
              "done": done}, sort_keys=True))
@@ -42,7 +43,13 @@ class PlanCheckpoint:
     def load(self) -> dict | None:
         if not self.path.exists():
             return None
-        return json.loads(self.path.read_text(encoding="utf-8"))
+        from .vault import STATE_SCHEMA, SchemaError
+        data = json.loads(self.path.read_text(encoding="utf-8"))
+        v = data.get("aeos_schema", 1)      # legacy: unversioned = 1
+        if not isinstance(v, int) or v > STATE_SCHEMA:
+            raise SchemaError(f"checkpoint schema {v!r} newer than this "
+                              f"aeos understands; upgrade first")
+        return data
 
     def state(self) -> dict:
         st = self.load() or {"plan_id": None, "tasks": [], "done": []}

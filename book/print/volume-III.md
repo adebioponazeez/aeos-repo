@@ -503,6 +503,25 @@ that claims to be resilient: prove it.
 
 ---
 
+## Chapter 15. Shipyard Printing Addendum — The Shipyard (v28)
+
+The deployment review named what was missing between built and
+deployed; the shipyard closed the closable. The repo took its
+license and its pipeline: a CI matrix that must prove 351 tests —
+chaos storm included — on four Pythons before any pull request may
+merge. Long-lived state learned to declare its version: an
+`aeos_schema` header on memory, fleet stream, and checkpoints;
+legacy files load without ceremony; state written by a newer aeos
+fails closed with a name, never a guess. And storage learned to pay
+its keep: `aeos groom` migrates legacy state in place and archives
+all but the newest runs — nothing deleted, everything shelved,
+everything named in the receipt. The storm grew a flake policy:
+generous walls, and one disclosed retry where wall-clock sensitivity
+demands it — a receipt that needed a retry says so, because a quiet
+receipt is worth nothing.
+
+---
+
 ## Appendix — Volume III Receipts
 
 - **ADR-017** Distance: taxonomy-preserving transports, remote

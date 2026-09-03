@@ -39,8 +39,13 @@ class EventBus:
         self._subs: list = []
 
     def publish(self, kind: str, agent: str, detail: str = "") -> FleetEvent:
+        import json as _json
+        from .vault import schema_header
         ev = FleetEvent(ts=time.time(), kind=kind, agent=agent, detail=detail)
+        new_stream = not self.path.exists()
         with self.path.open("a", encoding="utf-8") as fh:
+            if new_stream:
+                fh.write(_json.dumps(schema_header("fleet")) + "\n")
             fh.write(ev.as_line() + "\n")
         for sub in self._subs:
             sub(ev)
@@ -54,6 +59,10 @@ class EventBus:
         if not self.path.exists():
             return []
         good, torn = load_jsonl_tolerant(self.path)
+        from .vault import check_schema, is_header
+        if good and is_header(good[0]):
+            check_schema(good[0])
+            good = good[1:]
         events = []
         for d in good:
             try:

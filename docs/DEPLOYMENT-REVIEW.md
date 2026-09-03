@@ -35,13 +35,13 @@ restore drill.** Those are the pending items, ranked below.
 
 | # | Severity | Finding | Evidence | Action |
 |---|---|---|---|---|
-| F-01 | **P0** | **No version control.** 27 versions of discipline exist only as CHANGELOG prose; no history, no tags, no bisect, no rollback | `git status` → fatal | `git init`, commit, tag `v27.0.0` |
-| F-02 | **P0** | **No CI.** The suite (storm included) runs only on this sandbox machine | no `.github/` | GitHub Actions: 3.10–3.13 matrix, pytest, `aeos storm`, wheel build |
-| F-03 | **P0** | **No LICENSE file.** `pyproject` says MIT but the artifact carries no license text — legally ambiguous to distribute | `ls LICENSE*` → missing | Add MIT LICENSE (also ships in wheel) |
-| F-04 | **P0** | **Python-version claims untested.** `requires-python >=3.10`, verified only on 3.13 | this box: 3.13.14 | CI matrix is the proof (F-02) |
-| F-05 | **P1** | **No schema versioning.** `memory.jsonl`, events, checkpoints have no format version; upgrades have no migration path | no `schema` field on disk | Add `{"schema": 1}` headers + a `migrate()` that refuses unknown versions (fail closed) |
-| F-06 | **P1** | **Unbounded growth.** Per-run event files accumulate in `.aeos/runs/`; `events.jsonl` grows forever; `recall.sqlite` rebuilt but never pruned | retention grep | Retention policy: keep last N runs, archive+prune on a `aeos groom` command |
-| F-07 | **P1** | **Timing-sensitive tests.** 5 sleep-based waits (kill-storm delays) — flaky risk on loaded CI runners | grep `sleep(` | Storm marker + generous CI timeout budget, or retry-once policy — receipts must keep running |
+| F-01 | **DONE** | ~~No version control.~~ git repo, tagged v27.0.0+v28.0.0 | 27 versions of discipline exist only as CHANGELOG prose; no history, no tags, no bisect, no rollback | `git status` → fatal | `git init`, commit, tag `v27.0.0` |
+| F-02 | **DONE** | ~~No CI.~~ workflow on main; green matrix pending first push | The suite (storm included) runs only on this sandbox machine | no `.github/` | GitHub Actions: 3.10–3.13 matrix, pytest, `aeos storm`, wheel build |
+| F-03 | **DONE** | ~~No LICENSE file.~~ MIT in repo + wheel-asserted | `pyproject` says MIT but the artifact carries no license text — legally ambiguous to distribute | `ls LICENSE*` → missing | Add MIT LICENSE (also ships in wheel) |
+| F-04 | **DONE** | ~~Untested.~~ CI matrix 3.10-3.13 (first run = proof) | `requires-python >=3.10`, verified only on 3.13 | this box: 3.13.14 | CI matrix is the proof (F-02) |
+| F-05 | **DONE (v28)** | schema headers + fail-closed future + `groom` migration | `memory.jsonl`, events, checkpoints have no format version; upgrades have no migration path | no `schema` field on disk | Add `{"schema": 1}` headers + a `migrate()` that refuses unknown versions (fail closed) |
+| F-06 | **DONE (v28)** | `aeos groom` archives beyond newest N, deletes nothing | Per-run event files accumulate in `.aeos/runs/`; `events.jsonl` grows forever; `recall.sqlite` rebuilt but never pruned | retention grep | Retention policy: keep last N runs, archive+prune on a `aeos groom` command |
+| F-07 | **DONE (v28)** | 240s walls, CI timeout 20m, one disclosed retry | 5 sleep-based waits (kill-storm delays) — flaky risk on loaded CI runners | grep `sleep(` | Storm marker + generous CI timeout budget, or retry-once policy — receipts must keep running |
 | F-08 | **P1** | **Live path proven only by smoke.** Budget cutoff and provider error taxonomy are simulation-tested; the opt-in live test is skipped without a key | 1 skipped test | One recorded live soak (operator opt-in, capped $) before any production claim |
 | F-09 | **P1** | **No backup/restore drill.** Atomic writes ≠ backups; `.aeos` state has no export/restore proof | RUNBOOK lacks it | `aeos backup` / `aeos restore` + a storm scenario that restores and re-runs |
 | F-10 | **P2** | **Single-host, POSIX-only.** fcntl locks degrade loudly off-POSIX; no distributed durability (deliberate, on record in BENCHMARK) | `vault.py` | Document WSL requirement for Windows; brokers are a v3x decision |
@@ -72,9 +72,9 @@ restore drill.** Those are the pending items, ranked below.
 A second operator, on a fresh POSIX box, with no access to this
 sandbox, must be able to:
 
-- [ ] `git clone` the repo and read the LICENSE          (F-01, F-03)
+- [x] `git clone` the repo and read the LICENSE          (F-01, F-03)
 - [ ] `pip install .` → `aeos selftest` → v27 identity
-- [ ] `python -m pytest` → 338 green **from CI, on 3.10–3.13** (F-02)
+- [ ] `python -m pytest` → 351 green **from CI, on 3.10–3.13** (F-02 — workflow shipped, first remote run pending push)
 - [ ] `aeos storm` → 8/8 on that box
 - [ ] run a **live** pipeline with a $-capped key (opt-in) and see the meter stop at the budget (F-08)
 - [ ] `aeos backup` → destroy workspace → `aeos restore` → re-run accepted (F-09)

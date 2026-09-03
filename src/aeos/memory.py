@@ -46,8 +46,12 @@ class MemoryStore:
         self.path = path
         self.torn_lines = 0
         if path and path.exists():
+            from .vault import check_schema, is_header
             good, torn = load_jsonl_tolerant(path)
-            for d in good:
+            if good and is_header(good[0]):
+                check_schema(good[0])       # future state fails closed
+                good = good[1:]             # legacy v27 files: no header,
+            for d in good:                  # treated as schema 1
                 try:
                     d["mclass"] = MemoryClass(d["mclass"])
                     self.records[d["key"]] = MemoryRecord(**d)
@@ -100,8 +104,8 @@ class MemoryStore:
     def _flush(self) -> None:
         if not self.path:
             return
-        from .vault import durable_write
-        lines = []
+        from .vault import durable_write, schema_header
+        lines = [json.dumps(schema_header("memory"))]
         for r in self.records.values():
             d = asdict(r)
             d["mclass"] = r.mclass.value

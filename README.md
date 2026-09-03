@@ -1,6 +1,6 @@
 # AEOS — The AI Engineering OS
 
-**Version 27.0.0 — The Storm. Built, tested, torture-proven — not proposed.**
+**Version 28.0.0 — The Shipyard. Built, tested, deployed — not proposed.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
@@ -16,7 +16,7 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 338 proofs incl. the chaos storm, ~73 seconds
+python -m pytest            # 351 proofs incl. the chaos storm, ~75 seconds
 aeos run-demo               # full reference loop, evidence bundle
 aeos factory-demo           # v7: the capability factory (proposals only)
 aeos factory-demo --token S # v7: ...with sponsorship (scoped installs)
@@ -42,6 +42,7 @@ aeos mcp --serve            # v24: AEOS as a read-only MCP server (roundtrip)
 aeos colony                 # v25: explicit graph orchestration
 aeos vault                  # v26: fault-tolerance posture + environment scan
 aeos storm                  # v27: THE NUCLEAR TEST — kill storms, torn files, disk full, blackout
+aeos groom [--keep-runs N]  # v28: retention + schema migration (archives, never deletes)
 OPENROUTER_API_KEY=... aeos run-demo --live   # v11: real models, metered, $2 cap
 aeos selftest
 ```
@@ -78,10 +79,11 @@ aeos selftest
 | **v25.0** | **The Colony** | **Explicit graph orchestration: requires + conditions, failures block, cycles BLOCK — never hang** |
 | **v26.0** | **The Vault** | **Fault tolerance: atomic durable writes, torn-write quarantine, kernel-released locks, provable offline** |
 | **v27.0** | **The Storm** | **Chaos as a command: kill -9 storms, torn files, disk-full, garbage, 256MB cap, socket blackout — 8/8 survived, receipts permanent** |
+| **v28.0** | **The Shipyard** | **Deployment closure: LICENSE + CI matrix in-repo, schema-versioned state that fails closed on the future, `aeos groom` retention** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **338/338 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **351/351 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.
@@ -110,10 +112,10 @@ spent human token.**
 ## Repository layout
 
 ```
-src/aeos/            # 50 modules: kernel (v1) + platform (v2–v27)
+src/aeos/            # 51 modules: kernel (v1) + platform (v2–v28)
 tests/               # 177 tests incl. adversarial + e2e + factory + federation + live-wire
 evidence/            # captured test runs, run bundles, factory runs, dashboard
-docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, 36 ADRs
+docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, 37 ADRs
 book/                # Volumes I–III + v11 addendum (print/), HTML + markdown
 AGENTS.md            # short repo context for coding agents
 CHANGELOG.md         # every version, earned by tests

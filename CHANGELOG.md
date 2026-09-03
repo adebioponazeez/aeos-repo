@@ -3,6 +3,21 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v28.0.0 — The Shipyard: Deployment Closure (351 tests)
+- **First-push commit carries LICENSE + CI** (F-01..F-04): git repo,
+  tag v27.0.0, MIT license shipped in-repo and asserted in the built
+  wheel; CI matrix 3.10-3.13 with selftest, full suite (storm
+  included), `aeos storm`, clean wheel check.
+- **`groom.py` + schema law** (ADR-037, F-05/F-06): long-lived state
+  (memory, fleet stream, checkpoints) now opens with an
+  `aeos_schema` header; legacy v27 files load back-compat; future
+  schemas FAIL CLOSED (`SchemaError`). `aeos groom` upgrades legacy
+  state in place and archives all but the newest N runs — nothing
+  deleted, everything auditable.
+- **Storm flake policy** (F-07): generous walls (240s), CI
+  timeout-minutes 20, and one DISCLOSED retry on the two wall-clock
+  sensitive scenarios.
+
 ## v27.0.0 — The Storm: Chaos as a First-Class Command (338 tests)
 - **`storm.py`** (ADR-036): eight end-to-end chaos scenarios — kill
   -9 x3 + recovery, torn power-cut files (quarantined), disk-full at

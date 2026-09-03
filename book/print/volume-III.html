@@ -46,8 +46,8 @@ em { color:inherit; }
 <header class="titleblock">
   <h1 class="book-title">10,000,000&times; AI<br>ENGINEERING</h1>
   <p class="subtitle">Volume III &mdash; The Arc Completed</p>
-  <p class="subtitle">The Horizon March, the Mirror/Bridges/Colony, the Vault and the Storm (v15&ndash;v27) &middot; the System at v27.0.0</p>
-  <p class="vol">Storm printing (v27) &middot; 338 tests &middot; 50 modules &middot; 36 ADRs &middot; zero dependencies</p>
+  <p class="subtitle">The Vault and the Storm, the Shipyard and the schema law (v26&ndash;v28) &middot; the System at v28.0.0</p>
+  <p class="vol">Shipyard printing (v28) &middot; 351 tests &middot; 51 modules &middot; 37 ADRs &middot; zero dependencies</p>
 </header>
 
 <nav class="toc"><h2>Contents</h2><ul><li><a href="#10-000-000-ai-engineering-volume-iii">10,000,000× AI ENGINEERING — VOLUME III</a></li><li><a href="#part-i-distance-v8">PART I — DISTANCE (v8)</a></li><li><a href="#part-ii-co-design-v9">PART II — CO-DESIGN (v9)</a></li><li><a href="#part-iii-the-market-v10">PART III — THE MARKET (v10)</a></li></ul></nav>
@@ -490,6 +490,22 @@ thirty-six decisions, zero dependencies — and one command, <code>aeos
 storm</code>, that answers the only question that matters about a system
 that claims to be resilient: prove it.</p>
 <hr />
+<h2 class="chapter" id="chapter-15-shipyard-printing-addendum-the-shipyard-v28">Chapter 15. Shipyard Printing Addendum — The Shipyard (v28)</h2>
+<p>The deployment review named what was missing between built and
+deployed; the shipyard closed the closable. The repo took its
+license and its pipeline: a CI matrix that must prove 351 tests —
+chaos storm included — on four Pythons before any pull request may
+merge. Long-lived state learned to declare its version: an
+<code>aeos_schema</code> header on memory, fleet stream, and checkpoints;
+legacy files load without ceremony; state written by a newer aeos
+fails closed with a name, never a guess. And storage learned to pay
+its keep: <code>aeos groom</code> migrates legacy state in place and archives
+all but the newest runs — nothing deleted, everything shelved,
+everything named in the receipt. The storm grew a flake policy:
+generous walls, and one disclosed retry where wall-clock sensitivity
+demands it — a receipt that needed a retry says so, because a quiet
+receipt is worth nothing.</p>
+<hr />
 <h2 class="chapter" id="appendix-volume-iii-receipts">Appendix — Volume III Receipts</h2>
 <ul>
 <li><strong>ADR-017</strong> Distance: taxonomy-preserving transports, remote
@@ -504,5 +520,5 @@ that claims to be resilient: prove it.</p>
 --token</code> (scoped install, others refused) · <code>aeos federation-demo</code>
 (quarantine → revalidate → install) · <code>aeos console</code> (the record).</p>
 <p><em>— end of Volume III, and of the trilogy —</em></p>
-<p class="footnote">&mdash; end of Volume I &middot; 3,854 words &middot; generated from the aeos repository &mdash;</p>
+<p class="footnote">&mdash; end of Volume I &middot; 4,008 words &middot; generated from the aeos repository &mdash;</p>
 </div></body></html>

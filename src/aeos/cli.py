@@ -32,6 +32,10 @@ def main(argv: list[str] | None = None) -> int:
     stm_p = sub.add_parser("storm", help="v27: the nuclear test — kill storms, torn files, disk full, blackout")
     stm_p.add_argument("--workspace", default="aeos-demo")
 
+    gro_p = sub.add_parser("groom", help="v28: retention + schema migration — archive old runs, upgrade state")
+    gro_p.add_argument("--workspace", default="aeos-demo")
+    gro_p.add_argument("--keep-runs", type=int, default=10)
+
     vlt_p = sub.add_parser("vault", help="v26: fault tolerance — environment scan + self-proof")
     vlt_p.add_argument("--workspace", default="aeos-demo")
 
@@ -120,6 +124,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  wall: {time.time() - t0:.1f}s — real subprocesses, "
               "real SIGKILLs, real fault injection")
         return 0 if rep.passed else 1
+
+    if args.cmd == "groom":
+        from .groom import groom as sweep, render
+        print(render(sweep(Path(args.workspace), args.keep_runs)))
+        return 0
 
     if args.cmd == "vault":
         from aeos import vault

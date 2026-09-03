@@ -178,3 +178,29 @@ def environment_scan(ws: Path | None = None) -> dict:
             "cpu_count": os.cpu_count(),
             "degraded": degraded,
             "network": "not probed — offline by default"}
+
+
+# ------------------------------------------------------------ schema law
+
+STATE_SCHEMA = 1          # long-lived state: memory, fleet stream, checkpoints
+HEADER_KEY = "aeos_schema"
+
+
+class SchemaError(RuntimeError):
+    """State written by a NEWER aeos — fail closed, never guess."""
+
+
+def schema_header(kind: str) -> dict:
+    return {HEADER_KEY: STATE_SCHEMA, "kind": kind}
+
+
+def is_header(obj: dict) -> bool:
+    return isinstance(obj, dict) and HEADER_KEY in obj
+
+
+def check_schema(header: dict) -> None:
+    v = header.get(HEADER_KEY)
+    if not isinstance(v, int) or v > STATE_SCHEMA:
+        raise SchemaError(
+            f"state schema {v!r} is newer than this aeos understands "
+            f"({STATE_SCHEMA}); upgrade aeos before touching this state")
