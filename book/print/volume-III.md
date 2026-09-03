@@ -522,6 +522,30 @@ receipt is worth nothing.
 
 ---
 
+## Chapter 16. Soak Printing Addendum — The Soak (v29)
+
+Two proofs matured in this printing. The backup stopped being a hope
+and became an artifact with law: deterministic — sorted members,
+fixed metadata, a manifest stripped of clocks and paths so identical
+state yields byte-identical archives, provable by hash; verified —
+every member checked against its sha256 before a single byte touches
+the workspace, and any mismatch refuses the entire restore, because a
+corrupt backup must restore nothing, never something wrong. Caches
+are never carried: the recall index is rebuilt on restore, which is
+the proof that it is a cache. And the drill is permanent — backup,
+destroy, restore, run again is the ninth storm scenario, executed on
+every test run.
+
+The soak made stability a receipt instead of an impression: N
+consecutive runs on one workspace, state accumulating, wall-clock
+mean and max, tokens and cost, memory growth, disk delta — the
+numbers a serious operator asks for before trusting a system with
+sustained work. The live soak carries the same law as everything
+else that touches money: opt-in only, hard dollar cap, metered by
+the run.
+
+---
+
 ## Appendix — Volume III Receipts
 
 - **ADR-017** Distance: taxonomy-preserving transports, remote

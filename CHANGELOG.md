@@ -3,6 +3,19 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v29.0.0 — The Soak: Backup Drills + Sustained Operation (363 tests)
+- **`backup.py`** (ADR-038, F-09): deterministic backups — sorted
+  members, sha256 manifest with no clocks/paths, so identical state
+  yields byte-identical archives. Restore verifies EVERY member and
+  fails closed on any mismatch; caches never carried (recall REBUILDS,
+  proving it is a cache); locks never carried. CLI: `aeos backup` /
+  `aeos restore`. The backup -> destroy -> restore -> re-run drill is
+  now storm scenario 9 of 9.
+- **`soak.py`** (F-08): `aeos soak --runs N` — sustained operation
+  receipt: accepted count, wall mean/max, token/cost totals, memory
+  growth, disk delta. Live soak opt-in only (AEOS_LIVE=1 + key) under
+  a hard dollar cap; simulation is the honest, labeled default.
+
 ## v28.0.0 — The Shipyard: Deployment Closure (351 tests)
 - **First-push commit carries LICENSE + CI** (F-01..F-04): git repo,
   tag v27.0.0, MIT license shipped in-repo and asserted in the built

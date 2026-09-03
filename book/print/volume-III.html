@@ -46,8 +46,8 @@ em { color:inherit; }
 <header class="titleblock">
   <h1 class="book-title">10,000,000&times; AI<br>ENGINEERING</h1>
   <p class="subtitle">Volume III &mdash; The Arc Completed</p>
-  <p class="subtitle">The Vault and the Storm, the Shipyard and the schema law (v26&ndash;v28) &middot; the System at v28.0.0</p>
-  <p class="vol">Shipyard printing (v28) &middot; 351 tests &middot; 51 modules &middot; 37 ADRs &middot; zero dependencies</p>
+  <p class="subtitle">The Storm, the Shipyard, the Soak and the drill (v27&ndash;v29) &middot; the System at v29.0.0</p>
+  <p class="vol">Soak printing (v29) &middot; 363 tests &middot; 53 modules &middot; 38 ADRs &middot; zero dependencies</p>
 </header>
 
 <nav class="toc"><h2>Contents</h2><ul><li><a href="#10-000-000-ai-engineering-volume-iii">10,000,000× AI ENGINEERING — VOLUME III</a></li><li><a href="#part-i-distance-v8">PART I — DISTANCE (v8)</a></li><li><a href="#part-ii-co-design-v9">PART II — CO-DESIGN (v9)</a></li><li><a href="#part-iii-the-market-v10">PART III — THE MARKET (v10)</a></li></ul></nav>
@@ -506,6 +506,26 @@ generous walls, and one disclosed retry where wall-clock sensitivity
 demands it — a receipt that needed a retry says so, because a quiet
 receipt is worth nothing.</p>
 <hr />
+<h2 class="chapter" id="chapter-16-soak-printing-addendum-the-soak-v29">Chapter 16. Soak Printing Addendum — The Soak (v29)</h2>
+<p>Two proofs matured in this printing. The backup stopped being a hope
+and became an artifact with law: deterministic — sorted members,
+fixed metadata, a manifest stripped of clocks and paths so identical
+state yields byte-identical archives, provable by hash; verified —
+every member checked against its sha256 before a single byte touches
+the workspace, and any mismatch refuses the entire restore, because a
+corrupt backup must restore nothing, never something wrong. Caches
+are never carried: the recall index is rebuilt on restore, which is
+the proof that it is a cache. And the drill is permanent — backup,
+destroy, restore, run again is the ninth storm scenario, executed on
+every test run.</p>
+<p>The soak made stability a receipt instead of an impression: N
+consecutive runs on one workspace, state accumulating, wall-clock
+mean and max, tokens and cost, memory growth, disk delta — the
+numbers a serious operator asks for before trusting a system with
+sustained work. The live soak carries the same law as everything
+else that touches money: opt-in only, hard dollar cap, metered by
+the run.</p>
+<hr />
 <h2 class="chapter" id="appendix-volume-iii-receipts">Appendix — Volume III Receipts</h2>
 <ul>
 <li><strong>ADR-017</strong> Distance: taxonomy-preserving transports, remote
@@ -520,5 +540,5 @@ receipt is worth nothing.</p>
 --token</code> (scoped install, others refused) · <code>aeos federation-demo</code>
 (quarantine → revalidate → install) · <code>aeos console</code> (the record).</p>
 <p><em>— end of Volume III, and of the trilogy —</em></p>
-<p class="footnote">&mdash; end of Volume I &middot; 4,008 words &middot; generated from the aeos repository &mdash;</p>
+<p class="footnote">&mdash; end of Volume I &middot; 4,196 words &middot; generated from the aeos repository &mdash;</p>
 </div></body></html>

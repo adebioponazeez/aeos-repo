@@ -41,6 +41,7 @@ that can't must be written down where it can be audited.*
 | 30 | Torn writes quarantine, never crash | `vault.load_jsonl_tolerant` — torn lines to a `.torn` sidecar, the system continues | `test_torn_tail_quarantined_not_fatal` |
 | 31 | Network is optional | `vault.socket_blackout` — a full run with sockets impossible proves the default path is offline | `test_full_run_makes_zero_socket_calls` |
 | 32 | Resilience is a receipt, not a claim | `storm.run_storm` — kill -9 x3, torn, ENOSPC, garbage, 256MB cap, blackout; runs inside the suite | `test_every_scenario_survives` |
+| 33 | Backups are drilled, not assumed | `backup.restore_backup` — every member sha256-verified; tampered backups restore NOTHING | `test_tampered_backup_refused_fail_closed` |
 
 ## PRACTICED — held by discipline, auditable by record
 

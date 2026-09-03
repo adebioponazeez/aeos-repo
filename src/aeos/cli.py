@@ -32,6 +32,21 @@ def main(argv: list[str] | None = None) -> int:
     stm_p = sub.add_parser("storm", help="v27: the nuclear test — kill storms, torn files, disk full, blackout")
     stm_p.add_argument("--workspace", default="aeos-demo")
 
+    bak_p = sub.add_parser("backup", help="v29: deterministic workspace backup (sha256 manifest)")
+    bak_p.add_argument("--workspace", default="aeos-demo")
+    bak_p.add_argument("--out", default=None)
+
+    res_p = sub.add_parser("restore", help="v29: verify + restore a backup (fails closed on corruption)")
+    res_p.add_argument("--backup", required=True)
+    res_p.add_argument("--workspace", default="aeos-demo")
+
+    soa_p = sub.add_parser("soak", help="v29: sustained operation receipt — N runs, one workspace")
+    soa_p.add_argument("--workspace", default="aeos-demo")
+    soa_p.add_argument("--runs", type=int, default=5)
+    soa_p.add_argument("--live", action="store_true",
+                       help="live provider soak (requires AEOS_LIVE=1 + key)")
+    soa_p.add_argument("--max-usd", type=float, default=1.0)
+
     gro_p = sub.add_parser("groom", help="v28: retention + schema migration — archive old runs, upgrade state")
     gro_p.add_argument("--workspace", default="aeos-demo")
     gro_p.add_argument("--keep-runs", type=int, default=10)
@@ -124,6 +139,40 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  wall: {time.time() - t0:.1f}s — real subprocesses, "
               "real SIGKILLs, real fault injection")
         return 0 if rep.passed else 1
+
+    if args.cmd == "backup":
+        from .backup import create_backup
+        out = args.out or str(Path(args.workspace) / ".aeos" / "backup.tar")
+        r = create_backup(Path(args.workspace), Path(out))
+        print(f"BACKUP — deterministic, manifest-verified")
+        print(f"  {r['files']} file(s), {r['bytes'] // 1024} KB -> {r['path']}")
+        print(f"  sha256: {r['sha256']}")
+        print("  caches skipped (recall rebuilds); locks never carried")
+        return 0
+
+    if args.cmd == "restore":
+        from .backup import BackupError, restore_backup
+        try:
+            r = restore_backup(Path(args.backup), Path(args.workspace))
+        except BackupError as exc:
+            print(f"RESTORE REFUSED: {exc}")
+            return 1
+        print("RESTORE — every member verified against the manifest")
+        print(f"  {r['files']} file(s) -> {r['workspace']}")
+        print(f"  recall cache rebuilt: {r['recall_rebuilt']}")
+        print(f"  backup sha256: {r['sha256']}")
+        return 0
+
+    if args.cmd == "soak":
+        from .soak import render, run_soak
+        try:
+            r = run_soak(Path(args.workspace), args.runs,
+                         live=args.live, max_usd=args.max_usd)
+        except PermissionError as exc:
+            print(f"soak: {exc}")
+            return 1
+        print(render(r))
+        return 0 if r["passed"] else 1
 
     if args.cmd == "groom":
         from .groom import groom as sweep, render

@@ -42,8 +42,8 @@ restore drill.** Those are the pending items, ranked below.
 | F-05 | **DONE (v28)** | schema headers + fail-closed future + `groom` migration | `memory.jsonl`, events, checkpoints have no format version; upgrades have no migration path | no `schema` field on disk | Add `{"schema": 1}` headers + a `migrate()` that refuses unknown versions (fail closed) |
 | F-06 | **DONE (v28)** | `aeos groom` archives beyond newest N, deletes nothing | Per-run event files accumulate in `.aeos/runs/`; `events.jsonl` grows forever; `recall.sqlite` rebuilt but never pruned | retention grep | Retention policy: keep last N runs, archive+prune on a `aeos groom` command |
 | F-07 | **DONE (v28)** | 240s walls, CI timeout 20m, one disclosed retry | 5 sleep-based waits (kill-storm delays) — flaky risk on loaded CI runners | grep `sleep(` | Storm marker + generous CI timeout budget, or retry-once policy — receipts must keep running |
-| F-08 | **P1** | **Live path proven only by smoke.** Budget cutoff and provider error taxonomy are simulation-tested; the opt-in live test is skipped without a key | 1 skipped test | One recorded live soak (operator opt-in, capped $) before any production claim |
-| F-09 | **P1** | **No backup/restore drill.** Atomic writes ≠ backups; `.aeos` state has no export/restore proof | RUNBOOK lacks it | `aeos backup` / `aeos restore` + a storm scenario that restores and re-runs |
+| F-08 | **HARNESS DONE (v29)** | soak shipped (sim-proven); live execution awaits operator key — opt-in only | Budget cutoff and provider error taxonomy are simulation-tested; the opt-in live test is skipped without a key | 1 skipped test | One recorded live soak (operator opt-in, capped $) before any production claim |
+| F-09 | **DONE (v29)** | deterministic verified backups; drill = storm scenario 9/9 | Atomic writes ≠ backups; `.aeos` state has no export/restore proof | RUNBOOK lacks it | `aeos backup` / `aeos restore` + a storm scenario that restores and re-runs |
 | F-10 | **P2** | **Single-host, POSIX-only.** fcntl locks degrade loudly off-POSIX; no distributed durability (deliberate, on record in BENCHMARK) | `vault.py` | Document WSL requirement for Windows; brokers are a v3x decision |
 | F-11 | **P2** | **Wheel ships code only.** Docs/book/LICENSE absent from the artifact; PyPI page would be bare | wheel manifest: 55 files, no docs | Ship LICENSE + README in the sdist/wheel; publish to PyPI (or private index) |
 | F-12 | **FIXED** | Dead code: unreachable legacy flush block survived the v26 hardening after an early `return` | `memory.py` `_flush` | Removed this session; suite re-run green |
@@ -77,7 +77,7 @@ sandbox, must be able to:
 - [ ] `python -m pytest` → 351 green **from CI, on 3.10–3.13** (F-02 — workflow shipped, first remote run pending push)
 - [ ] `aeos storm` → 8/8 on that box
 - [ ] run a **live** pipeline with a $-capped key (opt-in) and see the meter stop at the budget (F-08)
-- [ ] `aeos backup` → destroy workspace → `aeos restore` → re-run accepted (F-09)
+- [x] `aeos backup` → destroy workspace → `aeos restore` → re-run accepted (F-09 — storm scenario, drilled on every pytest)
 - [ ] follow RUNBOOK.md start-to-finish without asking us anything
 
 ## 5. Proposed plan

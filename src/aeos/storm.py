@@ -227,9 +227,30 @@ def sc_companion_kill(ws: Path) -> StormRow:
                     else "client did not fail closed")
 
 
+def sc_backup_restore(ws: Path) -> StormRow:
+    """The drill (F-09): run, backup, DESTROY, restore, run again."""
+    import shutil as sh
+    from aeos.backup import create_backup, restore_backup
+    from aeos.memory import MemoryStore
+    _completed_run(ws)
+    mem = ws / ".aeos" / "memory.jsonl"
+    before = sorted(MemoryStore(mem).records) if mem.exists() else []
+    bak_path = ws.parent / (ws.name + "-drill.tar")
+    create_backup(ws, bak_path)
+    sh.rmtree(ws)                             # destroyed on purpose
+    restore_backup(bak_path, ws)
+    after = sorted(MemoryStore(mem).records) if mem.exists() else []
+    ok_state = after == before
+    ok_rerun = _completed_run(ws)
+    ok = ok_state and ok_rerun
+    return StormRow("backup -> destroy -> restore", ok,
+                    f"{len(before)} records survived; re-run accepted"
+                    if ok else f"state={ok_state} rerun={ok_rerun}")
+
+
 SCENARIOS = [sc_kill_storm, sc_torn_files, sc_disk_full, sc_garbage_intents,
              sc_socket_blackout, sc_memory_cap, sc_concurrent_runs,
-             sc_companion_kill]
+             sc_companion_kill, sc_backup_restore]
 
 
 def run_storm(workspace: Path) -> StormReport:
