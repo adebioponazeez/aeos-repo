@@ -132,6 +132,28 @@ def check_repo(path: Path) -> list:
     return rows
 
 
+def charter_check(principles: Path, tests_root: Path) -> tuple:
+    """The charter is load-bearing only if every test it cites exists
+    in the suite. Machine-verified, like every other claim."""
+    import re as _re
+    if not principles.exists():
+        return ("WARN", "charter not found (installed package?)")
+    text = principles.read_text(encoding="utf-8")
+    cited = sorted(set(_re.findall(r"\btest_[a-z0-9_]+\b", text)))
+    if not cited:
+        return ("WARN", "charter cites no tests — nothing is load-bearing")
+    corpus = ""
+    for t in sorted(Path(tests_root).glob("test_*.py")):
+        try:
+            corpus += t.read_text(encoding="utf-8")
+        except OSError:
+            pass
+    missing = [c for c in cited if c not in corpus]
+    if missing:
+        return ("FAIL", f"cited but absent: {', '.join(missing[:3])}")
+    return ("PASS", f"{len(cited)} cited test(s) all exist in the suite")
+
+
 def doctor(ws: Path | None = None) -> dict:
     rows = []
     v = sys.version_info
@@ -148,6 +170,9 @@ def doctor(ws: Path | None = None) -> dict:
     here = Path(__file__).resolve()
     repo_root = next((parent for parent in here.parents
                       if (parent / ".git").exists()), here.parent.parent)
+    verdict, detail = charter_check(repo_root / "docs" / "PRINCIPLES.md",
+                                    repo_root / "tests")
+    rows.append(("charter is load-bearing", verdict, detail))
     rows.extend(check_repo(repo_root))
     report = {"rows": [{"area": a, "verdict": verdict, "detail": d}
                        for a, verdict, d in rows],

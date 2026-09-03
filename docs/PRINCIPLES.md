@@ -42,6 +42,9 @@ that can't must be written down where it can be audited.*
 | 31 | Network is optional | `vault.socket_blackout` — a full run with sockets impossible proves the default path is offline | `test_full_run_makes_zero_socket_calls` |
 | 32 | Resilience is a receipt, not a claim | `storm.run_storm` — kill -9 x3, torn, ENOSPC, garbage, 256MB cap, blackout; runs inside the suite | `test_every_scenario_survives` |
 | 33 | Backups are drilled, not assumed | `backup.restore_backup` — every member sha256-verified; tampered backups restore NOTHING | `test_tampered_backup_refused_fail_closed` |
+| 34 | The door opens on purpose, and only to readers | `mcp_http_server` — READONLY_TOOLS is the whole wire catalog; loopback bind by default | `test_serves_readonly_tools_over_http` |
+| 35 | The wire gets receipts, not exceptions | `otlp.push_spans` — hostile wire = named attempts, spans safe on disk | `test_hostile_wire_is_a_receipt_not_an_exception` |
+| 36 | Claims become checks | `doctor` — the charter's cited tests must exist in the suite, machine-verified | `test_charter_is_load_bearing` |
 
 ## PRACTICED — held by discipline, auditable by record
 

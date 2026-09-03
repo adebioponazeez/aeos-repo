@@ -1,0 +1,35 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  prove-then-publish:
+    # Inert until the operator opts in (docs/PUBLISHING.md):
+    #   1. repo Settings -> Environments -> create 'pypi'
+    #   2. pypi.org -> pending publisher: this repo + workflow 'release'
+    #      + environment 'pypi'
+    #   3. repo Settings -> Variables -> PYPI_ENABLED = true
+    if: vars.PYPI_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write      # trusted publishing: no long-lived tokens
+      contents: read
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev] build twine
+      - name: Versions are earned — the proofs, then the artifacts
+        run: |
+          python -m pytest tests/ -q
+          python -m build
+          python -m twine check dist/*
+      - name: Publish (trusted publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1

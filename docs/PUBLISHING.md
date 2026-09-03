@@ -23,12 +23,21 @@ PyPI API token: pypi.org → Account settings → API tokens → add
 (scope: entire account for first upload — the project is created by
 the first upload itself).
 
-## Path B — trusted publishing via CI (no tokens)
+## Path B — trusted publishing via CI (SHIPPED, inert until you opt in)
 
-Add to `.github/workflows/ci.yml` a release job using
-`pypa/gh-action-pypi-publish` with `permissions: id-token: write`,
-after creating a "pending publisher" on PyPI pointing at this repo +
-workflow + environment. This is the no-long-lived-credentials path.
+`.github/workflows/release.yml` ships in the repo. On any `v*` tag it
+proves the suite, builds, twine-checks, and publishes — via OIDC
+trusted publishing, no tokens anywhere. Enable in three steps:
+
+1. Repo **Settings → Environments** → new environment: `pypi`
+2. **pypi.org → Account settings → Publishing** → add a pending
+   publisher: owner `adebioponazeez`, repo `aeos-repo`, workflow
+   `release.yml`, environment `pypi`
+3. Repo **Settings → Secrets and variables → Actions → Variables** →
+   `PYPI_ENABLED` = `true`
+
+Until all three are set, the workflow skips (green, no-op). After
+that, every tag is a release AND a publish.
 
 ## Rules already in place (nothing to decide at publish time)
 

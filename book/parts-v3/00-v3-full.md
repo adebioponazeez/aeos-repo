@@ -605,6 +605,34 @@ current map.
 
 ---
 
+## Chapter 20. Charter Printing Addendum — The Charter (v33)
+
+The constitution joined the machine-checked. Every compiled value in
+the charter ends in the name of a test; that citation is itself now
+a claim, and claims become checks — the doctor parses each cited
+test name and verifies it exists in the suite, so the day a law is
+renamed and its citation left behind, the doctor says FAIL: the
+constitution cannot reference phantom laws. Thirty-four citations,
+thirty-four verifications, one row on the health receipt.
+
+The upgrade path earned the same rigor. A workspace written six
+versions ago — no schema headers, a dozen run files, the old
+checkpoint format — must load without ceremony, groom itself to the
+current schemas in place, accept a fresh run, pass the doctor, and
+survive a backup-destroy-restore roundtrip. One test, spanning the
+whole distance from the Storm to the Charter; the law about the
+future (fail closed) tested at the same bench.
+
+And the last mile to the shelf was automated without handing anyone
+a key: a tag-triggered workflow that proves the suite, builds the
+artifacts, checks them, and publishes through trusted publishing —
+inert, green, and harmless until the operator completes three
+deliberate steps. The system remains what it has always been:
+nothing ships because someone believes it; everything ships because
+it passed.
+
+---
+
 ## Appendix — Volume III Receipts
 
 - **ADR-017** Distance: taxonomy-preserving transports, remote

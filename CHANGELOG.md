@@ -3,6 +3,21 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v33.0.0 — The Charter: Machine-Checked Constitution + Upgrade Drill (404 tests)
+- **Charter check** (ADR-042): every test cited in PRINCIPLES.md is
+  verified to exist in the suite — a cited-but-absent test FAILS
+  `aeos doctor`. Receipt: 34 cited tests, all present. The
+  constitution can no longer silently reference phantom laws.
+- **Cross-version upgrade drill**: a genuine v27-era workspace
+  (header-less state, 12 run files) must load back-compat, groom to
+  current schemas, accept a fresh run, doctor clean, and survive
+  backup/destroy/restore — one test, six versions of state distance.
+- **Publishing last mile**: `.github/workflows/release.yml` — tag
+  push proves the suite, builds, twine-checks, publishes via PyPI
+  trusted publishing (no tokens); INERT until the operator enables
+  (`PYPI_ENABLED=true` + pending publisher; three steps in
+  docs/PUBLISHING.md).
+
 ## v32.0.0 — The Physician: Self-Audit + Docs Truth (397 tests)
 - **`doctor.py`** (ADR-041): the system audits its own claims —
   `zero_dep_audit()` machine-checks ADR-002 (57 modules, 0 violations,
