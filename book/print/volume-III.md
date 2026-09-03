@@ -546,6 +546,24 @@ the run.
 
 ---
 
+## Chapter 17. Embassy Printing Addendum — The Embassy (v30)
+
+The last two ecosystem seams closed without surrendering the law
+that makes the system deployable anywhere: network is a room you
+enter on purpose. The MCP client learned the streamable-HTTP
+transport — one POST per request, JSON or event-stream replies, the
+same walls and the same fail-closed errors over the wire. The span
+exporter learned to push: OTLP over HTTP, retries only for the
+errors that deserve them, and a hostile wire answered with a receipt
+— attempts named, spans still safe on disk — never an exception,
+never a hang. Every bit of it is proven on the loopback range:
+disposable local servers playing the far end, so the proofs need no
+network that the machine does not already contain. The default path
+remains what it has been since the vault: provably, receiptably
+offline.
+
+---
+
 ## Appendix — Volume III Receipts
 
 - **ADR-017** Distance: taxonomy-preserving transports, remote

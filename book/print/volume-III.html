@@ -46,8 +46,8 @@ em { color:inherit; }
 <header class="titleblock">
   <h1 class="book-title">10,000,000&times; AI<br>ENGINEERING</h1>
   <p class="subtitle">Volume III &mdash; The Arc Completed</p>
-  <p class="subtitle">The Storm, the Shipyard, the Soak and the drill (v27&ndash;v29) &middot; the System at v29.0.0</p>
-  <p class="vol">Soak printing (v29) &middot; 363 tests &middot; 53 modules &middot; 38 ADRs &middot; zero dependencies</p>
+  <p class="subtitle">The Shipyard, the Soak, the Embassy and the release (v28&ndash;v30) &middot; the System at v30.0.0</p>
+  <p class="vol">Embassy printing (v30) &middot; 374 tests &middot; 55 modules &middot; 39 ADRs &middot; zero dependencies</p>
 </header>
 
 <nav class="toc"><h2>Contents</h2><ul><li><a href="#10-000-000-ai-engineering-volume-iii">10,000,000× AI ENGINEERING — VOLUME III</a></li><li><a href="#part-i-distance-v8">PART I — DISTANCE (v8)</a></li><li><a href="#part-ii-co-design-v9">PART II — CO-DESIGN (v9)</a></li><li><a href="#part-iii-the-market-v10">PART III — THE MARKET (v10)</a></li></ul></nav>
@@ -526,6 +526,21 @@ sustained work. The live soak carries the same law as everything
 else that touches money: opt-in only, hard dollar cap, metered by
 the run.</p>
 <hr />
+<h2 class="chapter" id="chapter-17-embassy-printing-addendum-the-embassy-v30">Chapter 17. Embassy Printing Addendum — The Embassy (v30)</h2>
+<p>The last two ecosystem seams closed without surrendering the law
+that makes the system deployable anywhere: network is a room you
+enter on purpose. The MCP client learned the streamable-HTTP
+transport — one POST per request, JSON or event-stream replies, the
+same walls and the same fail-closed errors over the wire. The span
+exporter learned to push: OTLP over HTTP, retries only for the
+errors that deserve them, and a hostile wire answered with a receipt
+— attempts named, spans still safe on disk — never an exception,
+never a hang. Every bit of it is proven on the loopback range:
+disposable local servers playing the far end, so the proofs need no
+network that the machine does not already contain. The default path
+remains what it has been since the vault: provably, receiptably
+offline.</p>
+<hr />
 <h2 class="chapter" id="appendix-volume-iii-receipts">Appendix — Volume III Receipts</h2>
 <ul>
 <li><strong>ADR-017</strong> Distance: taxonomy-preserving transports, remote
@@ -540,5 +555,5 @@ the run.</p>
 --token</code> (scoped install, others refused) · <code>aeos federation-demo</code>
 (quarantine → revalidate → install) · <code>aeos console</code> (the record).</p>
 <p><em>— end of Volume III, and of the trilogy —</em></p>
-<p class="footnote">&mdash; end of Volume I &middot; 4,196 words &middot; generated from the aeos repository &mdash;</p>
+<p class="footnote">&mdash; end of Volume I &middot; 4,340 words &middot; generated from the aeos repository &mdash;</p>
 </div></body></html>

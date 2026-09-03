@@ -81,8 +81,8 @@ VOL3_PARTS = ["00-v3-full.md"]
 VOL3_TITLES = {
     "title": "10,000,000&times; AI ENGINEERING",
     "sub1": "Volume III &mdash; The Arc Completed",
-    "sub2": "The Storm, the Shipyard, the Soak and the drill (v27&ndash;v29) &middot; the System at v29.0.0",
-    "vol": "Soak printing (v29) &middot; 363 tests &middot; 53 modules &middot; 38 ADRs &middot; zero dependencies",
+    "sub2": "The Shipyard, the Soak, the Embassy and the release (v28&ndash;v30) &middot; the System at v30.0.0",
+    "vol": "Embassy printing (v30) &middot; 374 tests &middot; 55 modules &middot; 39 ADRs &middot; zero dependencies",
 }
 
 VOL2_TITLES = {

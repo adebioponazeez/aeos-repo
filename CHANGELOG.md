@@ -3,6 +3,19 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v30.0.0 — The Embassy: HTTP Transports, Loopback-Proven (374 tests)
+- **`mcp_http.py`** (ADR-039): the streamable-HTTP MCP transport —
+  same client law (walls, fail-closed) over the wire; JSON and
+  text/event-stream responses both parsed. Closes the "transports
+  beyond stdio" seam, client side. CLI: `aeos mcp --http-url URL`.
+- **`otlp.py`** (ADR-039): OTLP/HTTP push with bounded, typed
+  retries (429/5xx only); a hostile wire is a receipt, never an
+  exception. CLI: `aeos otel --push URL`. Closes the "OTLP push"
+  seam. Both endpoint-explicit — the default path remains
+  blackout-proven offline; all tests run on the loopback range.
+- **GitHub Release v29.0.0** published with the Codex trilogy PDFs
+  + the fresh-clone receipt as assets.
+
 ## v29.0.0 — The Soak: Backup Drills + Sustained Operation (363 tests)
 - **`backup.py`** (ADR-038, F-09): deterministic backups — sorted
   members, sha256 manifest with no clocks/paths, so identical state

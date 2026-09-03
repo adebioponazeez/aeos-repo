@@ -1,6 +1,6 @@
 # BENCHMARK 2026 — AEOS vs the global field
 
-*Scored at v27.0.0 · 50 modules · 338+1 tests · 36 ADRs · zero
+*Scored at v30.0.0 · 55 modules · 374+1 tests · 39 ADRs · zero
 dependencies. Comparators are the named best-in-class for each
 dimension (LangGraph, CrewAI, Claude Agent SDK, OpenAgents/mcp-agent,
 Letta, Pydantic AI), per the 2026 comparisons cited inline. "Lead"
@@ -10,8 +10,8 @@ single framework wins everything, including us.*
 | Dimension | Best in class | AEOS at v22 | Verdict |
 |---|---|---|---|
 | Durable execution | LangGraph checkpoints; Pydantic AI via Temporal/DBOS | v17 `PlanCheckpoint` — atomic write after EVERY task, resume with side effects exactly once | **PARITY** at single-host scale; behind at distributed (seam: checkpoint schema is portable to a broker) |
-| Tool interop (MCP) | Native in LangGraph/CrewAI/Claude SDK/OpenAgents | v21 client + v24 `mcp_server` (read-only by law) — roundtrip proven | **PARITY** both directions; behind on transports beyond stdio (seam: HTTP transport) |
-| Observability | OTel everywhere (LangSmith, Strands, MAF) | v16 `EventBus` + v24 `otel` span export (byte-stable, content-addressed) | **PARITY** at file level; behind on collector integrations (seam: OTLP HTTP push) |
+| Tool interop (MCP) | Native in LangGraph/CrewAI/Claude SDK/OpenAgents | v21 stdio client + v24 read-only server + v30 streamable-HTTP client | **PARITY**; remaining seam: HTTP *server* mode |
+| Observability | OTel everywhere (LangSmith, Strands, MAF) | v16 `EventBus` + v24 span export + v30 OTLP/HTTP push (typed retries, receipts) | **PARITY** file + push; remaining seam: vendor integrations |
 | Persistent memory | Letta/MemGPT; ClaudeMem layered recall | v14 economics + v15 three-layer FTS recall + rent law | **LEAD** — nobody prices memory (negative marginal, squatters); parity on layering; behind at vector scale (deliberate) |
 | Context engineering | Claude Code / DeepAgents harnesses | v10 tiers + v14 byte-stable prefixes + v22 cache telemetry | **LEAD** on measurability — the cache payoff is READ, not asserted |
 | Governance & safety | (no leader ships this whole set) | inline budget cutoff, revocable autonomy, sponsorship-gated self-mod, quarantine-before-trust, boundaries-with-revert | **LEAD** — the industry's gap, our spine |
@@ -20,11 +20,12 @@ single framework wins everything, including us.*
 | Evaluation suites | Mastra/LangSmith evals | v23 `EvalSuite` — predicate judges, weights, thresholds; self-eval grades AEOS's own laws | **PARITY**; LEAD on determinism (no LLM-as-judge anywhere) |
 | Cost governance | providers meter after the fact | simulated default, live opt-in, inline cutoff mid-call | **LEAD** |
 
-**Where we are still behind (honest list at v25):** distributed
-durability (broker-class checkpoint fan-out), MCP transports beyond
-stdio, OTLP push to collectors, vector-scale retrieval (deliberate),
-and emergent swarm patterns (deliberate — untestable routing). Each
-has a named seam above; none requires abandoning stdlib-only.
+**Where we are still behind (honest list at v30):** distributed
+durability (broker-class checkpoint fan-out), MCP HTTP *server* mode,
+vendor-specific observability integrations, vector-scale retrieval
+(deliberate), and emergent swarm patterns (deliberate — untestable
+routing). Each has a named seam above; none requires abandoning
+stdlib-only.
 
 **Sources:** 2026 framework comparisons — openagents.org (Feb 2026),
 langfuse.com (2025-03/2026-07), uvik.net (Aug 2026), arize.com

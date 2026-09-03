@@ -57,12 +57,16 @@ def main(argv: list[str] | None = None) -> int:
     evl_p = sub.add_parser("eval", help="v23: eval suite — the system grades its own laws")
     evl_p.add_argument("--workspace", default="aeos-demo")
 
-    ote_p = sub.add_parser("otel", help="v24: export the fleet stream as OTel spans")
+    ote_p = sub.add_parser("otel", help="v24: export the fleet stream as OTel spans; v30: --push to a collector")
     ote_p.add_argument("--workspace", default="aeos-demo")
+    ote_p.add_argument("--push", default=None, metavar="URL",
+                       help="v30: push spans to an OTLP/HTTP collector (explicit endpoint)")
 
     mcp_p = sub.add_parser("mcp", help="v21: MCP client demo — handshake, tools, UNTRUSTED import")
     mcp_p.add_argument("--serve", action="store_true",
                        help="v24: serve AEOS read-only over MCP and roundtrip")
+    mcp_p.add_argument("--http-url", default=None, metavar="URL",
+                       help="v30: talk to a streamable-HTTP MCP endpoint instead of stdio")
 
     col_p = sub.add_parser("colony", help="v25: explicit graph orchestration demo")
     tel_p = sub.add_parser("telemetry", help="v22: cache telemetry — hit rate and effective tokens")
@@ -219,6 +223,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  {out}")
         print("  one trace per stream; FAILED events map to ERROR "
               "status; ingestible by any OTel collector")
+        if args.push:
+            from .otlp import push_file
+            r = push_file(args.push, out)
+            verdict = "PUSHED" if r["ok"] else "PUSH REFUSED by the wire"
+            print(f"  PUSH {verdict}: {r['pushed']} span(s), "
+                  f"{r['attempts']} attempt(s), status={r['status']}")
+            if not r["ok"]:
+                print(f"  {r['note']}")
         return 0
 
     if args.cmd == "colony":
@@ -235,6 +247,18 @@ def main(argv: list[str] | None = None) -> int:
         print(rep.render())
         print("  nodes declare requires + conditions; failures block "
               "dependents; cycles BLOCK, never hang")
+        return 0
+
+    if args.cmd == "mcp" and getattr(args, "http_url", None):
+        from .mcp_http import MCPHTTPClient
+        c = MCPHTTPClient(args.http_url, timeout_s=10.0)
+        info = c.initialize()
+        tools = c.tools()
+        print("MCP HTTP — streamable transport, same law (ADR-039)")
+        print(f"  endpoint: {args.http_url}")
+        print(f"  handshake: {info['serverInfo']['name']}")
+        for t in tools[:6]:
+            print(f"  tool: {t.name}")
         return 0
 
     if args.cmd == "mcp" and getattr(args, "serve", False):
