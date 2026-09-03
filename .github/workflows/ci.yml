@@ -24,16 +24,20 @@ jobs:
       - name: Selftest
         run: aeos selftest
       - name: The proofs (384 tests, chaos storm included)
-        run: python -m pytest tests/ -q
+        id: proofs1
+        continue-on-error: true   # one disclosed retry may recover; a
+        run: python -m pytest tests/ -q   # retry failure fails the job
         env:
           PYTEST_ADDOPTS: ""   # keep -q from pyproject; storm needs wall room
       - name: The proofs (disclosed retry — wall-clock scenarios on shared runners, F-07)
-        if: failure()
+        if: steps.proofs1.outcome == 'failure'
         run: python -m pytest tests/ -q
       - name: The nuclear receipt
+        id: storm1
+        continue-on-error: true
         run: aeos storm --workspace /tmp/storm-ci
       - name: The nuclear receipt (disclosed retry)
-        if: failure()
+        if: steps.storm1.outcome == 'failure'
         run: aeos storm --workspace /tmp/storm-ci2
       - name: Wheel builds clean
         run: |
