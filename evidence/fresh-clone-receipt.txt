@@ -1,0 +1,40 @@
+=== FRESH-CLONE RECEIPT — the second-operator test ===
+date: 2026-09-03T20:20:00Z  | clone URL: https://github.com/adebioponazeez/aeos-repo (public)
+
+--- git clone ---
+3200ef5 v29.0.0 — The Soak: deterministic verified backups + sustained-operation receipts (363 tests)
+078735c fix: 3.10-proof atomic rename — os.replace instead of Path.replace
+c89cf13 v28.0.0 — The Shipyard: schema law, groom retention, storm flake policy (351 tests)
+82635b3 Connect remote: adopt initial commit, AEOS tree authoritative
+v27.0.0
+v28.0.0
+v29.0.0
+tracked files: 178
+
+--- pip install (zero runtime deps) ---
+
+install rc=0
+
+--- aeos selftest ---
+AEOS v29.0.0 — harness is the product.
+
+--- full proof suite (incl. 9-scenario chaos storm) ---
+363 passed, 1 skipped in 91.70s (0:01:31)
+
+--- aeos storm (standalone receipt) ---
+STORM — 9/9 scenarios survived (PASS)
+  [x] kill -9 storm x3 + recovery power cut mid-run thrice; final run accepted
+  [x] torn files (power-cut writes) 1 torn, quarantined to .torn, run accepted
+
+--- backup -> destroy -> restore drill (standalone) ---
+BACKUP — deterministic, manifest-verified
+RESTORE — every member verified against the manifest
+
+--- soak receipt (3 sustained runs) ---
+SOAK — 3/3 accepted (PASS)
+  mode: simulation (honest default — no network, no spend)
+  wall: total 2.81s | mean 0.935s | max 0.938s
+  economics: 48960 tokens, $90.768 (metered by the run)
+
+--- leverage audit (12 points, evidence on disk) ---
+LEVERAGE AUDIT — 9/12 points with evidence on disk
