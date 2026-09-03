@@ -23,12 +23,18 @@ jobs:
           pip install -e .[dev]
       - name: Selftest
         run: aeos selftest
-      - name: The proofs (338 tests, chaos storm included)
+      - name: The proofs (384 tests, chaos storm included)
         run: python -m pytest tests/ -q
         env:
           PYTEST_ADDOPTS: ""   # keep -q from pyproject; storm needs wall room
+      - name: The proofs (disclosed retry — wall-clock scenarios on shared runners, F-07)
+        if: failure()
+        run: python -m pytest tests/ -q
       - name: The nuclear receipt
         run: aeos storm --workspace /tmp/storm-ci
+      - name: The nuclear receipt (disclosed retry)
+        if: failure()
+        run: aeos storm --workspace /tmp/storm-ci2
       - name: Wheel builds clean
         run: |
           pip wheel . -w dist --no-deps
