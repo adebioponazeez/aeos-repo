@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10,000,000&times; AI Engineering &mdash; Volume I</title>
+<style>
+:root { --ink:#1a1a20; --paper:#fbfaf7; --accent:#0e5a49; --rule:#d8d4cc; --soft:#6b6b74; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  font-size:19px; line-height:1.62; }
+.page { max-width:860px; margin:0 auto; padding:64px 48px 120px; }
+header.titleblock { text-align:center; padding:90px 0 60px; border-bottom:3px double var(--rule); margin-bottom:64px; }
+h1.book-title { font-size:52px; letter-spacing:2px; margin:0 0 10px; color:var(--accent); font-weight:800; }
+p.subtitle { font-size:22px; font-style:italic; color:var(--soft); margin:6px 0; }
+p.vol { font-size:16px; text-transform:uppercase; letter-spacing:4px; color:var(--soft); margin-top:28px; }
+h1 { font-size:30px; margin-top:72px; padding-bottom:8px; border-bottom:1px solid var(--rule); color:var(--ink); }
+h1.part { page-break-before:always; text-align:center; font-size:34px; color:var(--accent);
+  border:none; margin-top:120px; padding:40px 0 0; letter-spacing:1px; }
+h2 { font-size:24px; margin-top:52px; color:var(--ink); }
+h2.chapter { border-left:5px solid var(--accent); padding-left:14px; }
+h3 { font-size:19px; margin-top:32px; color:var(--soft); text-transform:none;}
+pre { background:#12141a; color:#e8e6df; padding:18px 20px; border-radius:8px; overflow-x:auto;
+  font-size:14px; line-height:1.5; font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; }
+code { font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:0.86em;
+  background:#eceae2; padding:1px 5px; border-radius:4px; }
+pre code { background:none; padding:0; font-size:1em; }
+table { border-collapse:collapse; width:100%; margin:24px 0; font-size:16px; }
+th { background:var(--accent); color:#fff; text-align:left; padding:9px 12px; }
+td { border-bottom:1px solid var(--rule); padding:8px 12px; vertical-align:top;}
+tr:nth-child(even) td { background:#f2f0e9; }
+blockquote { margin:28px 8px; padding:10px 22px; border-left:4px solid var(--accent);
+  color:#33333c; font-style:italic; }
+hr { border:none; border-top:1px solid var(--rule); margin:48px 0; }
+nav.toc { background:#f2f0e9; border:1px solid var(--rule); border-radius:10px; padding:26px 34px; }
+nav.toc h2 { margin-top:0; font-size:20px; letter-spacing:2px; text-transform:uppercase; color:var(--accent);}
+nav.toc ul { list-style:none; padding-left:0; } nav.toc ul ul { padding-left:22px; }
+nav.toc a { color:var(--ink); text-decoration:none; } nav.toc a:hover { color:var(--accent); }
+nav.toc li { padding:2px 0; font-size:16px;}
+a { color:var(--accent); }
+em { color:inherit; }
+.footnote { text-align:center; font-style:italic; color:var(--soft); margin-top:80px; font-size:16px;}
+@media print { .page{padding:0 24px;} h1.part{page-break-before:always;} pre{white-space:pre-wrap;} }
+</style></head>
+<body><div class="page">
+
+<header class="titleblock">
+  <h1 class="book-title">10,000,000&times; AI<br>ENGINEERING</h1>
+  <p class="subtitle">Volume II &mdash; The Platform and the Factory</p>
+  <p class="subtitle">From Multi-Agent Platform to Autonomous Capability Factory &middot; the System at v7.0.0</p>
+  <p class="vol">131 tests &middot; 26 modules &middot; zero dependencies</p>
+</header>
+
+<nav class="toc"><h2>Contents</h2><ul><li><a href="#10-000-000-ai-engineering-volume-ii">10,000,000× AI ENGINEERING — VOLUME II</a></li><li><a href="#part-i-the-platform">PART I — THE PLATFORM</a></li><li><a href="#part-ii-the-capability-os">PART II — THE CAPABILITY OS</a></li><li><a href="#part-iii-economics">PART III — ECONOMICS</a></li><li><a href="#part-iv-research-and-operations">PART IV — RESEARCH AND OPERATIONS</a></li><li><a href="#part-v-the-meta-loop">PART V — THE META-LOOP</a></li><li><a href="#part-vi-the-factory">PART VI — THE FACTORY</a></li><li><a href="#part-vii-the-state-of-the-system">PART VII — THE STATE OF THE SYSTEM</a></li><li><a href="#appendices">APPENDICES</a></li></ul></nav>
+<h1 id="10-000-000-ai-engineering-volume-ii">10,000,000× AI ENGINEERING — VOLUME II</h1>
+<h2 class="chapter" id="the-platform-and-the-factory">The Platform and the Factory</h2>
+<h3>From Multi-Agent Platform to Autonomous Capability Factory — the System at v7.0.0</h3>
+<hr />
+<h2 class="chapter" id="preface-what-changed-between-the-covers">Preface: What Changed Between the Covers</h2>
+<p>Volume I documented a system at v1.0: the kernel of an AI Engineering
+OS — contracts, orchestration, context, memory, skills, governance,
+evaluation, harness, observability, entropy, learning, discovery —
+68 tests, one reference run, and a book's worth of honesty about what
+it did not yet do. The final chapter mapped a roadmap: v1.1 hardening,
+a v2 platform, a v3 capability OS, and beyond.</p>
+<p>This volume documents that roadmap <strong>executed</strong>. The system is now
+v7.0.0: twenty-six modules, 131 tests, provider adapters with fusion,
+a durable resumable runtime, an MCP-idiom tool layer, a content-hashed
+capability catalog, sponsorship tokens, an economics layer, autonomous
+research and operations, a bounded meta-loop, and the capability
+factory — the L7 endgame in which the system designs, validates, and
+(only under spent human authority) installs new capabilities.</p>
+<p>The discipline did not change; that is the thesis of this volume. Every
+new layer arrives with the same receipt: modules you can read, tests
+that attack the system on purpose, evidence bundles you can regenerate
+with one command, and ADRs that admit alternatives. Version numbers
+were spent on capability, never on ceremony — the changelog is a list
+of things that now exist and pass tests, nothing else.</p>
+<p>The one-sentence summary of the seven versions: <strong>the OS learned to
+survive crashes (v2), to package and govern its own capabilities (v3),
+to account for its cost and leverage (v4), to do research and
+operations autonomously (v5), to improve itself inside hard bounds
+(v6), and finally to build new capabilities end-to-end under human
+sponsorship (v7)</strong> — without ever relaxing the four invariants, and
+while adding a fifth: <em>no self-modification without a spent human
+token.</em></p>
+<p><strong>How to read Volume II.</strong> Part I covers the platform mechanics
+(adapters, fusion, runtime, tools). Part II the capability OS (catalog,
+tenancy, sponsorship). Part III economics. Part IV research and
+operations. Part V the meta-loop. Part VI the factory. Part VII the
+witnessed runs and the honest gaps that remain. Appendices carry the
+new ADRs, the evidence, and the updated ten laws.</p>
+<p>Reproduce everything:</p>
+<pre><code class="language-bash">pip install -e . &amp;&amp; python -m pytest   # 131 proofs
+aeos run-demo &amp;&amp; aeos factory-demo &amp;&amp; aeos dashboard
+</code></pre>
+<p>The human moves upward. The machines execute downward. Between the
+covers of these two volumes, the space between them — the system that
+learns — is now built, end to end.</p>
+
+<h1 class="part" id="part-i-the-platform">PART I — THE PLATFORM</h1>
+<h2 class="chapter" id="chapter-1-adapters-classifying-failure-before-responding">Chapter 1. Adapters: Classifying Failure Before Responding</h2>
+<p>"Should we retry?" is the most common wrong answer in agent
+engineering. It looks like a judgment call; it is actually a typing
+problem. A 503 and a context overflow present identically to a naive
+harness — an exception — and demand opposite responses: the first
+wants backoff, the second wants compression, and retrying the second
+is a money bonfire.</p>
+<p>v2's <code>adapters.py</code> makes the class the contract. Every adapter failure
+is one of five kinds: <strong>TRANSIENT</strong> (retry, exponential backoff),
+<strong>CONTEXT_OVERFLOW</strong> (never retry — compress), <strong>PERMANENT</strong> (fail
+fast into repair), <strong>JUNK</strong> (confident nonsense — gate it), and
+<strong>CIRCUIT_OPEN</strong> (the breaker protecting a drowning upstream). The
+subtle rule the tests forced into the light: exhausted transient
+retries surface as <strong>PERMANENT</strong> — because a still-down upstream is,
+for the caller's purposes, permanent, and the runbook's "repair the
+correct layer" only works when the classification tells the truth
+(<code>test_transient_exhausted_is_permanent</code>).</p>
+<p>Around the taxonomy sit the two classic reliability mechanics, both
+tested: a circuit breaker that opens after consecutive failures and
+half-open probes after cooldown (<code>test_circuit_opens_after_threshold</code>),
+and backoff that grows geometrically per attempt. The transport is
+injectable — production wires HTTP, tests wire a deterministic fake —
+so the taxonomy is provable without a single real request (ADR-010).</p>
+<p>The deeper point is architectural. Error handling is not defensive
+programming bolted on; it is the <em>interface</em> between the model layer
+and the harness, and it belongs in the type system of the OS, not in
+the prose of a vendor's status page.</p>
+<h2 class="chapter" id="chapter-2-fusion-combine-compute-don-t-select-compute">Chapter 2. Fusion: Combine Compute, Don't Select Compute</h2>
+<p>The fusion-harness lineage (Volume I, Chapter 33) argued that racing
+models against each other wastes the loser. v2 ships the argument as
+an adapter: <code>FusionAdapter</code> fans one call out to N provider adapters,
+clusters the replies by word-overlap majority, and returns the winning
+text with an <code>agreement</code> flag and <strong>every opinion attached</strong>.</p>
+<p>Agreement semantics are strict. All streams converging (pairwise
+similarity above threshold) yields AGREED; anything else yields
+DISAGREED with the full opinion list — disagreement is <em>surfaced,
+never averaged away</em>, because an average of "deploy now" and "pineapple
+pizza" is not a deployment plan, it is a smell. Downstream, gates may
+treat DISAGREED as PARTIAL: opinions are evidence, not truth
+(<code>test_disagreement_is_surfaced_not_averaged</code>).</p>
+<p>Stream failures ride along as evidence too — a fusion reply from two
+healthy and one dead provider says so, in <code>opinions</code>, rather than
+hiding the outage. And if all streams are down, the fusion raises
+PERMANENT with every stream error enumerated: the failure is legible
+exactly when it is most needed.</p>
+<p>Cost discipline is the chapter's closing thought: fusion multiplies
+spend per phase, so it is a <em>policy</em> — the router sends high-stakes
+phases (architecture, security review) through fusion and routine
+phases through a single cheap model. The seam makes that a
+configuration decision rather than a rewrite, which was ADR-001's
+promise finally cashed.</p>
+<h2 class="chapter" id="chapter-3-the-durable-runtime-crash-becomes-a-pause">Chapter 3. The Durable Runtime: Crash Becomes a Pause</h2>
+<p>A run that must restart from zero after a crash taxes every long
+objective. v2 makes the run itself durable, and the mechanism is
+deliberately boring: after <strong>every task transition</strong>, the orchestrator
+flushes a minimal <code>RunState</code> — task specs, states, attempts — with a
+write-then-rename so a crash mid-write can leave at most a <code>.tmp</code>
+file, never a corrupt state (ADR-009).</p>
+<p>Resume inverts the run: <code>resume_plan</code> reads the persisted state and
+partitions it into <em>keep</em> (SUCCEEDED — their artifacts are already on
+disk, because the filesystem is the working memory) and <em>re-run</em>
+(everything else). A resumed run in a <strong>new process</strong> re-binds
+handlers by agent name from the registry and executes only the
+remainder:</p>
+<pre><code>crash → resume → keep=[done], rerun=[only] → accepted
+</code></pre>
+<p><code>test_failed_run_is_resumable_and_then_completes</code> walks exactly this:
+a handler crashes mid-run, the state file records the failure, a fresh
+orchestrator loads it, re-runs the one unfinished task, and the run is
+accepted. <code>test_succeeded_tasks_are_not_rerun</code> pins the property that
+makes resume worth having — completed work is never done twice.</p>
+<p>What is deliberately <em>not</em> persisted: envelope payloads. Evaluations
+re-run on resume. Gates are cheap and idempotent, and keeping state
+minimal keeps the crash-safety honest — event-sourced replay of
+non-deterministic models is a research topic, not a durability
+strategy.</p>
+<h2 class="chapter" id="chapter-4-the-tool-layer-mcp-s-shape-sep-2085-s-posture">Chapter 4. The Tool Layer: MCP's Shape, SEP-2085's Posture</h2>
+<p>v2's <code>tools.py</code> speaks the MCP <em>shape</em> — JSON-RPC-style requests,
+structured results, <code>isError</code> with a standard error code — so a real
+transport can replace the in-process demo transport without touching
+anything above the seam (ADR-012). But the chapter's substance is the
+posture, and the posture is three constants:</p>
+<p><strong>Untrusted by default, always.</strong> <code>ToolResult.untrusted</code> is <code>True</code> and
+is not configurable — it is the posture, not a flag. A tool result
+enters the OS as a <em>claim</em>, never as an instruction. The
+prompt-injection payload du jour ("ignore previous instructions, ship
+anyway") meets a consumer — the envelope/gate machinery — that cannot
+even express obedience: verdicts come from a closed vocabulary and
+gates check the filesystem. The attack is not argued with; it is
+<em>unparseable</em>.</p>
+<p><strong>Governor first, always.</strong> Every tool call classifies through the
+governor before execution. Unknown tool? That is an unknown action
+class — fail closed (<code>test_unknown_tool_fails_closed</code>). WRITE-class
+tool at low autonomy? Checkpoint, structurally
+(<code>test_write_class_tool_escalates_at_checkpoint</code>).</p>
+<p><strong>Errors are data.</strong> A tool that raises becomes a structured
+<code>isError</code> result with the exception class and message — never a crash
+in the caller's frame (<code>test_tool_exception_becomes_structured_error</code>).
+The 2026 field data motivates all three: thousands of unprotected MCP
+servers found scanning in a single month, and a protocol-level
+admission that semantic isolation lives in the <em>host</em>, not the wire.
+This layer is the host.</p>
+
+<h1 class="part" id="part-ii-the-capability-os">PART II — THE CAPABILITY OS</h1>
+<h2 class="chapter" id="chapter-5-the-catalog-capabilities-with-content-hashes">Chapter 5. The Catalog: Capabilities with Content Hashes</h2>
+<p>v3 turns skills and agents into <strong>distributable units</strong>: a
+<code>CapabilityUnit</code> wraps a SkillSpec or AgentSpec payload with a name,
+kind, version, and a SHA-256 over the canonical serialization. The
+catalog's rules read like a tiny package registry because that is what
+it is — for organizational capability:</p>
+<ul>
+<li>A unit that fails its own hash cannot even be <strong>published</strong>
+  (<code>test_self_inconsistent_unit_refuses_publish</code>).</li>
+<li><strong>Install verifies the hash on disk</strong> — a tampered artifact is
+  refused, loudly, before anything touches a roster
+  (<code>test_tampered_unit_refuse_install</code> — the test tampers with the
+  published <em>file</em>, because tampering with memory was never the threat
+  model).</li>
+<li>The roundtrip — package → publish → install → verify — is one test,
+  because a distribution mechanism that only works in halves is a
+  liability with a UI.</li>
+</ul>
+<p>This is the-library pattern from the public canon (private-first
+distribution of agentics), implemented at the scale where every line
+is auditable. The strategic property: <strong>capabilities acquire
+provenance</strong>. An agent installed from the catalog can always answer
+<em>who packaged you, from what payload, verifiable against what hash</em> —
+the difference between a capability and a rumor.</p>
+<h2 class="chapter" id="chapter-6-sponsorship-human-authority-spent-atomically">Chapter 6. Sponsorship: Human Authority, Spent Atomically</h2>
+<p>The hardest design question in an autonomous system is not "what may
+the machine do on its own" — the governor answers that. It is "what
+may the machine do <em>to itself</em>, and in whose name." v3's answer is the
+sponsorship token, and its four properties are the whole design:</p>
+<p><strong>Scoped.</strong> A token names its target — <code>factory:install:builder-
+specialist</code> — and a scope mismatch is refused
+(<code>test_scope_mismatch_refused</code>).</p>
+<p><strong>One-shot.</strong> Spending is atomic; replaying a spent token is refused
+(<code>test_spend_is_one_shot</code>). Approving one install does not license its
+cousins — the v7 demo <em>shows</em> this: a token scoped for one candidate
+installs it and the second candidate is refused, in the same run.</p>
+<p><strong>Expiring.</strong> Default one hour; expired tokens are refused
+(<code>test_expiry_refused</code>).</p>
+<p><strong>Audited.</strong> Every issue, spend, and refusal lands in an audit trail
+with an outcome — "who authorized this capability?" is a query, not an
+investigation.</p>
+<p>The tokens exist because the alternatives fail at human scale:
+approval fatigue turns per-action confirmations into rubber stamps,
+and standing admin rights are blank checks. A sponsorship is authority
+in exactly the amount a change requires — strong enough to matter,
+small enough to spend deliberately (ADR-013).</p>
+<h2 class="chapter" id="chapter-7-multi-tenant-governance-one-matrix-many-leases">Chapter 7. Multi-Tenant Governance: One Matrix, Many Leases</h2>
+<p>A single OS serving several teams cannot serve them one security
+posture — the fintech tenant and the research tenant disagree about
+DEPLOY the way their regulators disagree about money. v3 gives the
+governor per-tenant policy overlays: <code>set_tenant_policy("acme",
+DEPLOY, (L7, False))</code> makes deploys L7-and-sponsored for acme while
+the global matrix is untouched.</p>
+<p>The two tests are the contract. <code>test_tenant_override_applies</code>: at
+global L5 a DEPLOY allows; under tenant "acme" (L7 required) the same
+action denies — the overlay binds. <code>test_tenant_matrix_untouched_
+globally</code>: the overlay never leaks; a "strict" tenant demanding L7 for
+writes changes nothing for everyone else — global behavior is
+byte-identical before and after the overlay exists.</p>
+<p>What overlays cannot do matters as much: no tenant can weaken the
+immutable rows. FINANCIAL, DESTRUCTIVE, CREDENTIAL checkpoint at every
+occurrence whatever any overlay says, because the overlay API shapes
+<em>levels</em>, and the checkpoint-forever rule is not a level — it is a law
+of the kernel. Tenancy is a lease on the matrix, never a locksmith.</p>
+
+<h1 class="part" id="part-iii-economics">PART III — ECONOMICS</h1>
+<h2 class="chapter" id="chapter-8-accounting-cost-that-cannot-hide">Chapter 8. Accounting: Cost That Cannot Hide</h2>
+<p>The founding spec's objective function — <strong>OUTCOME VALUE / HUMAN
+ATTENTION</strong> — cannot be optimized by a system that never measures it.
+v4's <code>economics.py</code> makes the measurement structural.</p>
+<p><code>CostTracker</code> records every model's token usage per task at list-price
+rates and reports totals, per-task breakdowns, and budget states. The
+deterministic engine costs 0.0 by construction, and the demo is honest
+about being a demo: the reference bundle's economics note says the
+figures are list-price estimates on model hints, because honest
+accounting includes honesty about simulation (<code>test_echo_is_free</code> is,
+in its small way, an integrity test).</p>
+<p><code>Budget</code> speaks the governor's grammar on purpose: <strong>ALLOW</strong> under
+80% of budget, <strong>CHECKPOINT</strong> in the final 20% — the system tells you
+it is approaching the cliff while there is still time to decide — and
+<strong>DENY</strong> at exhaustion (<code>test_budget_escalates_then_denies</code>). Spending
+authority and action authority flow through the same decision
+vocabulary, so a budgeted agent fleet composes with the autonomy
+ladder instead of fighting it.</p>
+<h2 class="chapter" id="chapter-9-leverage-the-ratio-that-names-the-book">Chapter 9. Leverage: The Ratio That Names the Book</h2>
+<p><code>leverage_ratio(outcomes, interventions)</code> is the objective function as
+a function. Interventions are counted from the event log — checkpoints
+the human resolved plus escalations — because leverage the system
+<em>assigns itself</em> is marketing; leverage computed from what the human
+actually had to touch is a measurement.</p>
+<p>The reference run's number: <strong>7.0</strong> — seven verified outcomes, zero
+human interventions. The honest edge cases are part of the design:
+zero interventions with zero outcomes is <code>None</code>, not zero, because a
+ratio over an empty denominator is a lie; and the fully-supervised
+limit (N interventions, N outcomes) converges toward 1.0, which is
+precisely the "AI as fancy autocomplete" regime the whole architecture
+exists to escape.</p>
+<p>The economic reading of the seven versions: v1 bought leverage
+mechanisms; v2 bought leverage that survives crashes; v4 made the
+leverage <em>legible</em>; v6–v7 make it compound — the factory's installed
+capabilities are leverage that manufactures leverage. Ten-million-x is
+not a number anyone hits by going faster. It is what compounding looks
+like when the rungs are real.</p>
+
+<h1 class="part" id="part-iv-research-and-operations">PART IV — RESEARCH AND OPERATIONS</h1>
+<h2 class="chapter" id="chapter-10-autonomous-research-with-untrusted-sources">Chapter 10. Autonomous Research with Untrusted Sources</h2>
+<p>v5's research pipeline applies the anti-hallucination law one layer
+earlier than the gates: at <em>ingestion</em>. Every finding from the search
+tool carries a source and a confidence derived from the source's
+measured authority — and anything below threshold lands in <code>unverified</code>,
+never in the brief's conclusions.</p>
+<p>The deterministic demo search ships three sources on purpose: a spec
+document (authority 0.95), a research summary (0.9), and a forum hot
+take (0.2). The pipeline's verdict on them is the test:
+two findings accepted, the lore quarantined, average confidence of the
+accepted set ≥0.8 (<code>test_low_authority_sources_go_to_unverified</code>).
+When the governor denies the tool call outright — a network-restricted
+tenant, say — the pipeline returns an <em>empty</em> brief, which upstream
+evaluates as UNVERIFIED: <strong>no sources, no brief, no fabrication</strong>
+(<code>test_tool_denied_means_empty_brief</code>).</p>
+<p>This is the 2026 research-agent discipline in miniature: authority
+caps confidence, confidence gates inclusion, and the absence of
+evidence is a verdict, not a gap to be filled with confident prose.</p>
+<h2 class="chapter" id="chapter-11-operations-sweeps-and-the-regression-book">Chapter 11. Operations: Sweeps and the Regression Book</h2>
+<p>Entropy control graduated from "a scan at the end of a run" to a
+<em>schedule</em> — the posture Chapter 27 of Volume I argued for
+(continuous small corrections, never quarterly archaeology). The
+<code>SweepScheduler</code> registers jobs with intervals and executes exactly
+the due ones — <code>test_due_jobs_run_and_not_before</code> pins the "not
+before" half, because a scheduler that fires early is just a loop with
+ambitions.</p>
+<p>The <code>RegressionBook</code> is the Braintrust pattern at repository scale: a
+production failure, once recorded against a file pattern, becomes a
+<strong>permanent gate</strong>. <code>regression_gate</code> in the gate library consults the
+book; an envelope whose changed files match a recorded signature fails
+—— the same mistake cannot ship twice
+(<code>test_recorded_failure_blocks_matching_change</code>). The book persists as
+JSONL, so organizational scar tissue survives restarts.</p>
+<p>Together they close the operations loop: sweeps shrink the entropy the
+system produces; the regression book converts the failures that leak
+through into permanent immunities. Reliability stops being a property
+of heroics and becomes a property of the ledger.</p>
+<h1 class="part" id="part-v-the-meta-loop">PART V — THE META-LOOP</h1>
+<h2 class="chapter" id="chapter-12-self-improvement-inside-hard-floors">Chapter 12. Self-Improvement Inside Hard Floors</h2>
+<p>v6 is the version the whole architecture was built to make <em>safe</em>:
+the system proposing changes to itself. <code>MetaLoop.analyze()</code> reads the
+skills registry and the governor's reliability and returns proposals
+of exactly three kinds — retire a failing skill, tune the promotion
+threshold within bounds, or draft an ADR stub for human review. Each
+kind is bounded by <strong>data floors</strong>:</p>
+<ul>
+<li>Retirement requires ≥5 uses AND ≤0.4 win-rate — enough history to
+  condemn, not a bad first date (<code>test_young_skill_not_condemned</code>).</li>
+<li>Threshold tuning is clamped to [0.90, 0.99]; a forged value outside
+  the clamp is refused <strong>even with a valid sponsorship token</strong> — the
+  bounds outrank the human's key, deliberately, because the floors are
+  what the key <em>means</em> (<code>test_out_of_bounds_threshold_refused_even_
+  with_token</code>).</li>
+<li>Application always requires a spent, scoped, one-shot sponsorship
+  token (<code>test_apply_requires_sponsorship</code>), and every applied change
+  writes an ADR stub so the change is reviewable after the fact.</li>
+</ul>
+<p>Note what the meta-loop <em>cannot</em> propose: there is no proposal kind
+that reaches the immutable rows — the high-impact checkpoint-forever
+rule, fail-closed unknowns, the closed verdict vocabulary.
+Self-improvement without floors is just a runaway system with good
+intentions; the floors are the feature (ADR-015).</p>
+<p>This is L6 in the spec's ladder, earned rather than declared: the
+system improves itself exactly as much as its evidence and its humans
+can defend, and not one parameter further.</p>
+
+<h1 class="part" id="part-vi-the-factory">PART VI — THE FACTORY</h1>
+<h2 class="chapter" id="chapter-13-l7-the-system-that-designs-systems">Chapter 13. L7: The System That Designs Systems</h2>
+<p>v7 is the spec's terminal object, shipped: <em>"systems that discover
+what systems should exist."</em> The <code>CapabilityFactory</code> is a five-stage
+pipeline, and every stage emits evidence into the event log:</p>
+<p><strong>1. Measure.</strong> Discovery reads the pattern history — which
+<code>phase:role:class</code> signatures repeated past threshold. No signature,
+no candidate; enthusiasm is not a measurable quantity.</p>
+<p><strong>2. Design.</strong> <code>design_agent(signature)</code> derives a <em>conservative
+contract</em> from the signature itself: the action class determines the
+boundary. A <code>phase:triage:WRITE</code> pattern yields <code>triage-specialist</code>
+with <code>writes: ["triage/*"]</code>; a READ pattern yields an agent with no
+write surface at all. The design is template-shaped on purpose —
+templates are auditable, and novel architectures are a human's job
+(ADR-016's honest tradeoff).</p>
+<p><strong>3. Sandbox-validate.</strong> The design must pass the full gauntlet in a
+scratch workspace: contract validation (all thirteen fields, no
+blanks), then a real smoke task through the real orchestrator, harness,
+governor and gates on the deterministic engine. A candidate whose
+sandbox verdict is anything but PASS <strong>cannot reach the install
+branch — there is no override</strong> (<code>test_failed_sandbox_never_installs</code>
+proves it by breaking the contract on purpose).</p>
+<p><strong>4. Propose.</strong> Survivors are proposed with their evidence: measured
+signature, sandbox verdict, contract.</p>
+<p><strong>5. Install — under sponsorship.</strong> A scoped, one-shot token (ADR-013)
+moves the agent into the roster and publishes a content-hashed catalog
+unit. Without a token: proposals only, refusals logged
+(<code>test_install_refused_without_sponsorship</code>).</p>
+<h2 class="chapter" id="chapter-14-the-run-witnessed-twice">Chapter 14. The Run, Witnessed Twice</h2>
+<p>The demo runs the factory twice, and the difference between the two
+runs <em>is</em> the chapter:</p>
+<p><strong>Without a token</strong> (<code>aeos factory-demo</code>): two candidates measured and
+designed (<code>evaluator-specialist</code>, <code>builder-specialist</code>), two sandbox
+validations PASS, two proposals — and <strong>zero installs</strong>. Every install
+refused: <em>"sponsorship required for factory:install:…"</em>. The system
+did everything it could and then stopped at the one door it cannot
+open for itself.</p>
+<p><strong>With a scoped token</strong> (<code>--token</code>, registered for exactly one
+candidate): the history run completes, the factory validates both
+candidates, installs <code>evaluator-specialist</code> into the roster and the
+catalog — and <strong>refuses <code>builder-specialist</code> on scope mismatch</strong>, in
+the same breath, because one token is one power, not a mood
+(<code>test_full_run_with_valid_token_installs</code>).</p>
+<p>Read the pair slowly, because it is the entire safety thesis in
+microcosm: the system's autonomy expanded to cover <em>designing its own
+coworkers</em>, and the expansion itself stayed inside the same grammar —
+evidence, bounds, spent human authority — that governed a single file
+write in Volume I. The ladder did not weaken as it got taller.</p>
+<h2 class="chapter" id="chapter-15-the-studio-observability-you-can-hold">Chapter 15. The Studio: Observability You Can Hold</h2>
+<p>The last v7 artifact is a dashboard generator, and it is deliberately
+the least clever module in the OS: <code>aeos dashboard</code> renders the run's
+evidence bundle and event log into a single self-contained HTML file —
+inline styles, embedded data, no network, no dependencies, opens
+offline, prints to PDF.</p>
+<p>The choice is a protest against a trend: agent observability is
+drifting toward platforms, and platforms drift toward <em>someone else's</em>
+diagram of your system. The studio's position: a run's report should
+be as portable as its evidence — a file you can hold, archive, attach
+to an incident, or hand to an auditor who trusts nothing but what they
+can open. The heavy tooling (OTel collectors, trace backends) has its
+place behind the seam; the <em>floor</em> of observability is a static page
+anyone can read with the lights off.</p>
+<p>The dashboard shows what the run actually argued: task states with
+attempts, the governor's earned level and live reliability, cost and
+leverage, the event timeline. If Volume I's event log made runs
+<em>replayable</em>, the studio makes them <em>presentable</em> — the difference
+between data and testimony.</p>
+
+<h1 class="part" id="part-vii-the-state-of-the-system">PART VII — THE STATE OF THE SYSTEM</h1>
+<h2 class="chapter" id="chapter-16-the-ledger-at-v7-0-0">Chapter 16. The Ledger at v7.0.0</h2>
+<p>Twenty-six modules. 131 tests. Zero runtime dependencies. One command
+reproduces the ledger: <code>python -m pytest</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>v</th>
+<th>Proven by (selection)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kernel (contracts→discovery)</td>
+<td>1.0</td>
+<td>68 tests — Volume I</td>
+</tr>
+<tr>
+<td>Secret redaction, gate library, entropy</td>
+<td>1.1</td>
+<td><code>test_api_key_never_enters_the_log</code>, schema/tests/regression gates, drift+weak-test+unused-tool scans</td>
+</tr>
+<tr>
+<td>Error taxonomy, breaker, fusion</td>
+<td>2.0</td>
+<td><code>test_context_overflow_never_retries</code>, <code>test_circuit_opens_after_threshold</code>, <code>test_disagreement_is_surfaced_not_averaged</code></td>
+</tr>
+<tr>
+<td>Durable runtime</td>
+<td>2.0</td>
+<td><code>test_failed_run_is_resumable_and_then_completes</code></td>
+</tr>
+<tr>
+<td>Tool layer (MCP idiom)</td>
+<td>2.0</td>
+<td><code>test_results_are_always_untrusted</code>, <code>test_unknown_tool_fails_closed</code></td>
+</tr>
+<tr>
+<td>Catalog, sponsorship, tenancy</td>
+<td>3.0</td>
+<td><code>test_tampered_unit_refuses_install</code>, <code>test_spend_is_one_shot</code>, tenant overlay tests</td>
+</tr>
+<tr>
+<td>Economics</td>
+<td>4.0</td>
+<td><code>test_budget_escalates_then_denies</code>, <code>test_leverage_ratio</code></td>
+</tr>
+<tr>
+<td>Research, sweeps, regressions</td>
+<td>5.0</td>
+<td><code>test_low_authority_sources_go_to_unverified</code>, <code>test_recorded_failure_blocks_matching_change</code></td>
+</tr>
+<tr>
+<td>Meta-loop</td>
+<td>6.0</td>
+<td><code>test_out_of_bounds_threshold_refused_even_with_token</code></td>
+</tr>
+<tr>
+<td>Factory + Studio</td>
+<td>7.0</td>
+<td><code>test_failed_sandbox_never_installs</code>, <code>test_full_run_with_valid_token_installs</code></td>
+</tr>
+</tbody>
+</table>
+<p>Witnessed runs: reference loop accepted at leverage 7.0 with the
+governor earning L5; factory twice — proposals-only, then one scoped
+install with a scope-mismatch refusal. All bundles in <code>evidence/</code>.</p>
+<h2 class="chapter" id="chapter-17-the-honest-gaps-v7-edition">Chapter 17. The Honest Gaps, v7 Edition</h2>
+<p>The discipline that produced ADR-008 still governs. What v7.0 does
+<strong>not</strong> claim:</p>
+<ul>
+<li><strong>No real-model validation.</strong> The suite proves the harness; adapters
+  have not run against production providers at fleet scale. The seam
+  makes that an operations exercise, not a rewrite — but it is not
+  done, so it is not claimed.</li>
+<li><strong>No real MCP transport.</strong> The tool layer speaks the shape with an
+  injectable transport; a hardened client against live servers (with
+  the SEP-2085 SBOM posture) is v8 work.</li>
+<li><strong>Sponsorship UX is plumbing.</strong> Tokens are handled as strings; a
+  human-facing console (issue, inspect, audit) does not exist yet.</li>
+<li><strong>Factory designs are templates.</strong> Novel agent architectures still
+  need human architects; the factory compounds <em>known</em> shapes.</li>
+<li><strong>Single-machine.</strong> Multi-process fan-out, remote sandboxes, and
+  A2A-style remote workers are beyond v7's in-process runtime.</li>
+</ul>
+<p>The roadmap those gaps imply — v8 (hardened transports + console +
+remote sandboxes), v9 (novel-design co-architecting with humans),
+v10 (the cross-org capability market, catalog federation) — is stated
+as engineering work with exit criteria, exactly as the v1→v7 roadmap
+was, and for exactly the same reason: <strong>a roadmap you can't be wrong
+about is a poem.</strong></p>
+<h2 class="chapter" id="chapter-18-closing-the-fifth-invariant">Chapter 18. Closing: The Fifth Invariant</h2>
+<p>Volume I ended with four invariants. Seven versions later they hold
+unmodified — no envelope no result; no authority without a boundary;
+no autonomy without reliability; no memory without validation — and
+the platform earned a fifth, the one that makes the other four
+survive a system that edits itself:</p>
+<p><strong>No self-modification without a spent human token.</strong></p>
+<p>That sentence is the difference between the capability factory this
+book documents and the "self-improving AI org" of the keynote
+imagination. The factory designs its own coworkers, and every one of
+them arrives holding a receipt: a measured signature, a passing
+sandbox, a content hash, and a sponsor's spent authority. Growth, by
+construction, leaves a paper trail.</p>
+<p>Build systems that build systems. Then systems that improve systems.
+Then systems that discover what systems should exist — and stop, at
+every single door, to ask who is paying for the next one.</p>
+<p>The human moves upward. The machines execute downward. And between
+them, now, there is an OS — built, tested, documented, and <em>governed</em>.</p>
+<hr />
+<h1 class="part" id="appendices">APPENDICES</h1>
+<h2 class="chapter" id="appendix-a-new-decision-records-volume-ii">Appendix A — New Decision Records (Volume II)</h2>
+<ul>
+<li><strong>ADR-009</strong> Durable runtime: persist at transitions, resume without
+  rework. <em>States, not event-sourced replay.</em></li>
+<li><strong>ADR-010</strong> Adapter error taxonomy: classify before responding.
+  <em>Exhausted transients are permanent; still-down is permanent.</em></li>
+<li><strong>ADR-011</strong> Fusion: combine compute, surface disagreement.
+  <em>Opinions are evidence, not truth.</em></li>
+<li><strong>ADR-012</strong> Tool layer: MCP shape, SEP-2085 posture, untrusted
+  constant. <em>Injection is unparseable, not argued with.</em></li>
+<li><strong>ADR-013</strong> Sponsorship: scoped, one-shot, expiring, audited.</li>
+<li><strong>ADR-014</strong> Economics: the objective function is a measurement or
+  it is nothing.</li>
+<li><strong>ADR-015</strong> Meta-loop bounds: floors outrank keys.</li>
+<li><strong>ADR-016</strong> The factory: sandbox PASS is the only road to install;
+  there is no override.</li>
+</ul>
+<p>Full records with alternatives: <code>docs/adr/</code> (sixteen total).</p>
+<h2 class="chapter" id="appendix-b-the-ten-laws-at-v7">Appendix B — The Ten Laws at v7</h2>
+<p>The ten laws of Volume I hold verbatim. The platform stress-tested
+each: adapters met Law 7 (fail closed) with a new vocabulary; fusion
+met Law 3 (claims untrusted) with opinions-as-evidence; the catalog
+met Law 9 (no folklore) with hashes; the factory met Law 6 (autonomy
+earned) at architectural scale; and the meta-loop met every law at
+once, which is why its floors exist. The laws were not maintained by
+vigilance. They were maintained by <em>tests</em> — which is the only way
+anything is.</p>
+<h2 class="chapter" id="appendix-c-reproducing-every-claim">Appendix C — Reproducing Every Claim</h2>
+<pre><code class="language-bash">pip install -e .            # nothing else installs
+python -m pytest            # 131 proofs, ~4 seconds
+aeos run-demo               # accepted run, leverage, evidence bundle
+aeos dashboard              # the studio page
+aeos factory-demo           # proposals only, refusals logged
+aeos factory-demo --token S # scoped install, scope-mismatch refusal
+</code></pre>
+<p>Everything in both volumes is one of: a module you can read, a test
+you can run, or an honest gap you can check is still listed as a gap.
+<em>— end of Volume II —</em></p>
+<p class="footnote">&mdash; end of Volume I &middot; 4,281 words &middot; generated from the aeos repository &mdash;</p>
+</div></body></html>

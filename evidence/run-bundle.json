@@ -1,0 +1,218 @@
+{
+  "accepted": true,
+  "summary": "7/7 tasks succeeded in 7 waves, 0 repair cycle(s), 1.09s",
+  "states": {
+    "define-objective": "SUCCEEDED",
+    "research": "SUCCEEDED",
+    "architect": "SUCCEEDED",
+    "build-core": "SUCCEEDED",
+    "build-cli": "SUCCEEDED",
+    "evaluate": "SUCCEEDED",
+    "release": "SUCCEEDED"
+  },
+  "states_detail": [
+    {
+      "name": "define-objective",
+      "agent": "executive",
+      "state": "SUCCEEDED",
+      "attempts": 1
+    },
+    {
+      "name": "research",
+      "agent": "researcher",
+      "state": "SUCCEEDED",
+      "attempts": 1
+    },
+    {
+      "name": "architect",
+      "agent": "architect",
+      "state": "SUCCEEDED",
+      "attempts": 1
+    },
+    {
+      "name": "build-core",
+      "agent": "builder",
+      "state": "SUCCEEDED",
+      "attempts": 1
+    },
+    {
+      "name": "build-cli",
+      "agent": "builder",
+      "state": "SUCCEEDED",
+      "attempts": 1
+    },
+    {
+      "name": "evaluate",
+      "agent": "evaluator",
+      "state": "SUCCEEDED",
+      "attempts": 1
+    },
+    {
+      "name": "release",
+      "agent": "release",
+      "state": "SUCCEEDED",
+      "attempts": 1
+    }
+  ],
+  "observability": {
+    "events": 37,
+    "tasks_succeeded": 7,
+    "tasks_failed": 0,
+    "tasks_escalated": 0,
+    "success_rate": 1.0,
+    "by_kind": {
+      "wave.start": 7,
+      "governor.allow": 7,
+      "task.started": 7,
+      "gate.checked": 7,
+      "governor.level": 1,
+      "task.succeeded": 7,
+      "run.finished": 1
+    }
+  },
+  "governor_level": "L5_CONTINUOUS_AUTONOMY",
+  "governor_reliability": 1.0,
+  "economics": {
+    "total_cost": 30.256,
+    "total_tokens": 16320,
+    "per_task": {
+      "executive": 12.0,
+      "researcher": 4.6,
+      "architect": 12.0,
+      "builder": 0.552,
+      "evaluator": 0.552,
+      "release": 0.552
+    },
+    "mode": "simulated",
+    "note": "list-price estimate on model hints; the echo runtime itself costs 0.0 by construction"
+  },
+  "learning_lessons": 7,
+  "promotion_proposals": [
+    {
+      "signature": "phase:executive:READ",
+      "count": 4,
+      "proposal": "task -> skill",
+      "rationale": "repeated 4x; codify the procedure"
+    },
+    {
+      "signature": "phase:researcher:NETWORK",
+      "count": 4,
+      "proposal": "task -> skill",
+      "rationale": "repeated 4x; codify the procedure"
+    },
+    {
+      "signature": "phase:architect:WRITE",
+      "count": 4,
+      "proposal": "task -> skill",
+      "rationale": "repeated 4x; codify the procedure"
+    },
+    {
+      "signature": "phase:builder:WRITE",
+      "count": 8,
+      "proposal": "task -> skill",
+      "rationale": "repeated 8x; codify the procedure"
+    },
+    {
+      "signature": "phase:evaluator:EXECUTE",
+      "count": 4,
+      "proposal": "task -> skill",
+      "rationale": "repeated 4x; codify the procedure"
+    },
+    {
+      "signature": "phase:release:WRITE",
+      "count": 4,
+      "proposal": "task -> skill",
+      "rationale": "repeated 4x; codify the procedure"
+    }
+  ],
+  "entropy_findings": [],
+  "events_file": "/tmp/v27b/.aeos/runs/1788364945-events.jsonl",
+  "checkpoints": 7,
+  "leverage": 7.0,
+  "standards": {
+    "gated": false,
+    "registered": [],
+    "cited": [],
+    "missing": [],
+    "ok": true
+  },
+  "dividend": {
+    "distillation": {
+      "groups": 2,
+      "episodes_in": 8,
+      "tokens_in": 118,
+      "tokens_out": 29,
+      "compression": 4.07,
+      "projected_saving_per_recall": 89
+    },
+    "ledger": {
+      "classes": {
+        "build-core": {
+          "task_class": "build-core",
+          "runs": 3,
+          "baseline": 57,
+          "all_in": 24,
+          "delta": -33,
+          "negative_marginal": true,
+          "cumulative_saved": 56
+        },
+        "research": {
+          "task_class": "research",
+          "runs": 3,
+          "baseline": 61,
+          "all_in": 25,
+          "delta": -36,
+          "negative_marginal": true,
+          "cumulative_saved": 62
+        }
+      },
+      "any_negative": true,
+      "total_saved": 118
+    },
+    "rent": {
+      "pays": 2,
+      "squatters": 7,
+      "squat_tokens": 57
+    },
+    "recall": {
+      "tokens": 55,
+      "full_scan": 245,
+      "saving": 190
+    }
+  },
+  "profile": {
+    "name": "balanced",
+    "label": "BALANCED \u2014 the production default (v1\u2013v12 behavior)",
+    "autonomy_ceiling": "L4_GUARDED_AUTONOMY",
+    "max_workers": 4,
+    "strict_gates": false,
+    "isolation": "inprocess",
+    "fusion": false,
+    "budget_usd": 2.0,
+    "model_route": "default",
+    "floor_gates": [
+      "artifacts_exist",
+      "claims_are_backed"
+    ]
+  },
+  "triangle": {
+    "profile": "balanced",
+    "control": 0.46,
+    "cost_usd": 30.256,
+    "speed_tasks_per_s": 6.398,
+    "duration_s": 1.094,
+    "components": {
+      "gate_checks": 7,
+      "boundaries_enforced": 0,
+      "checkpoints": 0,
+      "escalations": 0,
+      "tokens": 16320,
+      "budget_usd": 2.0,
+      "waves": 7,
+      "max_workers": 4,
+      "isolation": "inprocess",
+      "fusion": false,
+      "trade": "the default trade \u2014 no axis maximized, none ignored"
+    }
+  }
+}

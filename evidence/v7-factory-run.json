@@ -1,0 +1,18 @@
+{
+  "candidates": 2,
+  "validated": 2,
+  "proposed": [
+    "evaluator-specialist",
+    "builder-specialist"
+  ],
+  "installed": [
+    "installed 'evaluator-specialist' into roster + catalog"
+  ],
+  "refused": [
+    "refused: sponsorship required for factory:install:builder-specialist"
+  ],
+  "duration_s": 0.002,
+  "history_accepted": true,
+  "sponsorship": "present",
+  "events": 20
+}

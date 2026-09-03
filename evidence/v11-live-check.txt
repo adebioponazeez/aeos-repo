@@ -1,0 +1,9 @@
+{
+  "provider": "openrouter",
+  "model": "openai/gpt-5-mini",
+  "base_url": "https://openrouter.ai/api/v1",
+  "key_env": "OPENROUTER_API_KEY",
+  "key_present": false,
+  "budget_usd": 2.0,
+  "spend": "0.00 \u2014 this command never calls the wire"
+}

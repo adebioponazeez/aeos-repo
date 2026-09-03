@@ -1,0 +1,16 @@
+{
+  "stage_1_import": {
+    "imported": 0,
+    "units": []
+  },
+  "stage_2_refused_quarantined": {
+    "no_token": "refused: sponsorship required for federation:install:triage-specialist",
+    "with_token": "installed federated 'triage-specialist' (origin foreign)"
+  },
+  "stage_3_revalidated_locally": "PASS",
+  "stage_4_sponsored_install": {
+    "ok": false,
+    "detail": "refused: sponsorship required for federation:install:triage-specialist"
+  },
+  "stage_5_export": "/tmp/v10-fed/.aeos/export-bundle.json"
+}

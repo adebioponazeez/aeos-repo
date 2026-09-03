@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.venv/
+.aeos-demo/
+*.torn
+.DS_Store
