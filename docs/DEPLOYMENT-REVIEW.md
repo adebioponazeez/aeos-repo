@@ -45,7 +45,7 @@ restore drill.** Those are the pending items, ranked below.
 | F-08 | **HARNESS DONE (v29)** | soak shipped (sim-proven); live execution awaits operator key — opt-in only | Budget cutoff and provider error taxonomy are simulation-tested; the opt-in live test is skipped without a key | 1 skipped test | One recorded live soak (operator opt-in, capped $) before any production claim |
 | F-09 | **DONE (v29)** | deterministic verified backups; drill = storm scenario 9/9 | Atomic writes ≠ backups; `.aeos` state has no export/restore proof | RUNBOOK lacks it | `aeos backup` / `aeos restore` + a storm scenario that restores and re-runs |
 | F-10 | **P2** | **Single-host, POSIX-only.** fcntl locks degrade loudly off-POSIX; no distributed durability (deliberate, on record in BENCHMARK) | `vault.py` | Document WSL requirement for Windows; brokers are a v3x decision |
-| F-11 | **P2** | **Wheel ships code only.** Docs/book/LICENSE absent from the artifact; PyPI page would be bare | wheel manifest: 55 files, no docs | Ship LICENSE + README in the sdist/wheel; publish to PyPI (or private index) |
+| F-11 | **READY (v31)** | sdist+wheel twine-PASSED w/ LICENSE+tests; PUBLISHING.md shipped; name `aeos` verified free — upload awaits account | Docs/book/LICENSE absent from the artifact; PyPI page would be bare | wheel manifest: 55 files, no docs | Ship LICENSE + README in the sdist/wheel; publish to PyPI (or private index) |
 | F-12 | **FIXED** | Dead code: unreachable legacy flush block survived the v26 hardening after an early `return` | `memory.py` `_flush` | Removed this session; suite re-run green |
 
 ## 3. Pending, ranked

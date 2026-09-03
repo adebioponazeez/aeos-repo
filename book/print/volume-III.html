@@ -46,8 +46,8 @@ em { color:inherit; }
 <header class="titleblock">
   <h1 class="book-title">10,000,000&times; AI<br>ENGINEERING</h1>
   <p class="subtitle">Volume III &mdash; The Arc Completed</p>
-  <p class="subtitle">The Shipyard, the Soak, the Embassy and the release (v28&ndash;v30) &middot; the System at v30.0.0</p>
-  <p class="vol">Embassy printing (v30) &middot; 374 tests &middot; 55 modules &middot; 39 ADRs &middot; zero dependencies</p>
+  <p class="subtitle">The Soak, the Embassy, the Consulate and the shelf (v29&ndash;v31) &middot; the System at v31.0.0</p>
+  <p class="vol">Consulate printing (v31) &middot; 384 tests &middot; 56 modules &middot; 40 ADRs &middot; zero dependencies</p>
 </header>
 
 <nav class="toc"><h2>Contents</h2><ul><li><a href="#10-000-000-ai-engineering-volume-iii">10,000,000× AI ENGINEERING — VOLUME III</a></li><li><a href="#part-i-distance-v8">PART I — DISTANCE (v8)</a></li><li><a href="#part-ii-co-design-v9">PART II — CO-DESIGN (v9)</a></li><li><a href="#part-iii-the-market-v10">PART III — THE MARKET (v10)</a></li></ul></nav>
@@ -541,6 +541,23 @@ network that the machine does not already contain. The default path
 remains what it has been since the vault: provably, receiptably
 offline.</p>
 <hr />
+<h2 class="chapter" id="chapter-18-consulate-printing-addendum-the-consulate-v31">Chapter 18. Consulate Printing Addendum — The Consulate (v31)</h2>
+<p>The last door on the protocol floor opened on purpose: the consulate
+serves the same read-only tool law over HTTP that the stdio server
+serves over pipes — one <code>handle_request</code>, two transports, so the law
+cannot drift between them. The default bind is loopback; reaching
+the world is an explicit act, recorded in a command. The strictness
+paid for itself immediately: the consulate refused the client's
+notification because the client had been sending it with an id
+attached — a protocol violation the permissive test doubles had
+let pass. The client now sends true id-less notifications, and the
+wire roundtrip — our HTTP client against our HTTP consulate — is a
+test. And the build learned its last deployment lesson early: a
+metadata table placed carelessly swallowed a settings key, caught by
+validating the project file before shipping. The sdist and wheel
+pass twine's checks with the license aboard, and the name is
+verified free. The system is one account step from the shelf.</p>
+<hr />
 <h2 class="chapter" id="appendix-volume-iii-receipts">Appendix — Volume III Receipts</h2>
 <ul>
 <li><strong>ADR-017</strong> Distance: taxonomy-preserving transports, remote
@@ -555,5 +572,5 @@ offline.</p>
 --token</code> (scoped install, others refused) · <code>aeos federation-demo</code>
 (quarantine → revalidate → install) · <code>aeos console</code> (the record).</p>
 <p><em>— end of Volume III, and of the trilogy —</em></p>
-<p class="footnote">&mdash; end of Volume I &middot; 4,340 words &middot; generated from the aeos repository &mdash;</p>
+<p class="footnote">&mdash; end of Volume I &middot; 4,514 words &middot; generated from the aeos repository &mdash;</p>
 </div></body></html>

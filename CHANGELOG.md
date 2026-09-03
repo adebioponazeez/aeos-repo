@@ -3,6 +3,21 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v31.0.0 — The Consulate: HTTP Server Mode + Publish Readiness (384 tests)
+- **`mcp_http_server.py`** (ADR-040): AEOS served over HTTP — the
+  SAME `handle_request` (one tool law, two transports), tool set
+  exactly READONLY_TOOLS, default bind 127.0.0.1 (0.0.0.0 explicit),
+  1MB body bound, malformed input fails closed as JSON-RPC errors,
+  notifications 202'd silently. Wire roundtrip proven: our v30 HTTP
+  client against the consulate. Build finding fixed: the client now
+  sends true id-less notifications (the strict server refused the
+  old id-carrying one). CLI: `aeos mcp --serve-http [--roundtrip]`.
+  Closes the final named MCP seam.
+- **Publish readiness (F-11)**: sdist + wheel build clean and PASS
+  `twine check` (LICENSE + tests in artifacts); classifiers + repo
+  URLs in metadata; `docs/PUBLISHING.md` — two paths (token upload /
+  trusted publishing). Name `aeos` verified FREE on PyPI.
+
 ## v30.0.0 — The Embassy: HTTP Transports, Loopback-Proven (374 tests)
 - **`mcp_http.py`** (ADR-039): the streamable-HTTP MCP transport —
   same client law (walls, fail-closed) over the wire; JSON and

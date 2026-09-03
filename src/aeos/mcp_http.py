@@ -25,7 +25,7 @@ class MCPHTTPClient:
         self.timeout_s = timeout_s
         self._id = 0
 
-    def _post(self, payload: dict) -> dict:
+    def _send(self, payload: dict) -> tuple:
         req = urllib.request.Request(
             self.endpoint, data=json.dumps(payload).encode("utf-8"),
             method="POST",
@@ -35,11 +35,14 @@ class MCPHTTPClient:
             with urllib.request.urlopen(req, timeout=self.timeout_s) as r:
                 ctype = r.headers.get("Content-Type", "")
                 body = r.read().decode("utf-8", errors="replace")
+                return ctype, body
         except urllib.error.HTTPError as exc:
             raise MCPError(f"http {exc.code}: {exc.reason}") from exc
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             raise MCPError(f"transport failed: {exc}") from exc
 
+    def _post(self, payload: dict) -> dict:
+        ctype, body = self._send(payload)
         obj = self._parse(body, ctype)
         if not isinstance(obj, dict):
             raise MCPError("unparseable response body")
@@ -47,6 +50,11 @@ class MCPHTTPClient:
             raise MCPError(f"{payload.get('method')}: "
                            f"{obj['error'].get('message')}")
         return obj.get("result") or {}
+
+    def notify(self, method: str, params: dict | None = None) -> None:
+        """A true JSON-RPC notification: NO id, no response expected."""
+        self._send({"jsonrpc": "2.0", "method": method,
+                    "params": params or {}})
 
     @staticmethod
     def _parse(body: str, ctype: str) -> dict | None:
@@ -73,7 +81,7 @@ class MCPHTTPClient:
         info = self.request("initialize", {
             "protocolVersion": PROTOCOL_VERSION, "capabilities": {},
             "clientInfo": {"name": "aeos-http", "version": "30.0"}})
-        self.request("notifications/initialized")   # fire-and-forget POST
+        self.notify("notifications/initialized")   # id-less, per spec
         return info
 
     def tools(self) -> list:

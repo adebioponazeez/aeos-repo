@@ -564,6 +564,26 @@ offline.
 
 ---
 
+## Chapter 18. Consulate Printing Addendum — The Consulate (v31)
+
+The last door on the protocol floor opened on purpose: the consulate
+serves the same read-only tool law over HTTP that the stdio server
+serves over pipes — one `handle_request`, two transports, so the law
+cannot drift between them. The default bind is loopback; reaching
+the world is an explicit act, recorded in a command. The strictness
+paid for itself immediately: the consulate refused the client's
+notification because the client had been sending it with an id
+attached — a protocol violation the permissive test doubles had
+let pass. The client now sends true id-less notifications, and the
+wire roundtrip — our HTTP client against our HTTP consulate — is a
+test. And the build learned its last deployment lesson early: a
+metadata table placed carelessly swallowed a settings key, caught by
+validating the project file before shipping. The sdist and wheel
+pass twine's checks with the license aboard, and the name is
+verified free. The system is one account step from the shelf.
+
+---
+
 ## Appendix — Volume III Receipts
 
 - **ADR-017** Distance: taxonomy-preserving transports, remote
