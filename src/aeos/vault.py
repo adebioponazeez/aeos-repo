@@ -37,7 +37,7 @@ def durable_write(path: Path, text: str) -> Path:
         fh.write(text)
         fh.flush()
         os.fsync(fh.fileno())
-    tmp.replace(path)
+    os.replace(tmp, path)      # explicit os-level atomic rename (3.10-proof)
     try:
         dir_fd = os.open(str(path.parent), os.O_RDONLY)
         try:
