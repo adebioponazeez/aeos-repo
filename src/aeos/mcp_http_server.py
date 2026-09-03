@@ -18,13 +18,30 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from .mcp_server import READONLY_TOOLS, UnknownMethod, handle_request
 
 MAX_BODY_BYTES = 1_000_000
+MAX_DRAIN_BYTES = 8_000_000     # drain up to this much before refusing
 
 
 class ConsulateHandler(BaseHTTPRequestHandler):
     server_version = "aeos-consulate/1.0"
 
+    def _drain(self, length: int) -> None:
+        """Discard an unread request body (bounded) so the CLIENT can
+        finish writing and read our refusal — closing mid-write gives
+        the client a broken pipe instead of a verdict."""
+        remaining = min(length, MAX_DRAIN_BYTES)
+        while remaining > 0:
+            chunk = self.rfile.read(min(65536, remaining))
+            if not chunk:
+                break
+            remaining -= len(chunk)
+
     def do_POST(self):
         if self.path not in ("/", "/mcp"):
+            try:
+                length = int(self.headers.get("Content-Length", 0))
+                self._drain(length)
+            except ValueError:
+                pass
             return self._json(404, {"error": "not found"})
         try:
             length = int(self.headers.get("Content-Length", 0))
@@ -33,6 +50,7 @@ class ConsulateHandler(BaseHTTPRequestHandler):
         if length <= 0:
             return self._json(400, {"error": "empty body"})
         if length > MAX_BODY_BYTES:
+            self._drain(length)          # body drained BEFORE the 413
             return self._json(413, {"error": "body too large"})
         raw = self.rfile.read(length)
         try:
