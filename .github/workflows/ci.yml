@@ -1,0 +1,41 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  proofs:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install (zero runtime dependencies)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+      - name: Selftest
+        run: aeos selftest
+      - name: The proofs (338 tests, chaos storm included)
+        run: python -m pytest tests/ -q
+        env:
+          PYTEST_ADDOPTS: ""   # keep -q from pyproject; storm needs wall room
+      - name: The nuclear receipt
+        run: aeos storm --workspace /tmp/storm-ci
+      - name: Wheel builds clean
+        run: |
+          pip wheel . -w dist --no-deps
+          python - <<'PY'
+          import glob, zipfile
+          w = glob.glob("dist/*.whl")[0]
+          names = zipfile.ZipFile(w).namelist()
+          assert any("cli.py" in n for n in names), "wheel missing code"
+          assert any("LICENSE" in n for n in names), "wheel missing license"
+          print("wheel ok:", w, len(names), "files")
+          PY
