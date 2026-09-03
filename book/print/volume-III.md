@@ -633,6 +633,27 @@ it passed.
 
 ---
 
+## Chapter 21. Gauge Printing Addendum — The Gauge (v34)
+
+Thirty-three versions proved the system correct; none had measured
+it large. The gauge changed that in an afternoon: seven cases, ten
+thousand records each, budgets as law — and the receipts were
+humbling in the best way. Memory loads in sixty-five milliseconds;
+recall builds and answers in sixty-four, still paying pennies of
+context; a backup of the whole state costs twenty-four thousandths
+of a second; the doctor audits all of it in less than two-tenths.
+And the blind spot held two real defects, both found by measuring:
+the fleet's tail read an entire stream to show twenty lines, and
+the colony's wave cap — built to stop cycles — was stopping
+legitimate depth instead. Both fixed; the accepted limits that
+remain (a full rewrite per memory write, linear full replay, full
+index rebuild) are written down as seams with numbers attached, so
+the day they matter, the decision is already half-made. Measurement
+is the last honesty: not "it should be fast," but "here is what it
+costs, at this size, on this machine, today."
+
+---
+
 ## Appendix — Volume III Receipts
 
 - **ADR-017** Distance: taxonomy-preserving transports, remote

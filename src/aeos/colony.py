@@ -66,10 +66,15 @@ class Colony:
         if self.bus is not None:
             self.bus.publish(kind, agent, detail)
 
-    def run(self, ctx: dict | None = None, max_waves: int = 50) -> ColonyReport:
+    def run(self, ctx: dict | None = None,
+            max_waves: int | None = None) -> ColonyReport:
         ctx = dict(ctx or {})
         status = {name: "pending" for name in self.nodes}
         rep = ColonyReport()
+        # the cap is belt-and-suspenders (the no-progress break catches
+        # cycles in one idle wave); it must allow legitimate depth:
+        # a 60-node chain is a legal graph that needs 60 waves.
+        max_waves = max_waves or (len(self.nodes) + 10)
         for _ in range(max_waves):
             runnable, gate_off = [], []
             for name, node in self.nodes.items():

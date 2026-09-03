@@ -1,6 +1,6 @@
 # AEOS — The AI Engineering OS
 
-**Version 33.0.0 — The Charter. Built, tested, constitution-checked — not proposed.**
+**Version 34.0.0 — The Gauge. Built, tested, measured — not proposed.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
@@ -16,7 +16,7 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 404 proofs incl. the 9-scenario chaos storm, ~115 seconds
+python -m pytest            # 414 proofs incl. the 9-scenario chaos storm, ~110 seconds
 aeos run-demo               # full reference loop, evidence bundle
 aeos factory-demo           # v7: the capability factory (proposals only)
 aeos factory-demo --token S # v7: ...with sponsorship (scoped installs)
@@ -49,6 +49,7 @@ aeos mcp --http-url URL     # v30: streamable-HTTP MCP transport (endpoint-expli
 aeos otel --push URL        # v30: OTLP/HTTP push with typed retries (receipt, never a hang)
 aeos mcp --serve-http       # v31: the consulate — read-only over HTTP, loopback by default
 aeos doctor                 # v32+: audits claims — zero-dep scan, charter citations, health
+aeos bench [--full]         # v34: the performance envelope — 10k-scale receipts, budgets are law
 OPENROUTER_API_KEY=... aeos run-demo --live   # v11: real models, metered, $2 cap
 aeos selftest
 ```
@@ -91,10 +92,11 @@ aeos selftest
 | **v31.0** | **The Consulate** | **MCP HTTP server mode: one tool law, two transports; read-only over the wire, loopback by default; sdist+wheel twine-PASSED and the name verified free** |
 | **v32.0** | **The Physician** | **The system audits itself: ADR-002 machine-checked (57 modules, 0 violations), workspace + repo health, PASS/WARN/FAIL — a doctor that flatters is not a doctor** |
 | **v33.0** | **The Charter** | **The constitution machine-checked: every cited test verified to exist; the v27→v33 upgrade drill is a test; PyPI last mile automated and inert until opt-in** |
+| **v34.0** | **The Gauge** | **The performance envelope measured at 10k scale with law budgets; two real defects found and fixed (O(1) tail, graph-scaled wave cap); limits named, not hidden** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **404/404 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **414/414 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.

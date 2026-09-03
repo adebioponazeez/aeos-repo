@@ -232,7 +232,7 @@ def front_html(slug_vol: str, heads: list) -> str:
   dependencies.</p>
   <p>Read it as an operator: run the proofs, then read the law.</p>
   <pre>pip install -e .        # zero runtime dependencies
-python -m pytest        # 404 proofs, chaos storm included
+python -m pytest        # 414 proofs, chaos storm included
 aeos run-demo           # the whole OS, end to end
 aeos storm              # the nuclear receipt: 9/9 scenarios survive</pre>
   <p class="kicker" style="margin-top:26pt">INDEX OPERUM</p>

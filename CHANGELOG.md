@@ -3,6 +3,17 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v34.0.0 — The Gauge: The Performance Envelope (414 tests)
+- **`bench.py` + `aeos bench [--full]`** (ADR-043): seven measured
+  cases with LAW budgets; at 10k scale all within budget (memory
+  load 0.065s, recall 0.064s paying 94 tokens, backup 0.024s, groom
+  0.347s, doctor 0.177s). docs/ENVELOPE.md records receipts, fixed
+  defects, and accepted limits as named seams.
+- **Fixed by the gauge**: `EventBus.tail` O(N)->O(1) (final-block
+  seek, torn fragments dropped as replay quarantines); `Colony.run`
+  wave cap now scales with graph size (a 60-deep chain is a legal
+  graph; cycles still break in one idle wave).
+
 ## v33.0.0 — The Charter: Machine-Checked Constitution + Upgrade Drill (404 tests)
 - **Charter check** (ADR-042): every test cited in PRINCIPLES.md is
   verified to exist in the suite — a cited-but-absent test FAILS

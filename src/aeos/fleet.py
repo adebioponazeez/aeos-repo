@@ -76,7 +76,46 @@ class EventBus:
         return events
 
     def tail(self, n: int = 20) -> list:
-        return self.replay()[-n:]
+        """Last n events in O(1): read the final block, parse complete
+        lines only (a torn tail fragment is dropped, as replay
+        quarantines it). The v34 gauge caught this reading the whole
+        stream; now it seeks."""
+        import os as _os
+        if not self.path.exists():
+            return []
+        block = 64 * 1024
+        with self.path.open("rb") as fh:
+            fh.seek(0, _os.SEEK_END)
+            size = fh.tell()
+            fh.seek(max(0, size - block))
+            data = fh.read()
+        text = data.decode("utf-8", errors="replace")
+        lines = text.split("\n")
+        if size > block and lines:
+            lines = lines[1:]          # leading fragment (cut by seek)
+        if not text.endswith("\n") and lines:
+            lines = lines[:-1]         # torn tail fragment
+        out = []
+        for ln in reversed(lines):
+            ln = ln.strip()
+            if not ln:
+                continue
+            try:
+                d = json.loads(ln)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(d, dict) or "aeos_schema" in d:
+                continue               # header / non-events
+            try:
+                out.append(FleetEvent(ts=d["ts"], kind=d["kind"],
+                                       agent=d["agent"],
+                                       detail=d.get("detail", "")))
+            except (KeyError, TypeError, ValueError):
+                continue
+            if len(out) >= n:
+                break
+        out.reverse()
+        return out
 
 
 @dataclass

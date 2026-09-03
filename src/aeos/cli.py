@@ -29,6 +29,11 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("companions", help="v12: Pi CLI / DeerFlow status + how to enable")
 
+    ben_p = sub.add_parser("bench", help="v34: the performance envelope — measured, budgeted receipts")
+    ben_p.add_argument("--workspace", default="aeos-demo")
+    ben_p.add_argument("--full", action="store_true",
+                       help="10k scale (default: quick 1k)")
+
     doc_p = sub.add_parser("doctor", help="v32: the system audits its own claims — zero-dep scan, workspace + repo health")
     doc_p.add_argument("--workspace", default=None)
 
@@ -147,6 +152,15 @@ def main(argv: list[str] | None = None) -> int:
         from . import __version__
         print(f"AEOS v{__version__} — harness is the product.")
         return 0
+
+    if args.cmd == "bench":
+        from .bench import envelope
+        t0 = time.time()
+        rep = envelope(Path(args.workspace), full=args.full)
+        print(rep.render())
+        print(f"  wall: {time.time() - t0:.1f}s — budgets are law; "
+              "see docs/ENVELOPE.md for the accepted limits")
+        return 0 if rep.passed else 1
 
     if args.cmd == "doctor":
         from .doctor import doctor, render

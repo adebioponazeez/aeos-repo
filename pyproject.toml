@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aeos"
-version = "33.0.0"
+version = "34.0.0"
 description = "The AI Engineering OS — a working, model-agnostic operating system for agentic engineering (orchestration, context, memory, skills, governance, evaluation, observability, harness, entropy, learning, discovery)."
 readme = "README.md"
 requires-python = ">=3.10"
