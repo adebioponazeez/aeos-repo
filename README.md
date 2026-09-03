@@ -1,11 +1,11 @@
 # AEOS — The AI Engineering OS
 
-**Version 34.0.0 — The Gauge. Built, tested, measured — not proposed.**
+**Version 35.0.0 — The Scribe. Built, tested, truthful — not proposed.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
 governance, evaluation, observability, harness, entropy, learning,
-discovery). v2–v7 ship the platform around it. **131 tests. Zero
+discovery). v2–v35 ship the platform around it. **426 tests. Zero
 runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models are
@@ -16,7 +16,7 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 414 proofs incl. the 9-scenario chaos storm, ~110 seconds
+python -m pytest            # 426 proofs incl. the 9-scenario chaos storm, ~115 seconds
 aeos run-demo               # full reference loop, evidence bundle
 aeos factory-demo           # v7: the capability factory (proposals only)
 aeos factory-demo --token S # v7: ...with sponsorship (scoped installs)
@@ -50,6 +50,7 @@ aeos otel --push URL        # v30: OTLP/HTTP push with typed retries (receipt, n
 aeos mcp --serve-http       # v31: the consulate — read-only over HTTP, loopback by default
 aeos doctor                 # v32+: audits claims — zero-dep scan, charter citations, health
 aeos bench [--full]         # v34: the performance envelope — 10k-scale receipts, budgets are law
+aeos scribe                 # v35: documentation that cannot drift — README claims vs live reality
 OPENROUTER_API_KEY=... aeos run-demo --live   # v11: real models, metered, $2 cap
 aeos selftest
 ```
@@ -93,10 +94,11 @@ aeos selftest
 | **v32.0** | **The Physician** | **The system audits itself: ADR-002 machine-checked (57 modules, 0 violations), workspace + repo health, PASS/WARN/FAIL — a doctor that flatters is not a doctor** |
 | **v33.0** | **The Charter** | **The constitution machine-checked: every cited test verified to exist; the v27→v33 upgrade drill is a test; PyPI last mile automated and inert until opt-in** |
 | **v34.0** | **The Gauge** | **The performance envelope measured at 10k scale with law budgets; two real defects found and fixed (O(1) tail, graph-scaled wave cap); limits named, not hidden** |
+| **v35.0** | **The Scribe** | **Documentation that cannot drift: README claims machine-checked against live reality; four real stale claims found and fixed on first run** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **414/414 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **426/426 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.
@@ -125,10 +127,10 @@ spent human token.**
 ## Repository layout
 
 ```
-src/aeos/            # 57 modules: kernel (v1) + platform (v2–v32)
-tests/               # 177 tests incl. adversarial + e2e + factory + federation + live-wire
+src/aeos/            # 59 modules: kernel (v1) + platform (v2–v35)
+tests/               # 426 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
 evidence/            # captured test runs, run bundles, factory runs, dashboard
-docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, 40 ADRs
+docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, 44 ADRs
 book/                # Volumes I–III + v11 addendum (print/), HTML + markdown
 AGENTS.md            # short repo context for coding agents
 CHANGELOG.md         # every version, earned by tests

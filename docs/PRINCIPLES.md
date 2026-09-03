@@ -45,6 +45,7 @@ that can't must be written down where it can be audited.*
 | 34 | The door opens on purpose, and only to readers | `mcp_http_server` — READONLY_TOOLS is the whole wire catalog; loopback bind by default | `test_serves_readonly_tools_over_http` |
 | 35 | The wire gets receipts, not exceptions | `otlp.push_spans` — hostile wire = named attempts, spans safe on disk | `test_hostile_wire_is_a_receipt_not_an_exception` |
 | 36 | Claims become checks | `doctor` — the charter's cited tests must exist in the suite, machine-verified | `test_charter_is_load_bearing` |
+| 37 | Documentation tells the truth | `scribe.audit` — README claims checked against live reality; drift FAILs with file:line | `test_the_real_readme_is_truthful_today` |
 
 ## PRACTICED — held by discipline, auditable by record
 

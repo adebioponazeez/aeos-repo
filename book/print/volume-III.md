@@ -654,6 +654,25 @@ costs, at this size, on this machine, today."
 
 ---
 
+## Chapter 22. Scribe Printing Addendum — The Scribe (v35)
+
+The last quiet lie in a system of receipts was the README. Every
+version bumped its numbers by hand, and hands drift — the scribe's
+very first pass found four stale claims still living in the
+storefront, including a v1-era test count nobody remembered
+updating. The fix was not diligence, which decays, but a check,
+which does not: every count, every version headline, every command
+the README mentions is extracted and compared against live reality —
+the imported version, the counted tests, the globbed modules, the
+parsed CLI. Drift fails with a file and a line. History is exempt
+by design: the changelog, the ADRs, the version table, and this
+book record what was true at tag time, and history is not a claim
+about the present. The doctor carries the row now — README tells
+the truth — and the charter its thirty-seventh compiled value. The
+system's final author is a proofreader that cannot be charmed.
+
+---
+
 ## Appendix — Volume III Receipts
 
 - **ADR-017** Distance: taxonomy-preserving transports, remote

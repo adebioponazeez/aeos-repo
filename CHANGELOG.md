@@ -3,6 +3,18 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v35.0.0 — The Scribe: Documentation Cannot Drift (426 tests)
+- **`scribe.py` + `aeos scribe`** (ADR-044): README claims — test/
+  module/ADR counts, version headline, every `aeos <command>` —
+  machine-checked against LIVE reality; drift FAILs with file:line.
+  Version-table rows and the historical record are exempt by design
+  (history is not a claim about the present). Doctor row: "README
+  tells the truth". Charter principle 37.
+- **Dogfooded on landing**: the scribe's first receipt found FOUR
+  real stale claims in the README (a v1-era "131 tests" and v11-era
+  "177 tests" among them) — fixed in this commit; RUNBOOK and
+  ARCHITECTURE brought current.
+
 ## v34.0.0 — The Gauge: The Performance Envelope (414 tests)
 - **`bench.py` + `aeos bench [--full]`** (ADR-043): seven measured
   cases with LAW budgets; at 10k scale all within budget (memory

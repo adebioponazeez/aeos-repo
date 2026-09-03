@@ -173,6 +173,13 @@ def doctor(ws: Path | None = None) -> dict:
     verdict, detail = charter_check(repo_root / "docs" / "PRINCIPLES.md",
                                     repo_root / "tests")
     rows.append(("charter is load-bearing", verdict, detail))
+    if (repo_root / "README.md").exists():
+        from .scribe import audit as _audit
+        srep = _audit(repo_root, ("README.md",))
+        rows.append(("README tells the truth",
+                     "PASS" if srep.passed else "FAIL",
+                     f"{len(srep.claims)} claim(s), "
+                     f"{len(srep.drift)} drift(s)"))
     rows.extend(check_repo(repo_root))
     report = {"rows": [{"area": a, "verdict": verdict, "detail": d}
                        for a, verdict, d in rows],

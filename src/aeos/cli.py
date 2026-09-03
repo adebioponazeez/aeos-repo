@@ -29,6 +29,10 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("companions", help="v12: Pi CLI / DeerFlow status + how to enable")
 
+    scr_p = sub.add_parser("scribe", help="v35: documentation that cannot drift — README claims vs live reality")
+    scr_p.add_argument("--doc", action="append", default=None,
+                       help="extra doc to audit (repeatable); default README.md")
+
     ben_p = sub.add_parser("bench", help="v34: the performance envelope — measured, budgeted receipts")
     ben_p.add_argument("--workspace", default="aeos-demo")
     ben_p.add_argument("--full", action="store_true",
@@ -152,6 +156,16 @@ def main(argv: list[str] | None = None) -> int:
         from . import __version__
         print(f"AEOS v{__version__} — harness is the product.")
         return 0
+
+    if args.cmd == "scribe":
+        from .scribe import audit
+        repo = Path(__file__).resolve().parent.parent.parent
+        docs = tuple(args.doc) if args.doc else ("README.md",)
+        rep = audit(repo, docs)
+        print(rep.render())
+        print("  history is exempt (CHANGELOG/ADR/book count at tag time);"
+              " the README is the storefront contract")
+        return 0 if rep.passed else 1
 
     if args.cmd == "bench":
         from .bench import envelope
