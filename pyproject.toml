@@ -4,20 +4,34 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aeos"
-version = "30.0.0"
+version = "32.0.0"
 description = "The AI Engineering OS — a working, model-agnostic operating system for agentic engineering (orchestration, context, memory, skills, governance, evaluation, observability, harness, entropy, learning, discovery)."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "AEOS Project" }]
-keywords = ["agents", "orchestration", "context-engineering", "evaluation", "autonomy"]
+keywords = ["agents", "orchestration", "context-engineering", "evaluation", "autonomy", "harness", "offline"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Operating System :: POSIX",
+]
 dependencies = []  # zero runtime dependencies by design (ADR-002)
-
-[project.scripts]
-aeos = "aeos.cli:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]
+
+[project.urls]
+Repository = "https://github.com/adebioponazeez/aeos-repo"
+Changelog = "https://github.com/adebioponazeez/aeos-repo/blob/main/CHANGELOG.md"
+
+[project.scripts]
+aeos = "aeos.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

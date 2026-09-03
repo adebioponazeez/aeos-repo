@@ -29,6 +29,9 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("companions", help="v12: Pi CLI / DeerFlow status + how to enable")
 
+    doc_p = sub.add_parser("doctor", help="v32: the system audits its own claims — zero-dep scan, workspace + repo health")
+    doc_p.add_argument("--workspace", default=None)
+
     stm_p = sub.add_parser("storm", help="v27: the nuclear test — kill storms, torn files, disk full, blackout")
     stm_p.add_argument("--workspace", default="aeos-demo")
 
@@ -67,6 +70,16 @@ def main(argv: list[str] | None = None) -> int:
                        help="v24: serve AEOS read-only over MCP and roundtrip")
     mcp_p.add_argument("--http-url", default=None, metavar="URL",
                        help="v30: talk to a streamable-HTTP MCP endpoint instead of stdio")
+    mcp_p.add_argument("--serve-http", action="store_true",
+                       help="v31: serve AEOS read-only over HTTP (bind 127.0.0.1 unless --bind)")
+    mcp_p.add_argument("--bind", default="127.0.0.1",
+                       help="v31: bind address for --serve-http (0.0.0.0 must be explicit)")
+    mcp_p.add_argument("--port", type=int, default=0,
+                       help="v31: port for --serve-http (0 = ephemeral)")
+    mcp_p.add_argument("--roundtrip", action="store_true",
+                       help="v31: prove the consulate with our own HTTP client, then exit")
+    mcp_p.add_argument("--workspace", default="aeos-demo",
+                       help="v31: workspace for --serve-http --roundtrip calls")
 
     col_p = sub.add_parser("colony", help="v25: explicit graph orchestration demo")
     tel_p = sub.add_parser("telemetry", help="v22: cache telemetry — hit rate and effective tokens")
@@ -134,6 +147,14 @@ def main(argv: list[str] | None = None) -> int:
         from . import __version__
         print(f"AEOS v{__version__} — harness is the product.")
         return 0
+
+    if args.cmd == "doctor":
+        from .doctor import doctor, render
+        rep = doctor(Path(args.workspace) if args.workspace else None)
+        print(render(rep))
+        if rep["failed"] == 0 and rep["warned"] > 0:
+            print("  (warnings are advice; failures are law)")
+        return 0 if rep["failed"] == 0 else 1
 
     if args.cmd == "storm":
         from .storm import run_storm
@@ -247,6 +268,34 @@ def main(argv: list[str] | None = None) -> int:
         print(rep.render())
         print("  nodes declare requires + conditions; failures block "
               "dependents; cycles BLOCK, never hang")
+        return 0
+
+    if args.cmd == "mcp" and getattr(args, "serve_http", False):
+        from .mcp_http import MCPHTTPClient
+        from .mcp_http_server import Consulate
+        with Consulate(args.bind, args.port) as c:
+            print(f"CONSULATE — AEOS over HTTP, read-only by law "
+                  f"(ADR-040)")
+            print(f"  listening: {c.url} (bind {c.bind})"
+                  f"{' — LOOPBACK ONLY' if c.bind == '127.0.0.1' else ''}")
+            if not args.roundtrip:
+                try:
+                    import time as _t
+                    while True:
+                        _t.sleep(3600)
+                except KeyboardInterrupt:
+                    print("\nconsulate closed cleanly")
+                return 0
+            cli = MCPHTTPClient(c.url, timeout_s=5)
+            info = cli.initialize()
+            tools = cli.tools()
+            res = cli.call("leverage_audit",
+                           {"workspace": args.workspace})
+            print(f"  roundtrip handshake: {info['serverInfo']['name']}")
+            for t in tools:
+                print(f"  tool: {t.name:<16} (read-only by law)")
+            print(f"  roundtrip call -> {res.text.splitlines()[0]}")
+        print("  consulate closed; the door is shut by default")
         return 0
 
     if args.cmd == "mcp" and getattr(args, "http_url", None):

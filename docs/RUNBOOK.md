@@ -1,47 +1,73 @@
-# Runbook — operating the OS
+# Runbook — operating AEOS at v32
 
-## Daily commands
+*The operator's journey, current as of v32.0.0 (57 modules, 384+ tests,
+zero dependencies). If this file and reality disagree, `aeos doctor`
+is the tiebreaker.*
+
+## 1. Install and first contact
 
 ```bash
-python -m pytest                 # verify the whole system (~5s)
-aeos run-demo --workspace ./demo # full reference loop
-aeos run-demo --intent "..."     # custom intent
-aeos selftest
+git clone https://github.com/adebioponazeez/aeos-repo && cd aeos-repo
+pip install -e .[dev]        # installs nothing but aeos (ADR-002)
+aeos selftest                # identity receipt
+aeos doctor                  # the system audits its own claims
+python -m pytest tests/ -q   # every proof, chaos storm included
 ```
 
-## Reading a run
+## 2. Daily commands
 
-1. `demo/.aeos/evidence/bundle.json` — verdict first: `accepted` true?
-2. `demo/.aeos/runs/*.jsonl` — every event, in order. Grepping:
-   - `governor.checkpoint|governor.deny` — anything asking permission
-   - `boundary.violation` — an agent wrote outside its fence
-   - `task.failed` — failures with reasons
-3. `demo/evaluation/report.json` — the independent verdict and its checks.
-4. `demo/release/NOTES.md` — the shipped record.
+```bash
+aeos run-demo --workspace ./demo            # the full reference loop
+aeos run-demo --intent "Ship it per [STD-1]"  # cite your standards
+aeos triangle --workspace ./demo            # control/cost/speed receipt
+aeos dividend --workspace ./demo            # memory economics receipt
+aeos recall --query deploy --workspace ./demo
+```
 
-## Failure playbook (spec §14: repair the correct layer)
+## 3. Serious operation
 
-| Symptom | Likely missing layer | Action |
+```bash
+aeos storm --workspace ./ws       # 9 chaos scenarios, end to end
+aeos soak --runs 5 --workspace ./ws   # sustained-operation receipt
+aeos backup --workspace ./ws --out ws.tar
+rm -rf ./ws && aeos restore --backup ws.tar --workspace ./ws
+aeos groom --keep-runs 10 --workspace ./ws   # archive, never delete
+aeos leverage-audit --workspace ./ws         # 12 points, evidence on disk
+```
+
+Live mode is opt-in only: `AEOS_LIVE=1` plus a provider key env
+(`aeos live-check` shows the resolved config, zero spend), capped by
+`AEOS_MAX_COST` with an inline cutoff.
+
+## 4. Serving and pushing (endpoint-explicit, never ambient)
+
+```bash
+aeos mcp --serve-http --roundtrip   # read-only consulate, loopback bind
+aeos mcp --http-url https://host/mcp
+aeos otel --push https://collector/v1/traces --workspace ./ws
+```
+
+## 5. Reading a run
+
+The bundle at `.aeos/evidence/bundle.json` is the truth: `accepted`,
+task states with attempts, economics (metered), leverage, standards
+gate verdict, dividend (distillation/ledger/rent/recall), triangle
+receipt, environment. Verdicts come from a closed vocabulary;
+UNVERIFIED is a first-class answer.
+
+## 6. Troubleshooting
+
+| Symptom | Meaning | Move |
 |---|---|---|
-| Task failed: `evaluation FAIL` | SPECIFICATION (acceptance unclear) | Tighten the task description; check artifacts expected |
-| `boundary.violation` | PERMISSION | Fix the agent's `writes:` or the handler's target path |
-| `claims_are_backed` FAIL | EVALUATION | Handler must attach Evidence, not prose |
-| Task ESCALATED | ORCHESTRATION (class/level) | Raise autonomy with evidence, or approve explicitly |
-| Model outage (EchoModel raise) | MODEL | Adapter resilience; repair cycle retries bounded |
-| Looping repairs | ORCHESTRATION | `max_attempts` bounds it; find the systemic cause |
+| `workspace locked` refusal | a run holds it | the kernel releases on death; or wait |
+| `.torn` sidecars appear | power-cut writes | quarantined forensics; doctor reports them |
+| `SchemaError` | state from a NEWER aeos | upgrade aeos before touching that state |
+| doctor FAIL (dependencies) | a non-stdlib import crept in | remove it — ADR-002 is law |
+| CI leg red once | shared-runner wall clock | the disclosed retry exists; twice red = real |
 
-## Promoting autonomy
+## 7. Shipping changes
 
-The governor moves itself on reliability. To operate at a higher level
-deliberately: run more work, watch the event log, let the EMA promote —
-or set the level explicitly in `reference_run` for a scoped
-experiment. High-impact classes checkpoint forever regardless.
-
-## Adding an agent (the only checklist
-
-1. `AgentSpec` with all contract fields (no blanks — validation
-   rejects empty success criteria).
-2. A handler returning `Envelope` with evidence attached.
-3. If it writes: declare `writes:` globs; wrap with `bounded()`.
-4. A test in `tests/` that fails if the contract regresses.
-5. One ADR if the decision is architectural.
+Commit, tag (`vX.Y.Z`), push — CI must prove the matrix (3.10–3.13,
+storm included) before anything counts. Release assets: the Codex
+PDFs from `book/print/` via `python book/build_pdf.py`. Publishing
+to PyPI: `docs/PUBLISHING.md`.

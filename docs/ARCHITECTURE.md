@@ -1,4 +1,16 @@
-# Architecture — AEOS v1.0.0
+# Architecture — AEOS
+
+> **System map at v32** — 57 modules, 384+ tests, 40+ ADRs, zero
+> runtime dependencies (machine-checked by `aeos doctor`). Layers:
+> **kernel** (contracts, orchestrator, harness, models) · **governance**
+> (governor, sponsorship, boundaries, gates) · **economics** (economics,
+> providers, triangle) · **memory** (memory, dividend, recall, entropy,
+> skills, learning) · **companions** (pi/deerflow/aider/claude, all under
+> one report law) · **protocols** (mcp client/server, HTTP both ways,
+> otel/otlp) · **resilience** (vault, storm, resume, backup, groom) ·
+> **operations** (cli, pipeline, fleet, colony, soak, doctor, evals).
+> Original kernel documentation follows; it remains true.
+ v1.0.0
 
 This documents the system that **is**, not a system that might be. Every
 claim below maps to a module and a test.

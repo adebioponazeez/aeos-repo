@@ -14,7 +14,7 @@ components (ADR-001); every reliability property in this package is
 implemented and enforced by deterministic code.
 """
 
-__version__ = "30.0.0"
+__version__ = "32.0.0"
 __all__ = [
     "contracts", "models", "observability", "context_os", "memory",
     "skills", "orchestrator", "governor", "evaluation", "harness",
@@ -24,5 +24,5 @@ __all__ = [
     "economics", "research", "ops", "meta", "factory", "visualizer",
     # v8-v10
     "transport", "sandbox_runner", "remote_worker", "console",
-    "codesign", "federation", "providers", "companions", "triangle", "dividend", "recall", "fleet", "resume", "leverage-audit", "standards", "mcp", "telemetry", "eval", "otel", "colony", "vault", "storm", "groom", "backup", "restore", "soak",
+    "codesign", "federation", "providers", "companions", "triangle", "dividend", "recall", "fleet", "resume", "leverage-audit", "standards", "mcp", "telemetry", "eval", "otel", "colony", "vault", "storm", "groom", "backup", "restore", "soak", "doctor",
 ]

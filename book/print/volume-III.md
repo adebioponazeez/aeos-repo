@@ -564,6 +564,47 @@ offline.
 
 ---
 
+## Chapter 18. Consulate Printing Addendum — The Consulate (v31)
+
+The last door on the protocol floor opened on purpose: the consulate
+serves the same read-only tool law over HTTP that the stdio server
+serves over pipes — one `handle_request`, two transports, so the law
+cannot drift between them. The default bind is loopback; reaching
+the world is an explicit act, recorded in a command. The strictness
+paid for itself immediately: the consulate refused the client's
+notification because the client had been sending it with an id
+attached — a protocol violation the permissive test doubles had
+let pass. The client now sends true id-less notifications, and the
+wire roundtrip — our HTTP client against our HTTP consulate — is a
+test. And the build learned its last deployment lesson early: a
+metadata table placed carelessly swallowed a settings key, caught by
+validating the project file before shipping. The sdist and wheel
+pass twine's checks with the license aboard, and the name is
+verified free. The system is one account step from the shelf.
+
+---
+
+## Chapter 19. Physician Printing Addendum — The Physician (v32)
+
+The oldest claim in the charter became a check. Zero runtime
+dependencies was asserted in ADR-002 when there were fifteen modules
+and inspected by eye for thirty-one versions; now a physician parses
+every import the interpreter sees and classifies it — stdlib,
+internal, or violation — and any violation fails the command. The
+same pass examines the workspace (are the schemas current, are there
+torn sidecars, is a lock held, is the disk breathing, is retention
+due) and the repository (is the tree clean, do the tags exist), and
+renders a verdict with names: PASS, WARN, FAIL — a doctor that
+flatters is not a doctor, and a FAIL fails the command. Fittingly,
+the physician's first patients were its own bugs: it misread
+relative imports as violations and looked for the repository one
+floor down — both caught because the check ran against reality
+before it ran against the claim. The runbook was rewritten the same
+day, because a system that audits itself still owes its operator a
+current map.
+
+---
+
 ## Appendix — Volume III Receipts
 
 - **ADR-017** Distance: taxonomy-preserving transports, remote

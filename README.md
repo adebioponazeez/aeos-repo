@@ -1,6 +1,6 @@
 # AEOS — The AI Engineering OS
 
-**Version 30.0.0 — The Embassy. Built, tested, loopback-proven — not proposed.**
+**Version 32.0.0 — The Physician. Built, tested, self-auditing — not proposed.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
@@ -16,7 +16,7 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 374 proofs incl. the 9-scenario chaos storm, ~96 seconds
+python -m pytest            # 397 proofs incl. the 9-scenario chaos storm, ~110 seconds
 aeos run-demo               # full reference loop, evidence bundle
 aeos factory-demo           # v7: the capability factory (proposals only)
 aeos factory-demo --token S # v7: ...with sponsorship (scoped installs)
@@ -47,6 +47,8 @@ aeos backup / restore       # v29: deterministic backups, verified fail-closed r
 aeos soak [--runs N]        # v29: sustained-operation receipt (live: opt-in, dollar-capped)
 aeos mcp --http-url URL     # v30: streamable-HTTP MCP transport (endpoint-explicit)
 aeos otel --push URL        # v30: OTLP/HTTP push with typed retries (receipt, never a hang)
+aeos mcp --serve-http       # v31: the consulate — read-only over HTTP, loopback by default
+aeos doctor                 # v32: the system audits its own claims (zero-dep scan, health)
 OPENROUTER_API_KEY=... aeos run-demo --live   # v11: real models, metered, $2 cap
 aeos selftest
 ```
@@ -86,10 +88,12 @@ aeos selftest
 | **v28.0** | **The Shipyard** | **Deployment closure: LICENSE + CI matrix in-repo, schema-versioned state that fails closed on the future, `aeos groom` retention** |
 | **v29.0** | **The Soak** | **Deterministic verified backups (drill = storm scenario 9/9) + sustained-operation receipts; live soak opt-in and dollar-capped** |
 | **v30.0** | **The Embassy** | **HTTP transports, loopback-proven: streamable-HTTP MCP client + OTLP push with typed retries — endpoint-explicit, default still offline** |
+| **v31.0** | **The Consulate** | **MCP HTTP server mode: one tool law, two transports; read-only over the wire, loopback by default; sdist+wheel twine-PASSED and the name verified free** |
+| **v32.0** | **The Physician** | **The system audits itself: ADR-002 machine-checked (57 modules, 0 violations), workspace + repo health, PASS/WARN/FAIL — a doctor that flatters is not a doctor** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **374/374 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **397/397 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.
@@ -118,10 +122,10 @@ spent human token.**
 ## Repository layout
 
 ```
-src/aeos/            # 55 modules: kernel (v1) + platform (v2–v30)
+src/aeos/            # 57 modules: kernel (v1) + platform (v2–v32)
 tests/               # 177 tests incl. adversarial + e2e + factory + federation + live-wire
 evidence/            # captured test runs, run bundles, factory runs, dashboard
-docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, 39 ADRs
+docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, 40 ADRs
 book/                # Volumes I–III + v11 addendum (print/), HTML + markdown
 AGENTS.md            # short repo context for coding agents
 CHANGELOG.md         # every version, earned by tests
