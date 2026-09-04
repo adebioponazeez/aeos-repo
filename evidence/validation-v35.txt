@@ -36,7 +36,7 @@ ci runs: 11 total, 8 green (rest: caught-and-fixed failures, on record)
 pypi.org/pypi/aeos: AVAILABLE (404)
 
 [CORRECTIONS — precise captures, same fresh-install method (v35.1.0)]
-pytest summary (clipped above): 
+pytest summary (clipped above): 428 passed, 1 skipped in 76.83s (0:01:16)
 backup determinism, real workspace (two independent backups, sha256):
   8f3c5a75dc1607e2 / 8f3c5a75dc1607e2 -> IDENTICAL
   (the earlier "IDENTICAL ()" line was vacuous — the storm workspace has
