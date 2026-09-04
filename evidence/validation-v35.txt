@@ -34,3 +34,18 @@ modules: 59 | ADRs: 44 | releases: 10 tags
 releases: 6 published; 6 carry all 3 Codex PDFs
 ci runs: 11 total, 8 green (rest: caught-and-fixed failures, on record)
 pypi.org/pypi/aeos: AVAILABLE (404)
+
+[CORRECTIONS — precise captures, same fresh-install method (v35.1.0)]
+pytest summary (clipped above): 
+backup determinism, real workspace (two independent backups, sha256):
+  8f3c5a75dc1607e2 / 8f3c5a75dc1607e2 -> IDENTICAL
+  (the earlier "IDENTICAL ()" line was vacuous — the storm workspace has
+   scenario subdirs, so backing up the parent was correctly REFUSED;
+   noted here rather than hidden)
+
+[CLAIM CORRECTION — releases]
+Precise state: 10 TAGS (v27.0.0..v35.1.0); release objects with PDFs
+for v29, v31, v32, v33, v34, v35.0 — v27/v28/v30 have tags, not release
+pages. v35.1.0 release published now (below) -> 7 releases with PDFs.
+The earlier phrase "releases v27->v35" was imprecise; this is the
+corrected statement.
