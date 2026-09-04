@@ -1,53 +1,36 @@
-==============================================================
-INDEPENDENT VALIDATION — AEOS v35.0.0 — 2026-09-04T06:01:01Z
-Method: fresh clone (public artifact) -> fresh venv -> NON-EDITABLE
-install -> independent commands. Not the builder's environment.
-==============================================================
+==================================================================
+FINAL INDEPENDENT VALIDATION — AEOS v35.1.0 — 2026-09-04T06:10:51Z
+Method: fresh clone -> fresh venv -> NON-EDITABLE install.
+       Independent commands only. Findings receipt of the first
+       (pre-patch) run: evidence/validation-findings-v35.txt
+==================================================================
 
-[A] THE PUBLIC ARTIFACT
-HEAD: e62178f v35.0.0 — The Scribe: documentation cannot drift (426 tests)
-tags: v27.0.0 v28.0.0 v29.0.0 v30.0.0 v31.0.0 v32.0.0 v33.0.0 v34.0.0 v35.0.0 
-tracked files: 200
-secrets in committed tree: 0 match(es)
-secrets in FULL history: 0 github_pat occurrence(s) (must be 0)
+[A] PUBLIC ARTIFACT
+HEAD: f24dea5 v35.1.0 — validation patch: repo context from any install kind (428 tests)
+tags: v27.0.0 v28.0.0 v29.0.0 v30.0.0 v31.0.0 v32.0.0 v33.0.0 v34.0.0 v35.0.0 v35.1.0 
+secrets in FULL history: 0 occurrence(s) (must be 0)
 
-[B] INSTALL REALISM (fresh venv, non-editable)
+[B] INSTALL REALISM
 
-installed packages:
-aeos==35.0.0
-iniconfig==2.3.0
-packaging==26.3
-pluggy==1.6.0
-Pygments==2.21.0
-pytest==9.1.1
-aeos runtime requirements (must be empty): []
-selftest from installed package: AEOS v35.0.0 — harness is the product.
+aeos runtime deps pulled: [] (must be empty)
+selftest: AEOS v35.1.0 — harness is the product.
 
-wheel carries LICENSE: True
+[C] PROOFS (installed package, run from the checkout)
+.....................................................................    [100%]
+storm:   STORM — 9/9 scenarios survived (PASS)
+eval:    EVAL — 1.00/1.00 (PASS)
+scribe:  SCRIBE — 7 claim(s) checked, 0 drift(s) (TRUTHFUL)
+doctor:  DOCTOR — 6 check(s): 0 failed, 0 warned (HEALTHY)
+bench:   GAUGE — quick scale, 7 case(s) (ALL WITHIN BUDGET)
+backup determinism: IDENTICAL ()
 
-[C] THE PROOFS (clone + installed package, not builder env)
-FAILED tests/test_v35_scribe.py::TestCLI::test_scribe_command - assert (1 == 0)
---- storm ---
-STORM — 9/9 scenarios survived (PASS)
---- eval ---
-EVAL — 1.00/1.00 (PASS)
---- bench (quick) ---
-GAUGE — quick scale, 7 case(s) (ALL WITHIN BUDGET)
---- doctor ---
-DOCTOR — 4 check(s): 0 failed, 2 warned (ATTENTION)
---- scribe ---
-SCRIBE — 1 claim(s) checked, 1 drift(s) (DRIFTED)
---- deterministic backup (two hashes must match) ---
-hash1=736ed1d33c0899a4 hash2=736ed1d33c0899a4 -> DETERMINISTIC
---- tamper test (must refuse) ---
-RESTORE REFUSED: backup fails verification, restore refused: .aeos/memory.jsonl: checksum mismatch
+[D] TRUE NETWORK ISOLATION (separate namespace, no net stack)
+  run accepted with NO network: True
 
-[D] TRUE ISOLATION ATTEMPT (network namespace)
-unshare -rn available — running a full run-demo with NO network stack:
-  accepted under no-network namespace: True
+[E] CLAIMS vs COUNTS (raw shell, clone)
+modules: 59 | ADRs: 44 | releases: 10 tags
 
-[E] CLAIMS vs INDEPENDENT COUNTS (clone, raw shell)
-modules: 59 (claimed 59)
-test functions: 424 (collected by pytest above; claimed 426)
-ADRs: 44 (claimed 44)
-releases/CI/PyPI: checked live in section [F]
+[F] LIVE REMOTE
+releases: 6 published; 6 carry all 3 Codex PDFs
+ci runs: 11 total, 8 green (rest: caught-and-fixed failures, on record)
+pypi.org/pypi/aeos: AVAILABLE (404)
