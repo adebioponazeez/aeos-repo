@@ -3,6 +3,15 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v35.1.0 — Validation Patch: Repo Context From Any Install (427 tests)
+- Found by INDEPENDENT validation (fresh clone -> fresh venv ->
+  non-editable install, evidence/validation-findings-v35.txt):
+  `aeos scribe` and two doctor rows guessed the repo root from the
+  package location, which is wrong for installed packages. Fix:
+  shared `doctor.repo_root()` — CWD chain first (works from any
+  install kind), package parents second, and NO context is an
+  honest WARN ("skipped, not guessed"). Regression tests included.
+
 ## v35.0.0 — The Scribe: Documentation Cannot Drift (426 tests)
 - **`scribe.py` + `aeos scribe`** (ADR-044): README claims — test/
   module/ADR counts, version headline, every `aeos <command>` —

@@ -158,8 +158,13 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.cmd == "scribe":
+        from .doctor import repo_root
         from .scribe import audit
-        repo = Path(__file__).resolve().parent.parent.parent
+        repo = repo_root()
+        if repo is None:
+            print("SCRIBE — no repository context: run from a checkout "
+                  "(any install kind); refusing to guess")
+            return 1
         docs = tuple(args.doc) if args.doc else ("README.md",)
         rep = audit(repo, docs)
         print(rep.render())

@@ -86,6 +86,18 @@ class TestDoctorRow:
 
 
 class TestCLI:
+    def test_repo_root_prefers_cwd_checkout(self, monkeypatch):
+        from aeos.doctor import repo_root
+        monkeypatch.chdir(REPO)
+        assert repo_root() == REPO.resolve()
+
+    def test_scribe_from_cwd_with_any_install(self, capsys, monkeypatch):
+        from aeos.cli import main
+        monkeypatch.chdir(REPO)          # wheel or editable: cwd wins
+        rc = main(["scribe"])
+        out = capsys.readouterr().out
+        assert rc == 0 and "TRUTHFUL" in out
+
     def test_scribe_command(self, capsys):
         from aeos.cli import main
         rc = main(["scribe"])

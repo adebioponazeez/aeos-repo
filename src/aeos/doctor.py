@@ -154,6 +154,21 @@ def charter_check(principles: Path, tests_root: Path) -> tuple:
     return ("PASS", f"{len(cited)} cited test(s) all exist in the suite")
 
 
+def repo_root() -> Path | None:
+    """Locate the aeos checkout from ANY install kind: prefer the CWD
+    chain (a user in a checkout, however aeos was installed), then
+    this file's parents (editable checkout). None = no repo context —
+    callers must say so honestly instead of guessing wrong."""
+    for base in (Path.cwd(), *Path.cwd().parents):
+        if (base / "src" / "aeos").is_dir() and (base / "README.md").exists():
+            return base
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "src" / "aeos").is_dir() and (parent / ".git").exists():
+            return parent
+    return None
+
+
 def doctor(ws: Path | None = None) -> dict:
     rows = []
     v = sys.version_info
@@ -167,20 +182,23 @@ def doctor(ws: Path | None = None) -> dict:
                  f"{len(audit['violations'])} violation(s)"))
     if ws:
         rows.extend(check_workspace(Path(ws)))
-    here = Path(__file__).resolve()
-    repo_root = next((parent for parent in here.parents
-                      if (parent / ".git").exists()), here.parent.parent)
-    verdict, detail = charter_check(repo_root / "docs" / "PRINCIPLES.md",
-                                    repo_root / "tests")
-    rows.append(("charter is load-bearing", verdict, detail))
-    if (repo_root / "README.md").exists():
+    root = repo_root()
+    if root is None:
+        rows.append(("repository context", "WARN",
+                     "not run from a checkout and no checkout beside the "
+                     "package — repo/charter/README checks skipped, "
+                     "not guessed"))
+    else:
+        verdict, detail = charter_check(root / "docs" / "PRINCIPLES.md",
+                                        root / "tests")
+        rows.append(("charter is load-bearing", verdict, detail))
         from .scribe import audit as _audit
-        srep = _audit(repo_root, ("README.md",))
+        srep = _audit(root, ("README.md",))
         rows.append(("README tells the truth",
                      "PASS" if srep.passed else "FAIL",
                      f"{len(srep.claims)} claim(s), "
                      f"{len(srep.drift)} drift(s)"))
-    rows.extend(check_repo(repo_root))
+        rows.extend(check_repo(root))
     report = {"rows": [{"area": a, "verdict": verdict, "detail": d}
                        for a, verdict, d in rows],
               "audit": audit}

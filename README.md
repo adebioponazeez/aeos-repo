@@ -1,11 +1,11 @@
 # AEOS — The AI Engineering OS
 
-**Version 35.0.0 — The Scribe. Built, tested, truthful — not proposed.**
+**Version 35.1.0 — The Scribe. Built, tested, truthful — not proposed.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
 governance, evaluation, observability, harness, entropy, learning,
-discovery). v2–v35 ship the platform around it. **426 tests. Zero
+discovery). v2–v35 ship the platform around it. **428 tests. Zero
 runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models are
@@ -16,7 +16,7 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 426 proofs incl. the 9-scenario chaos storm, ~115 seconds
+python -m pytest            # 428 proofs incl. the 9-scenario chaos storm, ~115 seconds
 aeos run-demo               # full reference loop, evidence bundle
 aeos factory-demo           # v7: the capability factory (proposals only)
 aeos factory-demo --token S # v7: ...with sponsorship (scoped installs)
@@ -95,10 +95,11 @@ aeos selftest
 | **v33.0** | **The Charter** | **The constitution machine-checked: every cited test verified to exist; the v27→v33 upgrade drill is a test; PyPI last mile automated and inert until opt-in** |
 | **v34.0** | **The Gauge** | **The performance envelope measured at 10k scale with law budgets; two real defects found and fixed (O(1) tail, graph-scaled wave cap); limits named, not hidden** |
 | **v35.0** | **The Scribe** | **Documentation that cannot drift: README claims machine-checked against live reality; four real stale claims found and fixed on first run** |
+| **v35.1** | **Validation patch** | **Independent fresh-clone validation found the scribe/doctor assuming checkouts; now a shared resolver works from ANY install kind, and no-repo-context is an honest WARN** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **426/426 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **428/428 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.
@@ -128,7 +129,7 @@ spent human token.**
 
 ```
 src/aeos/            # 59 modules: kernel (v1) + platform (v2–v35)
-tests/               # 426 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
+tests/               # 428 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
 evidence/            # captured test runs, run bundles, factory runs, dashboard
 docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, 44 ADRs
 book/                # Volumes I–III + v11 addendum (print/), HTML + markdown
