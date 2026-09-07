@@ -48,6 +48,7 @@ that can't must be written down where it can be audited.*
 | 37 | Documentation tells the truth | `scribe.audit` — README claims checked against live reality; drift FAILs with file:line | `test_the_real_readme_is_truthful_today` |
 | 38 | Done is a certificate, not a sentence | `saveproof.run_notary` — pre/post Merkle roots + a green command = verified; drift and failure are named, never narrated | `test_clean_run_is_verified` |
 | 39 | The door is one, and failure speaks plain language | `ignition.boot` — staged preflight → workspace → work → shutdown; every FAIL names what happened and what to do; the boot ledger tells the next boot how the last one died | `test_every_fail_carries_a_remedy` |
+| 40 | The founding contract is audited, not assumed | `docs/SPEC-AUDIT.md` — all 57 requirements of the master-builder spec carry verdicts and artifacts; gaps stay named | `test_spec_audit_covers_all_requirements` |
 
 ## PRACTICED — held by discipline, auditable by record
 

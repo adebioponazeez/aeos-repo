@@ -3,6 +3,36 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v38.0.0 — The Curriculum: The Founding Spec, Audited (486 tests)
+- The operator's "try again", decoded against the founding
+  master-builder specification (the second uploaded document): its
+  Requirement 54 commands "AUDIT EVERYTHING" after the first build,
+  and its Requirements 30/52 demand a 13-phase curriculum the
+  journey had not yet produced. This version is the loop's second
+  full turn.
+- **`docs/SPEC-AUDIT.md`**: all 57 numbered requirements of the
+  founding spec carry verdicts (SATISFIED with artifact / PARTIAL /
+  GAP) — the DoD's 16 clauses answered one by one, the 12-rung
+  project ladder mapped to shipped versions, and the honest gaps
+  kept visible: book length vs ~400pp, ladder rungs 11–12, live
+  research opt-in by law, PyPI awaiting operator activation.
+- **Volume IV — The Curriculum** (book/parts-v4 + print PDF): the
+  mandated 13 phases (AI coding → agentic coding → context → skills
+  → agents → harness → evaluation → orchestration → long-running →
+  agent-native → autonomy → the OS → the enterprise frontier), each
+  carrying the seven required sections (objectives / theory /
+  practice / projects / evaluation / capabilities unlocked /
+  advanced project) — every claim grounded in real modules,
+  commands, and tests. Phase 13's capability is "None claimed":
+  the frontier is drawn accurately, not relabeled.
+- Tests: the curriculum must contain all 13 phases × 7 sections;
+  every `aeos <verb>` it teaches must exist in the live CLI (the
+  README's law, extended to the book); the audit must cover all 57
+  requirements with no silent drops; the ladder must map all 12
+  rungs; the 16-clause DoD must be answered clause by clause.
+  Charter principle 40: the founding contract is audited, not
+  assumed. ADR-047.
+
 ## v37.0.2 — Guard Patch: A Guard That Cannot Fail Protects Nothing (478 tests)
 - v37.0.1's portability guard was itself non-portable: on Python
   < 3.12, ast positions INSIDE f-strings are approximations (the

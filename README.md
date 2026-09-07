@@ -1,11 +1,11 @@
 # AEOS — The AI Engineering OS
 
-**Version 37.0.2 — The Ignition. Built, tested, truthful — not proposed.**
+**Version 38.0.0 — The Curriculum. Built, tested, truthful — not proposed.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
 governance, evaluation, observability, harness, entropy, learning,
-discovery). v2–v37 ship the platform around it. **478 tests. Zero
+discovery). v2–v38 ship the platform around it. **486 tests. Zero
 runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models are
@@ -16,7 +16,7 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 478 proofs incl. the 9-scenario chaos storm, ~100 seconds
+python -m pytest            # 486 proofs incl. the 9-scenario chaos storm, ~100 seconds
 aeos up                     # v37: THE FRONT DOOR — staged boot (preflight · workspace · work · shutdown); failures speak plain language
 aeos run-demo               # full reference loop, evidence bundle
 aeos factory-demo           # v7: the capability factory (proposals only)
@@ -104,10 +104,11 @@ aeos selftest
 | **v37.0** | **The Ignition** | **One front door: `aeos up` — staged boot (preflight · workspace · work · shutdown), exit codes scripts can branch on, every FAIL naming what happened AND what to do, a boot ledger that tells the next boot how the last one died, and a nested-proof guard found the hard way** |
 | **v37.1** | **Portability patch** | **CI's 3.10/3.11 matrix caught a PEP 701 f-string (multi-line expression, 3.12-only) that local 3.13 parsed happily — fixed, plus an AST guard test so the whole class is impossible to ship again** |
 | **v37.2** | **Guard patch** | **The portability guard itself was non-portable (pre-3.12 ast positions inside f-strings are approximate — 270 phantom hits on 3.10/3.11); it now runs only where ast is truthful, the interpreter is the native guard below, and a synthetic-defect test proves the scanner can actually fail** |
+| **v38.0** | **The Curriculum** | **The founding master-builder spec audited requirement-by-requirement (57 verdicts, `docs/SPEC-AUDIT.md`); Volume IV ships the mandated 13-phase curriculum — every phase grounded in shipped modules, commands, and tests; the ladder's last two rungs honestly named as gaps** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **478/478 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **486/486 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.
@@ -136,11 +137,11 @@ spent human token.**
 ## Repository layout
 
 ```
-src/aeos/            # 63 modules: kernel (v1) + platform (v2–v37)
-tests/               # 478 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
+src/aeos/            # 63 modules: kernel (v1) + platform (v2–v38)
+tests/               # 486 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
 evidence/            # captured test runs, run bundles, factory runs, dashboard
-docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, 46 ADRs
-book/                # Volumes I–III + v11 addendum (print/), HTML + markdown
+docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, spec audit, 47 ADRs
+book/                # Volumes I–IV + v11 addendum (print/), HTML + markdown
 AGENTS.md            # short repo context for coding agents
 CHANGELOG.md         # every version, earned by tests
 ```

@@ -78,6 +78,8 @@ VOL2_PARTS = [
 
 VOL3_PARTS = ["00-v3-full.md"]
 
+VOL4_PARTS = ["00-v4-full.md"]
+
 VOL3_TITLES = {
     "title": "10,000,000&times; AI ENGINEERING",
     "sub1": "Volume III &mdash; The Arc Completed",
@@ -92,6 +94,13 @@ VOL2_TITLES = {
     "vol": "131 tests &middot; 26 modules &middot; zero dependencies",
 }
 
+
+VOL4_TITLES = {
+    "title": "10,000,000&times; AI ENGINEERING",
+    "sub1": "Volume IV &mdash; The Curriculum",
+    "sub2": "Thirteen phases from AI coding to the autonomous enterprise &middot; grounded in the shipped system",
+    "vol": "Curriculum printing (v38) &middot; 486 tests &middot; 63 modules &middot; 47 ADRs &middot; zero dependencies",
+}
 
 def build_volume(parts_dir: str, parts: list[str], vol_titles: dict,
                  out_slug: str) -> dict:
@@ -170,3 +179,4 @@ if __name__ == "__main__":
     build_volume("parts", PARTS, VOL1_TITLES, "volume-I")
     build_volume("parts-v2", VOL2_PARTS, VOL2_TITLES, "volume-II")
     build_volume("parts-v3", VOL3_PARTS, VOL3_TITLES, "volume-III")
+    build_volume("parts-v4", VOL4_PARTS, VOL4_TITLES, "volume-IV")

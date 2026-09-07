@@ -17,7 +17,7 @@ from pathlib import Path
 BOOK = Path(__file__).resolve().parent
 sys.path.insert(0, str(BOOK))
 from build_book import (PARTS, VOL1_TITLES, VOL2_PARTS, VOL2_TITLES,
-                        VOL3_PARTS, VOL3_TITLES)
+                        VOL3_PARTS, VOL3_TITLES, VOL4_PARTS, VOL4_TITLES)
 
 import markdown
 from weasyprint import HTML
@@ -154,8 +154,10 @@ hr::after { content: "\\25C6"; color: #C9A327; font-size: 9pt; }
   margin-top: 20pt; }
 """
 
-ROMAN = {"volume-I": "I", "volume-II": "II", "volume-III": "III"}
-MARKS = {"volume-I": "PRIMA", "volume-II": "SECUNDA", "volume-III": "TERTIA"}
+ROMAN = {"volume-I": "I", "volume-II": "II", "volume-III": "III",
+        "volume-IV": "IV"}
+MARKS = {"volume-I": "PRIMA", "volume-II": "SECUNDA", "volume-III": "TERTIA",
+        "volume-IV": "QUARTA"}
 
 
 def slug(text: str) -> str:
@@ -265,3 +267,4 @@ if __name__ == "__main__":
     build_pdf("parts", PARTS, VOL1_TITLES, "volume-I")
     build_pdf("parts-v2", VOL2_PARTS, VOL2_TITLES, "volume-II")
     build_pdf("parts-v3", VOL3_PARTS, VOL3_TITLES, "volume-III")
+    build_pdf("parts-v4", VOL4_PARTS, VOL4_TITLES, "volume-IV")
