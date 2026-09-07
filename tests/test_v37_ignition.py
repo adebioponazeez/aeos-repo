@@ -233,3 +233,24 @@ class TestRender:
         assert "IGNITION FAILED at stage 1/4 (preflight)" in text
         assert "what to do:" in text
         assert "exit code 2" in text
+
+class TestPortability:
+    def test_no_multiline_fstring_expressions(self):
+        # v37.0.0 shipped an f-string expression spanning lines —
+        # legal only under PEP 701 (3.12+); the CI matrix on 3.10
+        # refused the whole module. The floor is 3.10, so the guard
+        # is law: no f-string expression may span lines, ever.
+        import ast
+        import aeos
+        pkg = Path(aeos.__file__).resolve().parent
+        offenders = []
+        for py in sorted(pkg.glob("*.py")):
+            tree = ast.parse(py.read_text(encoding="utf-8"))
+            for node in ast.walk(tree):
+                if isinstance(node, ast.JoinedStr):
+                    for v in node.values:
+                        if (isinstance(v, ast.FormattedValue)
+                                and v.lineno != v.end_lineno):
+                            offenders.append(f"{py.name}:{v.lineno}")
+        assert not offenders, \
+            f"3.10-illegal multiline f-string: {offenders}"

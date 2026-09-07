@@ -163,11 +163,11 @@ def post(ws: Path, *, live_requested: bool = False) -> list[Check]:
 
     ledger = _last_boot(ws)
     if ledger is not None and ledger.get("outcome") != "ok":
+        prev_stage = ledger.get("failed_stage", "-")
         checks.append(Check(
             "previous boot", "WARN",
             f"boot #{ledger.get('boot_seq')} ended: "
-            f"{ledger.get('outcome')} (stage: {ledger.get('failed_stage',
-                                                          '-')})",
+            f"{ledger.get('outcome')} (stage: {prev_stage})",
             f"receipt: {ledger.get('receipt', '-')}; state writes are "
             "atomic, so a crashed boot leaves no torn state — this "
             "boot continues"))

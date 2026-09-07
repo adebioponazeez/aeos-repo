@@ -62,6 +62,18 @@ speaks plain language. The recursion defect is recorded here and in
 the CHANGELOG because a defect found by your own test suite and
 fixed with a guard is documentation, not embarrassment.
 
+## Addendum (v37.0.1)
+
+Shipped with a PEP 701 f-string (multi-line expression, 3.12-only)
+that Python 3.10 refused at import — caught by the CI matrix, not by
+the notary, because a certificate proves the suite passes on the
+Python that ran it; portability across the floor (3.10) is what the
+matrix is for. Fixed, plus `test_no_multiline_fstring_expressions`
+(an ast scan over every module) so the class is structurally
+unshippable. Third lesson in a row learned from a cold environment:
+fresh clones, dead ports, older Pythons — the warm machine always
+lies a little.
+
 ## Tests
 
 `test_healthy_workspace_is_all_clear`, `test_state_from_the_future_fails_with_remedy`,

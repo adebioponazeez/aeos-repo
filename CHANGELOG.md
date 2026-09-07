@@ -3,6 +3,18 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v37.0.1 — Portability Patch: The Floor Is 3.10 (477 tests)
+- CI caught what the certificate could not: the v37.0.0 notarization
+  proves the suite passes ON THE PYTHON THAT RAN IT — portability is
+  the matrix's job, and the matrix spoke. Python 3.10/3.11 refused
+  to even import ignition.py: one f-string expression spanned lines
+  (PEP 701, legal only from 3.12); the local 3.13 parsed it happily.
+- Fix: single-line expression. Guard: `test_no_multiline_fstring_
+  expressions` — an ast scan over every module, so the entire class
+  of 3.12-only syntax is unshippable while the floor is 3.10.
+- The v37.0.0 tag stays (history); its release notes carry the
+  correction; v37.0.1 is the version to run.
+
 ## v37.0.0 — The Ignition: One Front Door, Plain-Language Failure (476 tests)
 - Operator feedback, kept verbatim in spirit: 35+ verbs and no
   single production door; and when a real environment fails to

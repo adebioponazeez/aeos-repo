@@ -49,3 +49,12 @@ IGNITION — 4 stages: preflight · workspace · work · shutdown
     recursion) -> re-notarized: VERIFIED, root 4cca54a2d2d5bd00
     (final shipping root: see the certificate in this commit).
     Done is a certificate, not a sentence — even for the author.
+
+[8] THE MATRIX CAUGHT WHAT THE CERTIFICATE COULD NOT (v37.0.1)
+    CI, Python 3.10/3.11: SyntaxError at import — one f-string
+    expression spanned lines (PEP 701, 3.12-only). Local 3.13
+    parsed it; the certificate therefore said VERIFIED — a
+    certificate proves the suite passes ON THE PYTHON THAT RAN
+    IT. Portability is the matrix's job, and the matrix spoke.
+    Fix + permanent guard: test_no_multiline_fstring_expressions
+    (ast scan, every module, every future commit).
