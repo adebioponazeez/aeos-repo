@@ -1,0 +1,37 @@
+FOREMAN RECEIPT — v39.0.0 (real captures, this machine)
+================================================================
+
+[1] DEGRADED WORKSPACE (v1-era schema, torn sidecar, 14 runs, no backup)
+$ aeos foreman --workspace /tmp/foreman-demo
+FOREMAN — survey: 5 finding(s) — 4 mechanical, 1 proposal
+  [mech] backup           state exists but no backup on record
+  [mech] retention        14 run files kept (convention: 10)
+  [mech] state schema     state carries schema None (current: 1)
+  [mech] torn writes      1 quarantined sidecar(s) from hard cuts
+  [prop] README drift     1 README claim(s) drifted
+        what to do: documentation is the author's craft — filed, not auto-edited
+  apply order: schema-upgrade -> torn-archive -> groom -> backup-drill
+FOREMAN — outcome: ATTENTION (exit 1)
+
+[2] APPLY — the autonomous remediation
+$ aeos foreman --workspace /tmp/foreman-demo --apply
+  [ok] schema-upgrade memory.jsonl
+  [ok] torn-archive   1 archived -> .aeos/torn-archive
+  [ok] groom          4 run(s) archived, 10 kept
+  [ok] backup-drill   backup a57ee8ade9d0… — restore drill verified 18 member(s)
+  verification: 4 finding(s) resolved, 0 remain
+  workspace root 929a61f3d1cc -> ca578f443491   (real work, cryptographically visible)
+FOREMAN — outcome: CLEAN (exit 0)
+
+[3] SECOND PASS — idempotent
+  0 mechanical finding(s); workspace root unchanged
+
+[4] MEMORY — deduped history (.aeos/foreman/history.jsonl)
+  {"count": 3, "kind": "readme-drift", "status": "open"}   <- a pattern, not a surprise
+
+[5] THE PROPOSAL IT FILED WAS REAL
+  README drift (1 claim) pointed at this repo's stale test count —
+  the v39 doc pass fixed it. The foreman does not edit the author's
+  documentation; it files it. That is the boundary working.
+
+No book chapter. No PDF. The product is the code.

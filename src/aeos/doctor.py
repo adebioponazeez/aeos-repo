@@ -86,7 +86,8 @@ def check_workspace(ws: Path) -> list:
         rows.append(("fleet schema", "PASS" if v == STATE_SCHEMA else
                      ("WARN" if v == 1 else "FAIL"), f"schema {v}"))
 
-    torn = list(ws.glob("**/*.torn"))
+    torn = [t for t in ws.glob("**/*.torn")
+            if "torn-archive" not in t.relative_to(ws).parts]
     if torn:
         rows.append(("torn writes", "WARN",
                      f"{len(torn)} quarantined sidecar(s) — inspect or clear"))
@@ -221,6 +222,21 @@ def doctor(ws: Path | None = None) -> dict:
                      f"{len(checks)} check(s), {n_fail} would block "
                      f"`aeos up`"
                      + (f", {n_warn} warn(s)" if n_warn else "")))
+        receipts = sorted((Path(ws) / ".aeos" / "foreman")
+                          .glob("foreman-*.json"))
+        if receipts:
+            try:
+                last = json.loads(receipts[-1].read_text(encoding="utf-8"))
+                mode, rem = last.get("mode"), last.get("remaining", 0)
+                verdict = ("FAIL" if last.get("exit_code") == 2 else
+                           "WARN" if rem else "PASS")
+                rows.append(("foreman ledger", verdict,
+                             f"run #{last.get('seq')} ({mode}): "
+                             f"{last.get('resolved', 0)} resolved, "
+                             f"{rem} remain"))
+            except (OSError, ValueError):
+                rows.append(("foreman ledger", "WARN",
+                             "receipt unreadable"))
         rows.extend(check_workspace(Path(ws)))
     root = repo_root()
     if root is None:

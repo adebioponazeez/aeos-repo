@@ -189,6 +189,13 @@ def main(argv: list[str] | None = None) -> int:
                        help="what this token authorizes, e.g. factory:install:NAME")
     spo_p.add_argument("--ttl", type=float, default=3600)
 
+    frm_p = sub.add_parser("foreman",
+                           help="v39: THE AUTONOMOUS OPERATOR — survey the workspace, fix the mechanical class, file the rest; receipts for everything")
+    frm_p.add_argument("--workspace", default="aeos-demo")
+    frm_p.add_argument("--apply", action="store_true",
+                       help="execute the mechanical remediations "
+                            "(default: survey only — safe by design")
+
     fed_p = sub.add_parser("federation-demo",
                            help="v10: quarantine -> revalidate -> sponsored install")
     fed_p.add_argument("--workspace", default="aeos-federation")
@@ -205,6 +212,17 @@ def main(argv: list[str] | None = None) -> int:
         r = boot(Path(args.workspace), args.intent,
                  save_proof=args.save_proof, profile=args.profile)
         print(render(r))
+        return r["exit_code"]
+
+    if args.cmd == "foreman":
+        from .doctor import repo_root
+        from .foreman import render, run
+        r = run(Path(args.workspace), apply_mode=args.apply,
+                repo=repo_root())
+        print(render(r))
+        if r["exit_code"] == 1:
+            print("  exit 1 = attention (findings remain); "
+                  "0 = clean; 2 = a remediation failed")
         return r["exit_code"]
 
     if args.cmd == "scribe":

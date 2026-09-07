@@ -3,6 +3,37 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.0.0 — The Foreman: The Autonomous Operator (504 tests)
+- Operator direction, kept verbatim in spirit: "all the above is
+  for you to actually use it to produce a compelling production
+  grade autonomous agentic AI software system — and not a PDF —
+  following the tradition of dhh, creator of Omarchy." Answered
+  the only way that counts: the product is the code. No book
+  chapter, no printing, no PDF assets on this release.
+- **`foreman.py` + `aeos foreman [--apply]`** (ADR-048): the
+  autonomous loop the harness always deserved — PERCEIVE (survey:
+  state schema, torn writes, run retention, backup posture, boot
+  ledger, machine outbox, and in a checkout README drift + the
+  save-proof ledger), PLAN (every finding classified MECHANICAL —
+  safe, deterministic, reversible — or PROPOSAL — human work,
+  filed, never silently attempted), ACT (`--apply` only, fixed
+  dependency order: schema → torn → groom → backup-drill; heal
+  first, then capture the healed state; a failing action STOPS the
+  run), VERIFY (re-survey; findings that survive their own remedy
+  are named; pre/post workspace Merkle roots in every receipt),
+  REMEMBER (append-only, signature-deduped history — recurring
+  findings become patterns; no clocks, sequence is time).
+- Omarchy discipline applied: one command, opinionated defaults
+  (KEEP_RUNS=10, survey-is-safe), zero new config knobs, exit
+  codes as a contract (0 clean/resolved · 1 attention · 2 failed).
+- Doctor row: "foreman ledger" (last run: mode, resolved, remain).
+  Charter principle 41: the shop runs itself between visits.
+- Dogfooded before shipping: on a deliberately degraded workspace
+  the foreman found 4 mechanical + 1 honest proposal, fixed all 4
+  (schema upgraded, torn archived, 4 runs archived, backup drilled
+  + restore verified 18 members), second pass quiet. The README
+  drift it filed was real — this doc pass is the fix.
+
 ## v38.0.0 — The Curriculum: The Founding Spec, Audited (486 tests)
 - The operator's "try again", decoded against the founding
   master-builder specification (the second uploaded document): its
