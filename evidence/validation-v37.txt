@@ -1,0 +1,75 @@
+INDEPENDENT VALIDATION — v37.0.2 "The Ignition" (fresh clone, fresh venv)
+==========================================================================
+Prompted by the operator's "try again" (2026-09-07). Method: the v35
+discipline — nothing is trusted from the warm worktree. Fresh clone
+of adebioponazeez/aeos-repo at tag v37.0.2 (commit feb645c), fresh
+python venv, NON-EDITABLE install, every check run from the
+installed package. Ten checks, all real captures from this machine.
+
+[A] PACKAGE + ZERO-DEP LAW
+    /tmp/valenv37/bin/pip show aeos -> Version: 37.0.2, Requires:
+    (EMPTY — the wheel pulled zero runtime dependencies; Pygments in
+    the venv is pytest's own dependency, not aeos').
+
+[B] THE FULL SUITE (fresh venv, no -qq surprise)
+    478 passed, 1 skipped in 85.95s (0:01:25) — exit 0.
+
+[C] THE FRONT DOOR FROM THE INSTALLED PACKAGE (neutral cwd /tmp)
+    $ /tmp/valenv37/bin/aeos up --workspace /tmp/val37-ws
+    IGNITION — 4 stages: preflight · workspace · work · shutdown
+      [1/4] PREFLIGHT   4 check(s): 4 pass, all clear
+      [2/4] WORKSPACE   ready
+      [3/4] WORK        accepted — leverage 7.0, evidence bundle written
+      [4/4] SHUTDOWN    boot receipt -> .aeos/boots/boot-0001.json
+    BOOT — outcome: OK (wall 0.76s)
+
+[D] THE BOOT LEDGER (second boot, same workspace)
+    receipt boot-0002.json written; preflight clean (last boot ok).
+
+[E] STATE FROM THE FUTURE — plain language + exit code (installed pkg)
+    IGNITION FAILED at stage 1/4 (preflight)
+      what happened: state schema: memory.jsonl carries schema 99 —
+        state from the future (this aeos supports 1)
+      what to do:    upgrade aeos (pip install -U aeos) or point
+        --workspace at a fresh directory
+    exit code: 2 — and the failed boot still wrote its receipt.
+
+[F] LIVE MODE WITHOUT A KEY (presence checked, values never read)
+    live key: live mode requested but no provider key found
+    what to do: export one of OPENROUTER_API_KEY / ABACUS_API_KEY /
+    OPENAI_API_KEY (and AEOS_LIVE=1); keys are never logged
+
+[G] SCRIBE FROM THE INSTALLED PACKAGE, CLONE CWD (the v35.1 law)
+    SCRIBE — 7 claim(s) checked, 0 drift(s) (TRUTHFUL)
+
+[H] DOCTOR FROM THE INSTALLED PACKAGE, CLONE CWD
+    DOCTOR — 8 check(s): 0 failed, 0 warned (HEALTHY)
+    63 modules clean · charter 37 cited tests exist · README truthful
+    · save-proof ledger 7 certificates, all self-consistent ·
+    working tree clean · 15 tags, latest v37.0.2
+
+[I] THE TAG PROMISE (certificate vs the fresh-clone tree)
+    SAVE-PROOF — VERIFIED: bytes, arithmetic, and tree agree
+    (pre d0d61f3d57d9 == post d0d61f3d57d9) — the v36.0.1 egg-info
+    lesson holds: the root reproduces from any cold clone.
+
+[J] BACKUP DETERMINISM (installed pkg, two independent backups)
+    sha256 323e6996b4ecb081… both runs, byte-identical (cmp clean).
+
+[K] THE FRONT DOOR WITH NO NETWORK AT ALL (unshare -rn)
+    $ unshare -rn /tmp/valenv37/bin/aeos up --workspace …
+    BOOT — outcome: OK (wall 0.82s) — exit 0
+    A complete production boot, no network stack, sub-second: the
+    edge-invariance the SEF-X handover asked for, actually proved.
+
+VERDICT
+-------
+v37.0.2 validated end-to-end from a cold environment: package,
+suite, front door, ledger, failure language, tag certificate,
+backup determinism, offline boot — ALL GREEN. The three ship-day
+defects (nested-proof recursion, PEP 701 f-string, phantom-guard)
+are fixed and guarded in the tested tree.
+
+User-held items unchanged: PyPI enable (the 'pypi' environment does
+not exist yet — release workflow runs remain 'skipped'), live soak
+key, token revocation.
