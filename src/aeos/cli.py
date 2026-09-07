@@ -78,6 +78,15 @@ def main(argv: list[str] | None = None) -> int:
 
     ben_p = sub.add_parser("bench", help="v34: the performance envelope — measured, budgeted receipts")
     ben_p.add_argument("--workspace", default="aeos-demo")
+    ho_p = sub.add_parser("holdout",
+                          help="v39.4: sealed holdout scenarios vs a digital twin — evaluation the agent cannot overfit to")
+    ho_p.add_argument("--init", action="store_true",
+                      help="create/verify the sealed vault (per-install nonce; scenarios never plaintext)")
+    ho_p.add_argument("--run", action="store_true",
+                      help="unseal against a twin of --workspace; verdict-only report")
+    ho_p.add_argument("--workspace", default="aeos-demo")
+    ho_p.add_argument("--vault", default=None,
+                      help="vault dir (default: ~/.aeos/holdout — outside every repo and workspace)")
     ben_p.add_argument("--full", action="store_true",
                        help="10k scale (default: quick 1k)")
 
@@ -201,6 +210,31 @@ def main(argv: list[str] | None = None) -> int:
     fed_p.add_argument("--workspace", default="aeos-federation")
 
     args = parser.parse_args(argv)
+
+    if args.cmd == "holdout":
+        import sys
+        from .holdout import HoldoutVault, run_holdout
+        vroot = (Path(args.vault) if args.vault
+                 else Path.home() / ".aeos" / "holdout")
+        vault = HoldoutVault(vroot)
+        if args.init:
+            m = vault.init()
+            v = vault.verify()
+            print(f"HOLDOUT VAULT — {vroot}")
+            print(f"  sealed: {v.get('families', 0) if v['ok'] else 0} "
+                  "scenario families; per-install nonce (0600)")
+            print(f"  integrity: {'OK' if v['ok'] else 'REFUSED — ' + v['reason']}")
+            return 0 if v["ok"] else 2
+        if args.run:
+            r = run_holdout(Path(args.workspace), vault)
+            print(r.render())
+            print(f"  vault: {vroot} (outside the workspace; instances "
+                  "sealed — verdicts only)")
+            return 0 if r.passed else 1
+        v = vault.verify() if vault.initialized() else {"ok": False,
+               "reason": "vault not initialized — `aeos holdout --init`"}
+        print(f"HOLDOUT — {v['reason'] if not v['ok'] else 'vault verified'}")
+        return 0 if v["ok"] else 2
 
     if args.cmd == "selftest":
         from . import __version__

@@ -281,3 +281,28 @@ class TestPortability:
         good = ("prev = ledger.get('failed_stage', '-')\n"
                 "x = f\"{ledger.get('outcome')} (stage: {prev})\"\n")
         assert not self._offenders(good)
+
+
+class TestConcurrentPreflight:
+    """v39.4: the gauntlet re-run caught the writable probe racing
+    itself — two boots sharing the fixed .boot-probe path unlinked
+    each other's probe and misreported a WRITABLE workspace as
+    unwritable (the rare rc=2 in the concurrent-boot group). The
+    probe is now unique per call; this hammer keeps it that way."""
+
+    def test_concurrent_probes_never_lie(self, tmp_path):
+        import concurrent.futures
+        from aeos.ignition import post
+        ws = tmp_path / "ws"
+        ws.mkdir()
+
+        def probe_once(_):
+            return [c for c in post(ws)
+                    if c.name == "workspace writable"][0]
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
+            verdicts = list(ex.map(probe_once, range(64)))
+        bad = [v for v in verdicts if v.verdict != "PASS"]
+        assert not bad, f"probes misreported a writable workspace: {bad}"
+        leftovers = list((ws / ".aeos").glob(".boot-probe-*"))
+        assert leftovers == [], f"probe corpses: {leftovers}"

@@ -3,6 +3,45 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.4.0 — The Holdout: Digital-Twin Separation (527 tests)
+- The dark-factory validation's #1 honest gap, closed: evaluation
+  the agent cannot overfit to. Scenarios live OUTSIDE the codebase
+  in a sealed vault (~/.aeos/holdout by default — outside every
+  repo and workspace); `aeos holdout --init` seals a per-install
+  instance set (nonce-seeded: which hostile intents, which order,
+  which parameters — reading the source reveals the families, never
+  the instances); `aeos holdout --run` verifies the seal
+  (sha256 + hmac + merkle root; a tampered blob refuses to run),
+  copies the target workspace to a throwaway digital twin, runs
+  every sealed family against the twin, renders a verdict-only
+  report, and proves the original workspace byte-identical after.
+- Five families, all graded against real runs: hostile intents
+  verdicted (6 seeded injection/garbage/unicode intents — closed
+  accept/reject, never a fatal), determinism (same intent on two
+  twin copies -> identical canonical bundles, clock/env excluded),
+  refusal named (read-only twin refuses NAMED — "could not be
+  opened", not misdiagnosed as held), economics governed, leverage
+  numbered.
+- Honest scope, on the record (ADR-050): the separation is
+  boundary-based — the sandbox law already confines workspace
+  agents (writes only inside their cwd, never networked), and the
+  vault is sealed against reading, not multi-tenant security
+  against a same-user adversary with an arbitrary shell.
+- The production-gauntlet re-run (part of this release's
+  re-verification) caught a THIRD defect, rare but real: the boot
+  preflight's writable probe used a FIXED path, so two simultaneous
+  boots could unlink each other's probe and misreport a WRITABLE
+  workspace as unwritable (the 1-in-20 rc=2 in the concurrent-boot
+  group). Reproduced deterministically (51/320 misreports under a
+  threaded hammer), fixed with a unique auto-cleaning probe
+  (0/320), regression-tested forever.
+- Wording: lock refusals now compose cleanly through every path
+  ("workspace not available: the lock is held by a live run…" /
+  "…the lock file could not be opened: … — check permissions/disk").
+- DARK-FACTORY-VALIDATION updated: pattern #7 (layered evaluation
+  with holdout separation) PARTIAL -> EXCEEDS-pending-audience; the
+  roadmap's first gap is closed.
+
 ## v39.3.0 — The Field Test: Beyond One Sandbox (515 tests)
 - Operator challenge: receipts produced inside one sandbox prove
   only that sandbox. Answered with a field gauntlet — the same

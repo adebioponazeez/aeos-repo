@@ -1,6 +1,6 @@
 # DARK FACTORY VALIDATION — AEOS v39.3.0
 
-*Audited at v39.3.0 · 64 modules · 515 tests · 49 ADRs · zero runtime
+*Audited at v39.4.0 · 65 modules · 527 tests · 50 ADRs · zero runtime
 dependencies. References: IndyDevDan's public course listings and site
 (agenticengineer.com — no paid content accessed), the 2026 dark-software-
 factory literature (Fabro, BrainGu Guber, the BCG Plation report,
@@ -59,7 +59,7 @@ The 2026 references agree on a pattern list. Mapping, with verdicts:
 | 4 | Human-in-the-loop approval gates (Fabro) | `sponsorship.py` — human authority as a first-class, spendable, expiring, one-shot token; L7 installs and meta-loop changes require it | **EXCEEDS** (authority is spendable and expiring, not a click-through) |
 | 5 | Governance at the edges, autonomy in the middle (BrainGu Guber) | `governor.py` — autonomy earned, bounded, revocable; unknown action class → DENY | **PARITY** |
 | 6 | Execution isolation (Fabro cloud VMs; Guber ephemeral containers) | `sandbox_runner.py` — process-isolated child, never networked, writes only its cwd; field-tested under read-only/ENOSPC/non-root | **PARTIAL** — process-level, single host; no VM/container isolation (stdlib-only constraint) |
-| 7 | Layered evaluation, independent judges, holdouts (BCG; abaditya digital twins) | deterministic judges + weights (`evals.py`); chaos storm ×9; production gauntlet ×11; field test ×9 groups | **PARTIAL** — judges and hostile harnesses are real; holdout separation (tests the agent cannot see) is NOT implemented — see Part III |
+| 7 | Layered evaluation, independent judges, holdouts (BCG; abaditya digital twins) | deterministic judges + weights (`evals.py`); chaos storm ×9; production gauntlet ×11; field test ×9 groups; **v39.4 Holdout: sealed per-install scenario vault outside the repo, digital-twin runs, verdict-only reports, tamper-refusing seals** | **PARITY/EXCEEDS** — closed at v39.4.0 (scope honestly bounded in ADR-050: boundary-based separation, not same-user adversarial security) |
 | 8 | Deterministic workflow graphs (Fabro DOT pipelines) | `orchestrator.py` — dependency-ordered parallel waves; durable PlanCheckpoint after every task | **PARITY** at single host (plans are programmatic, not declarative DOT) |
 | 9 | Multi-model routing / ensembles (Fabro stylesheets) | `models.py` adapter protocol; provider adapters; triangle control/cost/speed per run | **PARTIAL** — the seam exists; no per-node routing configuration |
 | 10 | Run observability, durable events (Fabro SSE) | `fleet.py` JSONL event bus; `otel.py`/`otlp.py` OTel export; `telemetry.py`; console/visualizer | **PARITY** (no SSE stream / web UI) |
@@ -78,11 +78,8 @@ single-host, offline-first law — each is load-bearing, not accidental.
 
 ## Part III — Honest gaps (the roadmap)
 
-1. **Holdout / digital-twin separation** (abaditya's sharpest pattern):
-   tests live in-repo where an agent can read them; nothing enforces
-   evaluation the agent cannot overfit to. The storm/gauntlet/field
-   harnesses are separate programs, but not hidden ones.
-2. **VM/container execution isolation** — process isolation only;
+0. *(closed at v39.4.0 — holdout/digital-twin separation; see `holdout.py` and ADR-050)*
+1. **VM/container execution isolation** — process isolation only;
    stdlib-only forbids docker. The seam is `sandbox_runner.py`.
 3. **Declarative workflow graphs + per-node model routing** — plans are
    programmatic; Fabro's DOT + stylesheet ergonomics are real.

@@ -109,10 +109,17 @@ def post(ws: Path, *, live_requested: bool = False) -> list[Check]:
 
     try:
         ws.mkdir(parents=True, exist_ok=True)
-        probe = ws / ".aeos" / ".boot-probe"
-        probe.parent.mkdir(parents=True, exist_ok=True)
-        probe.write_text("probe", encoding="utf-8")
-        probe.unlink()
+        probe_dir = ws / ".aeos"
+        probe_dir.mkdir(parents=True, exist_ok=True)
+        # found by the v39.4 gauntlet re-run: a FIXED probe path let
+        # two simultaneous boots unlink each other's probe and
+        # misreport a writable workspace as unwritable (rc=2 in the
+        # concurrent-boot race). Unique per call, cleaned on close.
+        import tempfile
+        with tempfile.NamedTemporaryFile(dir=probe_dir,
+                                         prefix=".boot-probe-",
+                                         delete=True) as fh:
+            fh.write(b"probe")
         checks.append(Check("workspace writable", "PASS",
                             str(ws), ""))
     except OSError as exc:
