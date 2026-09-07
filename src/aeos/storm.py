@@ -199,7 +199,8 @@ def sc_concurrent_runs(ws: Path) -> StormRow:
     ws.mkdir(parents=True, exist_ok=True)
     with WorkspaceLock(ws / ".aeos" / "workspace.lock"):
         b = reference_run(ws, intent="Ship it")
-    ok = b["accepted"] is False and "locked" in b.get("reason", "")
+    ok = b["accepted"] is False and "held by a live run" in \
+        b.get("reason", "")
     return StormRow("concurrent runs refused", ok,
                     "second run refused cleanly; no interleaving" if ok
                     else "runs interleaved or crashed")

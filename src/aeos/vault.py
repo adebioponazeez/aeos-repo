@@ -95,12 +95,23 @@ class WorkspaceLock:
     def __init__(self, path: Path):
         self.path = Path(path)
         self._fh = None
+        self.last_error = None      # set when the file itself would not open
 
     def acquire(self, blocking: bool = False) -> bool:
         if fcntl is None:                      # pragma: no cover
             return True
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._fh = self.path.open("a+")
+        self.last_error = None
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self._fh = self.path.open("a+")
+        except OSError as exc:
+            # found by the v39.3 field test: the open sat OUTSIDE the
+            # guard, so a read-only workspace or a full disk escaped as
+            # a raw PermissionError/ENOSPC traceback — and callers
+            # misread EVERY failure as "held by a live run"
+            self.last_error = exc.strerror or str(exc)
+            self._fh = None
+            return False
         flags = fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB)
         try:
             fcntl.flock(self._fh.fileno(), flags)
@@ -109,6 +120,16 @@ class WorkspaceLock:
             self._fh.close()
             self._fh = None
             return False
+
+    def refusal_reason(self) -> str:
+        """Plain language for WHY acquire failed — held is not the
+        only way to fail, and the difference is the remedy."""
+        if self.last_error:
+            return ("the lock file could not be opened: "
+                    f"{self.last_error} — check permissions/disk on "
+                    "the workspace")
+        return ("held by a live run (kernel-released; a dead holder "
+                "cannot strand you)")
 
     def release(self) -> None:
         if self._fh is not None:

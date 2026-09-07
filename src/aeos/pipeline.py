@@ -497,8 +497,8 @@ def reference_run(workspace: Path, intent: str = "Ship a verified seed module",
     lock = WorkspaceLock(workspace / ".aeos" / "workspace.lock")
     if not lock.acquire(blocking=False):
         return {"accepted": False,
-                "reason": "workspace locked: another run holds it "
-                          "(kernel releases it if that run died)",
+                "reason": "workspace not available: the lock is "
+                          + lock.refusal_reason(),
                 "environment": environment_scan(workspace)}
     try:
         bundle = _reference_run(workspace, intent, model=model,

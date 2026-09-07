@@ -225,7 +225,7 @@ class TestProductionGauntlet:
         assert lock.acquire(blocking=False)
         r = run(tmp_path, apply_mode=True)
         assert r["exit_code"] == EXIT_FAILED
-        assert "locked by a live run" in r["failure"]
+        assert "held by a live run" in r["failure"]
         assert r["actions"] == []            # refused = did nothing
         text = render(r)
         assert "FOREMAN — refused" in text and "Traceback" not in text
@@ -283,9 +283,8 @@ class TestProductionGauntlet:
         r = boot(tmp_path)
         lock.release()
         assert r["outcome"] == "work-failed"
-        assert "workspace locked" in r["what"]
-        assert "kernel releases" in r["what"] or "kernel releases" \
-            in r.get("remedy", "") or "releases" in r["what"]
+        assert "held by a live run" in r["what"]
+        assert "kernel-released" in r["what"] or "releases" in r["what"]
 
     def test_cli_backup_names_starvation(self, tmp_path, monkeypatch,
                                          capsys):
@@ -303,3 +302,82 @@ class TestProductionGauntlet:
         assert rc == 1
         assert "BACKUP REFUSED" in out and "File too large" in out
         assert "nothing was written" in out
+
+class TestFieldTest:
+    """v39.3: the field test (different environments) found the lock
+    lying about WHY it refused, and two unwrapped writes (history
+    append, receipt write) escaping as raw tracebacks on full disks.
+    These pin all three, read-only included."""
+
+    def test_lock_names_why_it_refused(self, tmp_path):
+        # read-only .aeos: acquire returns False and the reason is
+        # PERMISSIONS, not "held by a live run" — the v26-era open
+        # sat outside the guard and escaped as a raw PermissionError
+        import os
+        if os.geteuid() == 0:
+            pytest.skip("root ignores permission bits")
+        from aeos.vault import WorkspaceLock
+        d = tmp_path / ".aeos"
+        d.mkdir()
+        d.chmod(0o555)
+        lock = WorkspaceLock(d / "workspace.lock")
+        try:
+            assert lock.acquire(blocking=False) is False
+            assert "could not be opened" in lock.refusal_reason()
+            assert "Permission" in lock.refusal_reason()
+        finally:
+            d.chmod(0o755)
+        # and the held case still tells the truth
+        assert lock.acquire(blocking=False)
+        lock2 = WorkspaceLock(d / "workspace.lock")
+        assert lock2.acquire(blocking=False) is False
+        assert "held by a live run" in lock2.refusal_reason()
+        lock.release()
+
+    def test_foreman_on_readonly_workspace_is_named(self, tmp_path):
+        import os
+        if os.geteuid() == 0:
+            pytest.skip("root ignores permission bits")
+        (tmp_path / ".aeos").mkdir()
+        (tmp_path / ".aeos" / "memory.jsonl").write_text(
+            '{"kind": "m"}\n', encoding="utf-8")
+        import subprocess
+        subprocess.run(["chmod", "-R", "a-w", str(tmp_path)], check=True)
+        try:
+            r = run(tmp_path, apply_mode=True)
+            assert r["exit_code"] == EXIT_FAILED
+            assert "could not be opened" in r["failure"]
+            assert "Permission" in r["failure"]
+            text = render(r)
+            assert "FOREMAN — refused" in text
+            assert "check permissions" in text
+            assert "wait for the holder" not in text
+        finally:
+            subprocess.run(["chmod", "-R", "u+w", str(tmp_path)],
+                           check=True)
+
+    def test_history_append_is_best_effort(self, tmp_path, monkeypatch):
+        # ENOSPC during the history append must not take the verdict
+        import aeos.foreman as fm
+
+        def full_disk(path, text):
+            raise OSError(28, "No space left on device")
+
+        monkeypatch.setattr(fm, "_append_durable", full_disk)
+        _degraded(tmp_path)
+        r = run(tmp_path, apply_mode=True)     # must not raise
+        assert r["exit_code"] in (EXIT_CLEAN, EXIT_ATTENTION,
+                                  EXIT_FAILED)
+
+    def test_receipt_write_failure_keeps_the_verdict(self, tmp_path,
+                                                     monkeypatch):
+        import aeos.foreman as fm
+
+        def full_disk(path, text, *a, **kw):
+            raise OSError(28, "No space left on device")
+
+        monkeypatch.setattr(fm, "durable_write", full_disk)
+        _degraded(tmp_path)
+        r = run(tmp_path, apply_mode=True)     # must not raise
+        assert r["receipt_unwritten"] == "No space left on device"
+        assert r["resolved"] == 4              # the work still counts

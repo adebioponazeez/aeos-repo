@@ -117,7 +117,7 @@ class TestWorkspaceLock:
         with WorkspaceLock(ws / ".aeos" / "workspace.lock"):
             b = reference_run(ws, intent="Ship it")
         assert b["accepted"] is False
-        assert "locked" in b["reason"]
+        assert "held by a live run" in b["reason"]
 
     def test_killed_holder_cannot_strand_the_workspace(self, tmp_path):
         """The kernel releases flock on death — no stale locks, ever."""

@@ -99,7 +99,7 @@ def check_workspace(ws: Path) -> list:
             rows.append(("workspace lock", "PASS", "runnable (no holder)"))
         else:
             rows.append(("workspace lock", "WARN",
-                         "held by a live run (kernel releases on death)"))
+                         lock.refusal_reason()))
 
     try:
         free = __import__("shutil").disk_usage(ws).free // 1_000_000

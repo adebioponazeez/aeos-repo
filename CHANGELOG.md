@@ -3,6 +3,39 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.3.0 — The Field Test: Beyond One Sandbox (515 tests)
+- Operator challenge: receipts produced inside one sandbox prove
+  only that sandbox. Answered with a field gauntlet — the same
+  build exercised in genuinely different environments: empty
+  environment (env -i), read-only workspace, read-only HOME, a
+  real 256KB tmpfs mounted under unshare (true kernel ENOSPC),
+  a 64MB tmpfs workspace with a full roundtrip, a shadow package
+  shadowing the aeos import, deep unicode paths under LC_ALL=C,
+  TZ/locale flips for determinism, all as non-root.
+  Receipt: evidence/field-test-v39.txt.
+- **Run 2 found two defect classes** (that is the field test
+  working):
+  1. `WorkspaceLock.acquire` opened the lock file outside its
+     guard — a read-only workspace surfaced as a raw
+     PermissionError traceback instead of a named refusal;
+  2. when the disk is truly full, the ENOSPC escaped raw from
+     the foreman's durable history append, killing the run
+     before it could deliver its verdict.
+- **Both fixed**: `refusal_reason()` distinguishes "the lock is
+  held by a live run" from "the lock file could not be opened —
+  check permissions/disk"; the foreman refuses by name
+  ("workspace is not available: ..."); history and receipts
+  degrade best-effort (`unwritten` / `receipt_unwritten` flags)
+  so a run's verdict survives a full disk; doctor and pipeline
+  report the same honest reason; render() branches its advice.
+- Harness confounds were separated from defects and eliminated
+  (set -e swallowing checks; machine HOME leaking into
+  namespaces; README count drift leaking through repo context) —
+  the final field run is green with every failure named, never
+  raw.
+- The wheel (not just the editable install) verified on real
+  CPython 3.10, 3.11 and 3.12.
+
 ## v39.2.0 — The Gauntlet: Production Constraints, For Real (511 tests)
 - Operator demand: "test and validate and ensure this build
   survives real production grade constraints." Answered with an

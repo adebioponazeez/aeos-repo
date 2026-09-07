@@ -305,7 +305,14 @@ def remember(ws: Path, findings: list[Finding], status: str) -> dict:
         counts[key] = n
         entry = {"kind": f.kind, "sig": f.signature(), "status": status,
                  "count": n}
-        _append_durable(p, json.dumps(entry, sort_keys=True) + "\n")
+        try:
+            _append_durable(p, json.dumps(entry, sort_keys=True) + "\n")
+        except OSError:
+            # found by the v39.3 field test: a full disk escaped here
+            # as a raw traceback. History is best-effort by design
+            # (a log, not a ledger of record); the run's verdict must
+            # survive the disk refusing one more line
+            entry["unwritten"] = True
         last = entry
     return last or {}
 
@@ -318,15 +325,15 @@ def run(ws: Path, *, apply_mode: bool = False,
     lock = WorkspaceLock(ws / ".aeos" / "workspace.lock")
     if not lock.acquire(blocking=False):
         # found by the v39.2 production gauntlet: two foremen could
-        # race on the same workspace. One operator at a time — the
-        # lock is kernel-released, a dead holder cannot strand you.
+        # race on the same workspace; and by the v39.3 field test:
+        # a refusal must say WHY (held vs cannot-open) — the
+        # difference is the remedy
         return {"kind": "aeos-foreman", "mode": "survey",
                 "findings": [], "actions": [], "resolved": 0,
                 "remaining": 0, "pre_root": None, "post_root": None,
                 "exit_code": EXIT_FAILED,
-                "failure": "workspace is locked by a live run "
-                           "(kernel-released; a dead holder cannot "
-                           "strand you)",
+                "failure": "workspace is not available: "
+                           + lock.refusal_reason(),
                 "seq": len(list((ws / ".aeos" / "foreman")
                                 .glob("foreman-*.json"))) + 1
                 if (ws / ".aeos" / "foreman").exists() else 1}
@@ -371,11 +378,18 @@ def _run_locked(ws: Path, *, apply_mode: bool = False,
               "clean" if not result["remaining"] else "open")
     remember(ws, pre, status)
     d = ws / ".aeos" / "foreman"
-    d.mkdir(parents=True, exist_ok=True)
-    seq = len(list(d.glob("foreman-*.json"))) + 1
-    result["seq"] = seq
-    durable_write(d / f"foreman-{seq:04d}.json",
-                  json.dumps(result, indent=2, sort_keys=True) + "\n")
+    try:
+        d.mkdir(parents=True, exist_ok=True)
+        seq = len(list(d.glob("foreman-*.json"))) + 1
+        result["seq"] = seq
+        durable_write(d / f"foreman-{seq:04d}.json",
+                      json.dumps(result, indent=2, sort_keys=True) + "\n")
+    except OSError as exc:
+        # found by the v39.3 field test: on a full disk the receipt
+        # write escaped and took the verdict with it. The screen is
+        # the record now; say so honestly
+        result["seq"] = result.get("seq", 0)
+        result["receipt_unwritten"] = exc.strerror or str(exc)
     return result
 
 
@@ -383,11 +397,15 @@ def _run_locked(ws: Path, *, apply_mode: bool = False,
 
 def render(result: dict) -> str:
     if result.get("pre_root") is None and result.get("failure"):
-        # the busy refusal: no findings, no receipt (the lock holder
-        # owns the workspace) — named, one breath, done
+        # the refusal: no findings, no receipt (the workspace is not
+        # ours to operate) — named, one breath, with advice that
+        # matches WHY (held is not the only way to fail)
+        advice = ("check permissions/disk on the workspace"
+                  if "could not be opened" in result["failure"]
+                  else "wait for the holder or check for a live process")
         return ("FOREMAN — refused: " + result["failure"] +
-                "\n  wait for the holder or check for a live process; "
-                "exit code " + str(result["exit_code"]))
+                "\n  " + advice + "; exit code "
+                + str(result["exit_code"]))
     rows = result["findings"]
     mech = [r for r in rows if r["class"] == "mechanical"]
     prop = [r for r in rows if r["class"] == "proposal"]

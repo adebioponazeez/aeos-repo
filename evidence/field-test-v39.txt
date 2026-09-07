@@ -1,0 +1,115 @@
+FIELD TEST — v39.3.0
+"receipts from one sandbox prove only that sandbox — will the
+shipped build survive a real live sandbox and OTHER environment
+constraints?"
+
+================================================================
+ENVIRONMENT DISCLOSURE (this receipt names its environment)
+================================================================
+Producing environment: THIS sandbox — non-root user `user`,
+Linux 6.1.158+, CPython 3.13.14 host interpreter, no docker, no
+mkfs, no root. The hostile environments below are REAL within
+that limit: `unshare -rm` user namespaces with kernel tmpfs
+mounts (true ENOSPC), `chmod -R a-w` (true read-only),
+`env -i` (true empty environment), uv-managed interpreters
+CPython 3.10.21 / 3.11.16 / 3.12.14 for the wheel verification.
+What this receipt does NOT prove: other operating systems,
+other kernels, other filesystems than tmpfs/ext4-overlay, and
+CPython < 3.10. Those remain unclaimed.
+
+================================================================
+METHOD — 9 field groups + the wheel (E6)
+================================================================
+E1  identity disclosure (above)
+E2  EMPTY environment (env -i): no HOME, no env beyond PATH
+    — boot + foreman --apply + doctor
+E3  READ-ONLY workspace (recursive chmod -R a-w — a
+    non-recursive chmod tests nothing): refusal must be NAMED
+    and must NOT masquerade as "held by a live run"
+E4  REAL full disk: 256K tmpfs, filled to ~24K free — true
+    kernel ENOSPC — foreman --apply must fail named, exit 2,
+    no .tmp corpse, history/receipt degrade honestly
+E5  HEALTHY 64M tmpfs workspace: up + foreman + backup on a
+    different filesystem, hermetic HOME (no machine leakage)
+E7  shadow package: a directory named `aeos/` in cwd — console
+    script and boot must not be fooled
+E8  deep path (200 chars) + unicode under LC_ALL=C
+E9  TZ/locale invariance: same workspace backed up under
+    Asia/Tokyo+LC_ALL=C vs America/New_York — byte-identical
+E10 READ-ONLY HOME: default outbox (~/.aeos) unwritable —
+    enqueue must be refused NAMED, doctor must tolerate
+
+================================================================
+RUN HISTORY — honesty about the process
+================================================================
+Run 1 (harness v1): 13/7 — 4 failures were HARNESS bugs (bash
+-c repr quoting broke E4/E5 mounts; non-recursive chmod made
+E3/E10 test nothing). Fixed; not charged to the build.
+Run 2 (v39.2.0 code): 15/5 — TWO REAL DEFECT CLASSES:
+  1. WorkspaceLock.acquire opened the lock file OUTSIDE its
+     guard: read-only workspace -> raw PermissionError
+     traceback (vault.py) instead of a named refusal.
+  2. True ENOSPC escaped RAW from the foreman's durable
+     history append (OSError 28) — the run died before
+     delivering its verdict.
+Run 3 (fixed tree): 14/6 — E3/E4 verified fixed (named refusal,
+correct advice, no traceback, no corpse); the 6 residual
+failures were diagnosed as CONFOUNDS, not defects: E4's inner
+script `set -e` killed the checks before they ran; E2/E5/E10
+inherited the checkout cwd so README count drift (511 vs
+reality) leaked through repo context into doctor/foreman.
+Run 4 (this receipt): harness hermetic, docs aligned.
+
+================================================================
+RUN 4 — FINAL: 20/20 CHECKS PASS, 0 FAIL
+================================================================
+E1  PASS  non-root; POSIX kernel stated (fcntl locks real)
+E2  PASS  env -i: boot OK; foreman --apply CLEAN (exit 0);
+          doctor clean (hermetic HOME — no machine state)
+E3  PASS  read-only workspace: refusal NAMED, exit 2, advice
+          "check permissions/disk" — and NOT misdiagnosed as
+          "held by a live run"; boot names read-only preflight
+          at stage 1/4
+E4  PASS  true ENOSPC: no traceback; an ENOSPC failure is
+          named; NO tmp corpse on the full disk; foreman
+          exited 2 by design, verdict delivered
+E5  PASS  64M tmpfs: up + foreman + deterministic backup —
+          TMPFS_ALL_OK
+E7  PASS  shadow `aeos/` dir: console script reports
+          v39.3.0; boot from inside the shadow dir OK
+E8  PASS  deep+unicode path under LC_ALL=C: boot OK (1.11s)
+E9  PASS  backups byte-identical across TZ/locale flips
+E10 PASS  read-only HOME: enqueue refused NAMED ("unable to
+          open database file"); doctor tolerates (0 failed)
+
+================================================================
+E6 — THE WHEEL, NOT JUST THE CHECKOUT (real interpreters)
+================================================================
+Wheel: aeos-39.3.0-py3-none-any.whl (pure, zero runtime deps,
+requires-python >=3.10), installed into fresh venvs:
+
+CPython 3.10.21  import -> site-packages 39.3.0; CLI up +
+                 foreman --apply OK; full suite FROM the repo
+                 checkout importing the WHEEL:
+                 513 passed, 3 skipped (1 live-opt-in,
+                 2 version-gated 3.12+ syntax tests, by design)
+CPython 3.11.16  same: 513 passed, 3 skipped
+CPython 3.12.14  same: 515 passed, 1 skipped (live-opt-in only)
+Host   3.13.14   editable install: 515 passed, 1 skipped
+
+A built wheel that was never installed is an unverified wheel;
+this one is verified on three real interpreters beyond the
+host's.
+
+================================================================
+VERDICT
+================================================================
+Every environmental failure now arrives NAMED, never raw:
+read-only (workspace and HOME), full disk, empty environment,
+shadow imports, hostile locales, foreign filesystems. History
+and receipts degrade best-effort and SAY so (unwritten /
+receipt_unwritten) — a run's verdict survives a full disk. The
+shipped wheel behaves identically on CPython 3.10 through
+3.13. The build's resilience is proven across the environments
+this machine can genuinely produce — and this receipt states
+exactly which those are.
