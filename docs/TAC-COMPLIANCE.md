@@ -1,5 +1,9 @@
 # TAC COMPLIANCE AUDIT — AEOS vs IndyDevDan's *Tactical Agentic Coding*
 
+*Re-audited at v39.3.0 — see DARK-FACTORY-VALIDATION.md: five of
+the six gaps named below are closed with tests; the prompt-ladder
+divergence stands by choice.*
+
 *v14.0.0 · 36 modules · 221+1 tests · 23 ADRs. Curriculum names below are
 from public course listings only (no paid content was accessed or used);
 the mapping is to our own shipped mechanisms and their tests.*

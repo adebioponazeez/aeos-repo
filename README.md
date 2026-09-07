@@ -145,7 +145,7 @@ spent human token.**
 src/aeos/            # 64 modules: kernel (v1) + platform (v2–v39)
 tests/               # 515 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
 evidence/            # captured test runs, run bundles, factory runs, dashboard
-docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, spec audit, 49 ADRs
+docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, spec audit, dark-factory validation, 49 ADRs
 book/                # Volumes I–IV + v11 addendum (print/), HTML + markdown
 AGENTS.md            # short repo context for coding agents
 CHANGELOG.md         # every version, earned by tests
