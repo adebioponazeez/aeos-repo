@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shlex
 import sys
 import time
 from pathlib import Path
@@ -32,6 +34,36 @@ def main(argv: list[str] | None = None) -> int:
     scr_p = sub.add_parser("scribe", help="v35: documentation that cannot drift — README claims vs live reality")
     scr_p.add_argument("--doc", action="append", default=None,
                        help="extra doc to audit (repeatable); default README.md")
+
+    sfp_p = sub.add_parser("save-proof",
+                           help="v36: the notary — pre/post Merkle roots + a green command = a completion certificate")
+    sfp_p.add_argument("--command", default=None, metavar="CMD",
+                       help="proof command as a quoted string (default: the test suite); shlex-split, never a shell")
+    sfp_p.add_argument("--out", default=None, metavar="DIR",
+                       help="certificate directory (default: evidence/save-proofs in the repo)")
+    sfp_p.add_argument("--verify", default=None, metavar="CERT",
+                       help="verify a saved certificate instead of running one")
+    sfp_p.add_argument("--against-tree", action="store_true",
+                       help="with --verify: also re-check the live tree against the certificate")
+
+    obx_p = sub.add_parser("outbox",
+                           help="v36: the edge outbox — a local WAL queue; the wire stays explicit")
+    obx_sub = obx_p.add_subparsers(dest="outbox_cmd", required=True)
+    obx_e = obx_sub.add_parser("enqueue",
+                               help="buffer a record locally (offline-safe; nothing leaves the machine)")
+    obx_e.add_argument("--endpoint", required=True,
+                       help="explicit http(s) destination for a later flush")
+    obx_e.add_argument("--payload", required=True, help="the record (text/JSON)")
+    obx_e.add_argument("--key", default=None,
+                       help="idempotency key (default: sha256 of endpoint+payload)")
+    obx_s = obx_sub.add_parser("status", help="queue counts — no side effects")
+    obx_f = obx_sub.add_parser("flush",
+                               help="replay pending rows to ONE explicit endpoint")
+    obx_f.add_argument("--endpoint", required=True,
+                       help="the endpoint rows must already name — flush never guesses")
+    obx_f.add_argument("--limit", type=int, default=100)
+    obx_f.add_argument("--dry", action="store_true",
+                       help="rehearse: report what would leave, deliver nothing")
 
     ben_p = sub.add_parser("bench", help="v34: the performance envelope — measured, budgeted receipts")
     ben_p.add_argument("--workspace", default="aeos-demo")
@@ -171,6 +203,128 @@ def main(argv: list[str] | None = None) -> int:
         print("  history is exempt (CHANGELOG/ADR/book count at tag time);"
               " the README is the storefront contract")
         return 0 if rep.passed else 1
+
+    if args.cmd == "save-proof":
+        from . import saveproof
+        from .doctor import repo_root
+        if args.verify:
+            try:
+                cert = json.loads(
+                    Path(args.verify).read_text(encoding="utf-8"))
+            except (OSError, ValueError) as exc:
+                print(f"SAVE-PROOF — cannot read certificate: {exc}")
+                return 1
+            ok, why = saveproof.verify(
+                cert,
+                root=repo_root() if args.against_tree else None,
+                key=os.environ.get("AEOS_PROOF_KEY"))
+            print(f"SAVE-PROOF — {'VERIFIED' if ok else 'REFUSED'}: {why}")
+            if ok:
+                print(f"  outcome {cert['outcome']}; "
+                      f"pre {cert['pre_root'][:12]} -> "
+                      f"post {cert['post_root'][:12]}; "
+                      f"auth {cert['auth']['scheme']}")
+            return 0 if ok else 1
+        root = repo_root()
+        if root is None:
+            print("SAVE-PROOF — no repository context: run from a checkout "
+                  "(any install kind); refusing to guess")
+            return 1
+        try:
+            command = shlex.split(args.command) if args.command else None
+            cert = saveproof.run_notary(
+                root, command, key=os.environ.get("AEOS_PROOF_KEY"))
+            path = saveproof.write(
+                cert, Path(args.out) if args.out
+                else root / "evidence" / "save-proofs")
+        except (saveproof.SaveProofError, ValueError, OSError) as exc:
+            print(f"SAVE-PROOF — refused: {exc}")
+            return 1
+        print(f"SAVE-PROOF — outcome: {cert['outcome'].upper()}")
+        print(f"  command: {' '.join(cert['command'])}")
+        print(f"  pre-root  {cert['pre_root'][:16]}…")
+        print(f"  post-root {cert['post_root'][:16]}…")
+        print(f"  {cert['files']} file(s), {cert['bytes'] // 1024} KB "
+              f"in the proven tree")
+        for ev in cert["drift"]["events"]:
+            print(f"  DRIFT {ev['change']:<9} {ev['path']}")
+        if cert["drift"]["truncated"]:
+            print(f"  … and {cert['drift']['total'] - len(cert['drift']['events'])}"
+                  " more")
+        print(f"  auth: {cert['auth']['scheme']} | certificate: {path}")
+        if cert["outcome"] != "verified":
+            print("  done is a certificate, not a sentence —"
+                  " this one is not done")
+        return 0 if cert["outcome"] == "verified" else 1
+
+    if args.cmd == "outbox":
+        import sqlite3
+        from . import outbox as obx
+        if args.outbox_cmd == "enqueue":
+            try:
+                conn = obx.connect()
+                try:
+                    r = obx.enqueue(conn, args.endpoint, args.payload,
+                                    args.key)
+                finally:
+                    conn.close()
+            except (ValueError, sqlite3.Error, OSError) as exc:
+                print(f"OUTBOX — enqueue refused: {exc}")
+                return 1
+            note = "" if r["created"] else " (already queued — idempotent)"
+            print("OUTBOX — buffered locally (offline-safe; nothing left"
+                  " the machine)")
+            print(f"  record #{r['id']} for {args.endpoint} —"
+                  f" {r['status']}{note}")
+            print(f"  db: {obx.db_path()}")
+            print("  flush later: aeos outbox flush --endpoint URL")
+            return 0
+        if args.outbox_cmd == "status":
+            p = obx.db_path()
+            if not p.exists():
+                print(f"OUTBOX — no queue at {p} (nothing ever enqueued)")
+                return 0
+            conn = obx.connect(p)
+            try:
+                c = obx.counts(conn)
+            finally:
+                conn.close()
+            print(f"OUTBOX — {p}")
+            print(f"  pending {c['pending']} | sent {c['sent']} |"
+                  f" dead {c['dead']}")
+            for ep, n in sorted(c["endpoints"].items()):
+                print(f"    {n} pending -> {ep}")
+            if c["dead"]:
+                print("  dead letters want a human — inspect before flush")
+            return 0
+        if args.outbox_cmd == "flush":
+            try:
+                conn = obx.connect()
+            except (sqlite3.Error, OSError) as exc:
+                print(f"OUTBOX — flush refused: {exc}")
+                return 1
+            try:
+                if args.dry:
+                    n = conn.execute(
+                        "SELECT COUNT(*) FROM outbox WHERE status ="
+                        " 'pending' AND endpoint = ?",
+                        (args.endpoint,)).fetchone()[0]
+                    print(f"OUTBOX FLUSH (DRY) — {n} row(s) would be POSTed"
+                          f" to {args.endpoint}; nothing delivered")
+                    return 0
+                receipt = obx.drain(conn, obx.deliver_http,
+                                    endpoint=args.endpoint,
+                                    limit=args.limit)
+            finally:
+                conn.close()
+            print(f"OUTBOX FLUSH — endpoint: {args.endpoint}")
+            print(f"  considered {receipt['considered']} | delivered"
+                  f" {receipt['delivered']} | failed {receipt['failed']}"
+                  f" | dead {receipt['dead']}")
+            print(f"  pending remaining: {receipt['remaining_pending']}")
+            print("  at-least-once toward the endpoint; exactly-once"
+                  " locally; the consumer dedupes on the idem key")
+            return 0 if receipt["failed"] == 0 else 1
 
     if args.cmd == "bench":
         from .bench import envelope
@@ -564,7 +718,6 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "live-check":
         from .providers import PRESETS, live_budget
-        import os
         provider = (args.provider or os.environ.get("AEOS_PROVIDER")
                     or "openrouter").lower()
         if provider not in PRESETS:

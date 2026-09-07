@@ -12,6 +12,7 @@ is not a doctor.
 from __future__ import annotations
 
 import ast
+import json
 import os
 import sys
 from pathlib import Path
@@ -154,6 +155,33 @@ def charter_check(principles: Path, tests_root: Path) -> tuple:
     return ("PASS", f"{len(cited)} cited test(s) all exist in the suite")
 
 
+def saveproof_rows(root: Path) -> list:
+    """The notary's ledger (v36): every saved certificate must still
+    verify against its own bytes. An edited receipt is a FAIL; an
+    empty ledger is honestly empty — absence is not tamper."""
+    root = Path(root)
+    sp_dir = root / "evidence" / "save-proofs"
+    certs = sorted(sp_dir.glob("save-proof-*.json")) if sp_dir.exists() else []
+    if not certs:
+        return [("save-proof ledger", "PASS",
+                 "no certificates yet — `aeos save-proof` writes them")]
+    from .saveproof import verify as _verify
+    bad = []
+    for c in certs:
+        try:
+            ok, _ = _verify(json.loads(c.read_text(encoding="utf-8")))
+        except (OSError, ValueError):
+            ok = False
+        if not ok:
+            bad.append(c.name)
+    if bad:
+        return [("save-proof ledger", "FAIL",
+                 f"{len(certs)} certificate(s), TAMPERED: "
+                 f"{', '.join(bad[:3])}")]
+    return [("save-proof ledger", "PASS",
+             f"{len(certs)} certificate(s), all self-consistent")]
+
+
 def repo_root() -> Path | None:
     """Locate the aeos checkout from ANY install kind: prefer the CWD
     chain (a user in a checkout, however aeos was installed), then
@@ -180,6 +208,9 @@ def doctor(ws: Path | None = None) -> dict:
                  f"{audit['modules']} modules scanned, "
                  f"{audit['clean']} clean, "
                  f"{len(audit['violations'])} violation(s)"))
+    from .outbox import health as outbox_health
+    verdict, detail = outbox_health()
+    rows.append(("edge outbox", verdict, detail))
     if ws:
         rows.extend(check_workspace(Path(ws)))
     root = repo_root()
@@ -198,6 +229,7 @@ def doctor(ws: Path | None = None) -> dict:
                      "PASS" if srep.passed else "FAIL",
                      f"{len(srep.claims)} claim(s), "
                      f"{len(srep.drift)} drift(s)"))
+        rows.extend(saveproof_rows(root))
         rows.extend(check_repo(root))
     report = {"rows": [{"area": a, "verdict": verdict, "detail": d}
                        for a, verdict, d in rows],

@@ -3,6 +3,38 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v36.0.0 — The Notary: SEF-X Handover, Honestly Adopted (456 tests)
+- The SEF-X / OMNI-OS V22 handover spec demanded cryptographic
+  save-proofs, an edge WAL outbox, capability permanence — alongside
+  a shelf of pseudo-quantitative vapor (H-JEPA energy bounds, Arrow
+  Flight, microVMs). ADR-045 is the full disposition: adopt what is
+  engineering, reject what is theater, each on the record.
+- **`merkle.py` + `saveproof.py` + `aeos save-proof`**: the tree has
+  a cryptographic identity — sha256, path-bound leaves (renames are
+  not free), pairwise nodes, odd promoted, volatile trees excluded.
+  Completion is a CERTIFICATE: pre/post roots + a green command.
+  Outcomes are named, never narrated: verified / drifted (files
+  listed) / tests-failed / timed-out. Tamper-evident by default
+  (sha256 self-digest), HMAC-SHA256 with AEOS_PROOF_KEY; NO
+  timestamps inside — determinism is law. The ledger is
+  evidence/save-proofs/, excluded from the root it certifies (the
+  receipt about the tree is not the tree — observer effect removed
+  by rule, on the record).
+- **`outbox.py` + `aeos outbox enqueue|status|flush`**: the edge
+  outbox — SQLite WAL, content-hash idempotency keys (the same
+  record twice is ONE row), bounded retries with dead letters, and
+  flush to ONE explicit endpoint only (ADR-039/040 intact) with a
+  --dry rehearsal. At-least-once toward the endpoint, exactly-once
+  locally — the honest contract a queue can keep.
+- **Capability permanence, machine-checked**: every CLI verb that
+  ever shipped (all 10 tags) still parses today — tested at ship
+  time from the full clone; CI clones shallow and skips, said
+  plainly in the test.
+- Doctor +2 rows: edge outbox (corruption = FAIL, dead letters =
+  WARN, buffering = PASS by design) and the save-proof ledger (an
+  edited receipt is a FAIL; an empty ledger is honestly empty).
+  Charter principle 38. Receipt: evidence/handover-v36.txt.
+
 ## v35.1.0 — Validation Patch: Repo Context From Any Install (427 tests)
 - Found by INDEPENDENT validation (fresh clone -> fresh venv ->
   non-editable install, evidence/validation-findings-v35.txt):

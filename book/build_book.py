@@ -81,8 +81,8 @@ VOL3_PARTS = ["00-v3-full.md"]
 VOL3_TITLES = {
     "title": "10,000,000&times; AI ENGINEERING",
     "sub1": "Volume III &mdash; The Arc Completed",
-    "sub2": "The Charter, the Gauge, the Scribe and the truthful README (v33&ndash;v35) &middot; the System at v35.0.0",
-    "vol": "Scribe printing (v35) &middot; 426 tests &middot; 59 modules &middot; 44 ADRs &middot; zero dependencies",
+    "sub2": "The Charter, the Gauge, the Scribe, the Notary and the truthful README (v33&ndash;v36) &middot; the System at v36.0.0",
+    "vol": "Notary printing (v36) &middot; 456 tests &middot; 62 modules &middot; 45 ADRs &middot; zero dependencies",
 }
 
 VOL2_TITLES = {

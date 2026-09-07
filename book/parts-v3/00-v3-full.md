@@ -671,6 +671,31 @@ about the present. The doctor carries the row now — README tells
 the truth — and the charter its thirty-seventh compiled value. The
 system's final author is a proofreader that cannot be charmed.
 
+## Chapter 23. Notary Printing Addendum — The Notary (v36)
+
+A handover specification arrived wearing a lab coat: cryptographic
+save-proofs and an edge outbox beside H-JEPA manifolds and Arrow
+Flight rings, precision scattered like garnish. The notary is what
+that document deserved — the engineering adopted, the theater
+refused, both on the record. The tree now has an identity: sha256
+leaves that bind each path to its content, so a rename is not free,
+rolled into pairwise nodes over sorted files, volatile growth pruned
+by rule. Completion became a certificate — pre-root, proof command,
+post-root — and the four honest outcomes are named, never narrated:
+verified, drifted with the files listed, tests-failed with the code,
+timed-out. The ledger is excluded from the root it certifies, the
+observer effect removed by law rather than ignored. The outbox
+buffers records for a wire that only opens to an explicitly named
+endpoint, replays them exactly-once locally and at-least-once
+afar, and dead-letters what three honest tries cannot deliver — a
+queue that tells the truth about its own semantics. And the
+specification's one eternal law — capabilities are permanent — became
+a test: every verb that ever shipped, across every tag in history,
+still parses today. The system that began by refusing unbacked
+claims now refuses them about itself, with a signature.
+
+---
+
 ---
 
 ## Appendix — Volume III Receipts
@@ -681,6 +706,10 @@ system's final author is a proofreader that cannot be charmed.
   variant-scoped sponsorship.
 - **ADR-019** Federation: import is quarantine; reputation is not a
   verdict.
+
+- **ADR-045** The Notary: SEF-X handover disposition — merkle
+  save-proofs, the edge outbox, capability permanence; vapor
+  rejected with reasons.
 
 Reproduce: `pip install -e . && python -m pytest` (161) ·
 `aeos run-demo` (leverage 7.0) · `aeos sponsor` + `aeos factory-demo

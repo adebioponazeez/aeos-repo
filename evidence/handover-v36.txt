@@ -1,0 +1,118 @@
+HANDOVER RECEIPT — v36.0.0 "The Notary" (SEF-X disposition)
+================================================================
+Date: 2026-09-07 (UTC) · repo: adebioponazeez/aeos-repo · method:
+every number below is a real capture from this machine, this tree.
+
+WHAT WAS ASKED
+--------------
+The SEF-X / OMNI-OS V22 "Master Production Handover" (33 pp) was
+delivered with the instruction: make aeos more robust. Its real
+engineering demands — completion certificates anchored to Merkle
+roots, an edge WAL outbox, permanent capability abstractions — sit
+beside pseudo-quantitative vapor (H-JEPA energy <= 0.085, 12,000
+MCTS rollouts/s, Arrow Flight 12.8 GB/s, Firecracker/eBPF). Full
+disposition with reasons: docs/adr/ADR-045-the-notary.md.
+
+ADOPTED (mechanism shipped this version)
+----------------------------------------
+1. save-proof  -> merkle.py + saveproof.py + `aeos save-proof`
+2. edge outbox -> outbox.py + `aeos outbox enqueue|status|flush`
+3. capability  -> permanence machine-checked across every tag
+4. error matrix-> doctor +2 rows (outbox health, save-proof ledger)
+
+REJECTED (with reasons, on the record)
+--------------------------------------
+H-JEPA latent planning · MCTS/PRM thresholds · Arrow Flight ·
+microVM/eBPF sandboxing · "1M tools" / 99.98% / ms-latency claims.
+Reasons in ADR-045; the short version: no dependency may enter
+(ADR-002), no number may be claimed that was not measured
+(ADR-043), and no mechanism may be adopted that cannot be audited.
+
+PROOF OF THE MECHANISM (demo notarization, this tree, real run)
+----------------------------------------------------------------
+$ aeos save-proof --out /tmp/ship-sp     # default: the full suite
+SAVE-PROOF — outcome: VERIFIED
+  command: python -m pytest tests/ -q
+  pre-root  458e6e20aaf174af…
+  post-root 458e6e20aaf174af…
+  213 file(s), 1718 KB in the proven tree
+  auth: sha256 | certificate: /tmp/ship-sp/save-proof-458e6e20aaf1-verified.json
+
+VERIFIED means: the entire test suite ran green (456 passed,
+1 skipped, 95.89s) AND left zero unproven state behind — the tree
+after the run is bit-identical, by Merkle root, to the tree before.
+
+CAPABILITY PERMANENCE (the SEF-X core law, machine-checked)
+-----------------------------------------------------------
+$ python3 -m pytest tests/test_v36_notary.py::TestCapabilityPermanence -v
+1 passed — every CLI verb that ever shipped still parses today,
+checked at ALL 10 tags: v27.0.0 v28.0.0 v29.0.0 v30.0.0 v31.0.0
+v32.0.0 v33.0.0 v34.0.0 v35.0.0 v35.1.0 (v31.0.0 re-fetched from
+the remote after the known between-session .git reset; remote
+ls-remote confirms 10 tags). CI clones shallow and skips this test
+— disclosed in the test body; this receipt is the full-history
+proof.
+
+EDGE OUTBOX (real captures)
+---------------------------
+$ aeos outbox enqueue --endpoint https://collector.example/v1/records \
+      --payload '{"event":"release","repo":"aeos","version":"36.0.0"}'
+  record #1 … — pending
+$ (same command again)
+  record #1 … — pending (already queued — idempotent)   <- ONE row
+$ aeos outbox status
+  pending 1 | sent 0 | dead 0
+$ aeos outbox flush --endpoint … --dry
+  OUTBOX FLUSH (DRY) — 1 row(s) would be POSTed …; nothing delivered
+
+Additional machine-checked behavior (tests): failed deliveries burn
+attempts and dead-letter after 3; state survives process death
+(WAL); hostile wires are receipts, not exceptions; flush requires
+an explicitly named endpoint — the ADR-039/040 no-ambient-network
+law is intact.
+
+SCRIBE / DOCTOR (the day of the ship)
+-------------------------------------
+$ aeos scribe
+SCRIBE — 7 claim(s) checked, 0 drift(s) (TRUTHFUL)
+$ aeos doctor
+DOCTOR — 8 check(s): 0 failed, 1 warned (ATTENTION)
+  … [PASS] zero dependencies (ADR-002) 62 modules scanned, 62 clean
+  … [PASS] edge outbox    not initialized (nothing enqueued yet)
+  … [PASS] charter is load-bearing    36 cited test(s) all exist
+  … [PASS] README tells the truth     7 claim(s), 0 drift(s)
+  … [PASS] save-proof ledger          no certificates yet — …
+  … [WARN] working tree    18 uncommitted change(s)   <- this receipt
+  … [PASS] tags           10 tag(s), latest v35.1.0
+(the WARN is the receipt itself: it is part of the commit it
+describes, so it necessarily exists before that commit. The
+ledger certificate below proves the exact post-commit tree.)
+
+THE SHIPPING CERTIFICATE (the notary notarizes its own landing)
+----------------------------------------------------------------
+The final `aeos save-proof` (default command) runs after this
+receipt is written; its certificate lands in evidence/save-proofs/
+whose contents are excluded from the Merkle root BY LAW — the
+receipt about the tree is not the tree. Its filename embeds the
+root of the exact tree being tagged v36.0.0. Anyone can re-prove
+the tag at any time:
+
+  git checkout v36.0.0
+  aeos save-proof --verify evidence/save-proofs/save-proof-*-verified.json --against-tree
+
+That command re-hashes the tagged tree and compares it to the
+certificate — VERIFIED means the tag you are standing on is the
+tree that was proven. Done is a certificate, not a sentence.
+
+HONEST LIMITS (stated plainly)
+------------------------------
+- The default signature is a sha256 self-digest: tamper-EVIDENT,
+  not origin-authentic. AEOS_PROOF_KEY upgrades to HMAC-SHA256
+  between key-sharers. Asymmetric signing needs a dependency:
+  rejected (ADR-002).
+- Certificates carry no timestamps: determinism is law. Time lives
+  here, in the receipt, never in the artifact.
+- The outbox is at-least-once toward an endpoint, exactly-once
+  locally; the consumer dedupes on the idem key we send. That is
+  the honest contract; anything stronger would be a lie queues
+  cannot keep.
