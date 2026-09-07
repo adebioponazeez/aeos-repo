@@ -31,8 +31,14 @@ EXCLUDE_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache",
                 ".ruff_cache", ".tox", ".nox", ".venv", "node_modules",
                 "dist", "build", "out", "aeos-demo", ".aeos-demo",
                 "save-proofs"}
+# Build metadata is REGENERATED on every install and its content
+# depends on WHEN it was generated — found by cold-clone validation
+# (v36.0.1): the warm worktree's egg-info hid inside the root and
+# the fresh clone refused the certificate. Derived trees never count.
+EXCLUDE_DIR_SUFFIXES = (".egg-info", ".dist-info", ".egg")
 EXCLUDE_SUFFIXES = (".pyc", ".pyo", ".tmp", ".lock", ".torn")
-EXCLUDE_NAMES = {"workspace.lock", ".coverage", "recall.sqlite"}
+EXCLUDE_NAMES = {"workspace.lock", ".coverage", "recall.sqlite",
+                 ".DS_Store"}
 
 
 def file_digest(path: Path) -> str:
@@ -56,7 +62,9 @@ def collect(root: Path,
         if not p.is_file() and not p.is_symlink():
             continue
         rel = p.relative_to(root)
-        if any(part in exclude_dirs for part in rel.parts[:-1]):
+        if any(part in exclude_dirs
+               or part.endswith(EXCLUDE_DIR_SUFFIXES)
+               for part in rel.parts[:-1]):
             continue
         name = rel.parts[-1]
         if name in exclude_names or name.endswith(exclude_suffixes):

@@ -60,6 +60,16 @@ itself a certificate in the ledger (`evidence/save-proofs/`), and
 `git checkout v36.0.0 && aeos save-proof --verify <cert>
 --against-tree` re-proves the tag's tree matches the certificate.
 
+## Addendum (v36.0.1)
+
+Cold-clone validation refused v36.0.0's certificate: build metadata
+(egg-info) sat inside the Merkle root — regenerated per install,
+content time-dependent, invisible in the warm worktree. The
+exclusion law now covers `*.egg-info` / `*.dist-info` / `*.egg`
+directories and `.DS_Store`; regression test added; the tag promise
+re-proven from a fresh clone before shipping. The defect and the
+repair are on the record in `evidence/handover-v36.txt`.
+
 ## Tests
 
 `test_known_vector`, `test_rename_moves_the_root`,

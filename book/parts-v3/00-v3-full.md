@@ -691,7 +691,12 @@ afar, and dead-letters what three honest tries cannot deliver — a
 queue that tells the truth about its own semantics. And the
 specification's one eternal law — capabilities are permanent — became
 a test: every verb that ever shipped, across every tag in history,
-still parses today. The system that began by refusing unbacked
+still parses today. The first certificate did not survive its own
+cold clone: build metadata sat inside the root, regenerated per
+install, invisible in the warm tree that wrote it. The fresh clone
+refused, the exclusion law grew, and the promise was re-proven from
+a clean checkout before the patch shipped — the system catching its
+author twice in two versions, which is the system working. The system that began by refusing unbacked
 claims now refuses them about itself, with a signature.
 
 ---

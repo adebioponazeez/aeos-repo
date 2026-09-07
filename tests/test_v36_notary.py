@@ -77,6 +77,21 @@ class TestMerkle:
         (tmp_path / "save-proofs" / "c.json").write_text("{}", encoding="utf-8")
         assert merkle.snapshot(tmp_path)["root"] == baseline
 
+    def test_build_metadata_never_counts(self, tmp_path):
+        # v36.0.1 regression: egg-info is regenerated on every install
+        # and its content depends on WHEN pip ran — a warm worktree and
+        # a cold clone must hash to the SAME root. Found the hard way:
+        # the fresh clone refused v36.0.0's certificate.
+        _make_tree(tmp_path)
+        baseline = merkle.snapshot(tmp_path)["root"]
+        egg = tmp_path / "src" / "aeos.egg-info"
+        egg.mkdir(parents=True)
+        (egg / "SOURCES.txt").write_text("generated-tuesday",
+                                         encoding="utf-8")
+        (egg / "PKG-INFO").write_text("also-generated", encoding="utf-8")
+        (tmp_path / ".DS_Store").write_bytes(b"\x00\x01finder")
+        assert merkle.snapshot(tmp_path)["root"] == baseline
+
     def test_diff_names_every_change(self, tmp_path):
         _make_tree(tmp_path)
         pre = merkle.snapshot(tmp_path)

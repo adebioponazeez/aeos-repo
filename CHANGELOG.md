@@ -3,6 +3,22 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v36.0.1 — Validation Patch: The Root Is Reproducible (457 tests)
+- Found by COLD-CLONE validation (the exact discipline v35.1
+  taught): `git clone && checkout v36.0.0 && aeos save-proof
+  --verify --against-tree` REFUSED — src/aeos.egg-info, regenerated
+  by every `pip install -e .` with content that depends on WHEN it
+  ran, was inside the Merkle root. The warm worktree hid it; the
+  fresh clone refused it. The notary caught its own author.
+- Fix: build metadata (*.egg-info, *.dist-info, *.egg directories)
+  and .DS_Store join the exclusion law — derived trees never count
+  toward identity. Regression test:
+  `test_build_metadata_never_counts`.
+- The v36.0.0 certificate stays in the ledger (it truthfully
+  describes the tree state it hashed); v36.0.1 re-notarizes with a
+  root that reproduces from any clean clone — and the promise was
+  re-proven from a cold clone BEFORE this entry shipped.
+
 ## v36.0.0 — The Notary: SEF-X Handover, Honestly Adopted (456 tests)
 - The SEF-X / OMNI-OS V22 handover spec demanded cryptographic
   save-proofs, an edge WAL outbox, capability permanence — alongside
