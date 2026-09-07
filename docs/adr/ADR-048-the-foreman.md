@@ -59,6 +59,20 @@ end-to-end (4/4 mechanical resolved, second pass quiet), and the
 one proposal it filed (README drift) was real and fixed the same
 hour.
 
+## Addendum (v39.2.0) — the production gauntlet
+
+The gauntlet (11 constraint groups, real kills/limits/wires/paths)
+found the foreman unlocked and uncaught: two concurrent foremen
+could race; a starved backup escaped as a traceback and left a .tmp
+corpse. Fixes: the kernel-released workspace lock (busy = named
+refusal, exit 2, no receipt pretense), per-action exception naming
+(plain-language law applies to the agent), the atomic-write contract
+enforced in backup on failure, ignition speaking a refused run's
+own reason, and the backup verb naming starvation. Five regression
+tests; run 2 of the gauntlet is 27/27. The gauntlet recipe is
+preserved in evidence/production-gauntlet-v39.txt and belongs in
+the ship ritual of every major version.
+
 ## Tests
 
 `test_degraded_workspace_finds_all_four_mechanical`, `test_fixed_order_and_heal_before_backup`,

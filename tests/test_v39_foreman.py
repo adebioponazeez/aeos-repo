@@ -172,7 +172,12 @@ class TestMemory:
 
 
 class TestCLI:
-    def test_survey_attention_then_apply_clean(self, tmp_path, capsys):
+    def test_survey_attention_then_apply_clean(self, tmp_path, capsys,
+                                                monkeypatch):
+        # workspace-scoped: no repo context (in a checkout the CLI
+        # also surveys README drift — an honest proposal, not this
+        # test's subject)
+        monkeypatch.setattr("aeos.doctor.repo_root", lambda: None)
         from aeos.cli import main
         _degraded(tmp_path)
         rc = main(["foreman", "--workspace", str(tmp_path)])
@@ -205,3 +210,96 @@ class TestDoctorRow:
         assert row and row[0]["verdict"] == "PASS"
         assert "1 resolved" in row[0]["detail"] or "4 resolved" in \
             row[0]["detail"] or "resolved" in row[0]["detail"]
+
+class TestProductionGauntlet:
+    """v39.2: the production gauntlet found five defects under real
+    constraints (concurrency, starvation, refused runs). These pin
+    every one of them — the gauntlet is now law, not a one-off."""
+
+    def test_foreman_respects_the_workspace_lock(self, tmp_path):
+        # G3: two foremen could race on one workspace; now the lock
+        # (kernel-released) refuses the second, NAMED, exit 2
+        from aeos.vault import WorkspaceLock
+        (tmp_path / ".aeos").mkdir()
+        lock = WorkspaceLock(tmp_path / ".aeos" / "workspace.lock")
+        assert lock.acquire(blocking=False)
+        r = run(tmp_path, apply_mode=True)
+        assert r["exit_code"] == EXIT_FAILED
+        assert "locked by a live run" in r["failure"]
+        assert r["actions"] == []            # refused = did nothing
+        text = render(r)
+        assert "FOREMAN — refused" in text and "Traceback" not in text
+        lock.release()
+        assert run(tmp_path, apply_mode=True)["exit_code"] in (0, 1)
+
+    def test_action_exception_is_named_not_traced(self, tmp_path,
+                                                  monkeypatch):
+        # G4: file-size starvation escaped as a raw traceback; now
+        # the action is named and the run stops with exit 2
+        import aeos.foreman as fm
+
+        def starved(ws):
+            raise OSError(27, "File too large")
+
+        monkeypatch.setitem(fm.ACTIONS, "backup-drill", starved)
+        _degraded(tmp_path)
+        r = run(tmp_path, apply_mode=True)
+        assert r["exit_code"] == EXIT_FAILED
+        last = r["actions"][-1]
+        assert last["action"] == "backup-drill"
+        assert "File too large" in last["detail"]
+        assert "Traceback" not in render(r)
+        # heal-first order: the earlier actions still happened
+        assert any(a["action"] == "schema-upgrade" and a["ok"]
+                   for a in r["actions"])
+
+    def test_backup_leaves_no_tmp_corpse_on_failure(self, tmp_path,
+                                                    monkeypatch):
+        # G4: the atomic-write contract — a failed tar write leaves
+        # NOTHING behind
+        import aeos.backup as bk
+
+        def boom(tmp, blobs, manifest):
+            tmp.write_bytes(b"partial")     # a corpse-in-the-making
+            raise OSError(27, "File too large")
+
+        monkeypatch.setattr(bk, "_write_tar_body", boom)
+        (tmp_path / ".aeos").mkdir()
+        (tmp_path / ".aeos" / "memory.jsonl").write_text(
+            '{"aeos_schema": 1, "kind": "memory"}\n', encoding="utf-8")
+        with pytest.raises(OSError):
+            bk.create_backup(tmp_path, tmp_path / "b.tar")
+        assert not (tmp_path / "b.tar").exists()
+        assert not (tmp_path / "b.tar.tmp").exists()   # no corpse
+
+    def test_refused_run_is_named_not_keyerrored(self, tmp_path):
+        # G2: a lock refusal returned accepted=False and ignition
+        # died on KeyError; now the reason is spoken in plain language
+        from aeos.ignition import boot
+        from aeos.vault import WorkspaceLock
+        (tmp_path / ".aeos").mkdir()
+        lock = WorkspaceLock(tmp_path / ".aeos" / "workspace.lock")
+        assert lock.acquire(blocking=False)
+        r = boot(tmp_path)
+        lock.release()
+        assert r["outcome"] == "work-failed"
+        assert "workspace locked" in r["what"]
+        assert "kernel releases" in r["what"] or "kernel releases" \
+            in r.get("remedy", "") or "releases" in r["what"]
+
+    def test_cli_backup_names_starvation(self, tmp_path, monkeypatch,
+                                         capsys):
+        # G4: the backup verb itself speaks plain language when the
+        # disk refuses — never a traceback
+        from aeos.cli import main
+        import aeos.backup as bk
+
+        def boom(ws, out):
+            raise OSError(27, "File too large")
+
+        monkeypatch.setattr(bk, "create_backup", boom)
+        rc = main(["backup", "--workspace", str(tmp_path)])
+        out = capsys.readouterr().out
+        assert rc == 1
+        assert "BACKUP REFUSED" in out and "File too large" in out
+        assert "nothing was written" in out

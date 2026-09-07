@@ -391,7 +391,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "backup":
         from .backup import create_backup
         out = args.out or str(Path(args.workspace) / ".aeos" / "backup.tar")
-        r = create_backup(Path(args.workspace), Path(out))
+        try:
+            r = create_backup(Path(args.workspace), Path(out))
+        except OSError as exc:
+            print(f"BACKUP REFUSED — the disk would not take it: "
+                  f"{exc.strerror or exc}")
+            print("  free space or point --out elsewhere; nothing "
+                  "was written (atomic contract)")
+            return 1
         print(f"BACKUP — deterministic, manifest-verified")
         print(f"  {r['files']} file(s), {r['bytes'] // 1024} KB -> {r['path']}")
         print(f"  sha256: {r['sha256']}")

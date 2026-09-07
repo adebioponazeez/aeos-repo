@@ -268,7 +268,15 @@ def apply(ws: Path, findings: list[Finding]) -> list[dict]:
     for name in APPLY_ORDER:
         if name not in wanted:
             continue
-        result = ACTIONS[name](ws)
+        try:
+            result = ACTIONS[name](ws)
+        except OSError as exc:
+            # found by the v39.2 production gauntlet: file-size
+            # starvation escaped as a raw traceback. The plain-
+            # language law applies to the agent too — name it, stop.
+            result = {"ok": False,
+                      "detail": f"{name} failed: "
+                                f"{exc.strerror or exc}"}
         acted.append({"action": name, **result})
         if not result["ok"]:
             break
@@ -306,6 +314,30 @@ def run(ws: Path, *, apply_mode: bool = False,
         repo: Path | None = None) -> dict:
     """The whole loop, receipted. Exit codes are a contract."""
     ws = Path(ws)
+    from .vault import WorkspaceLock
+    lock = WorkspaceLock(ws / ".aeos" / "workspace.lock")
+    if not lock.acquire(blocking=False):
+        # found by the v39.2 production gauntlet: two foremen could
+        # race on the same workspace. One operator at a time — the
+        # lock is kernel-released, a dead holder cannot strand you.
+        return {"kind": "aeos-foreman", "mode": "survey",
+                "findings": [], "actions": [], "resolved": 0,
+                "remaining": 0, "pre_root": None, "post_root": None,
+                "exit_code": EXIT_FAILED,
+                "failure": "workspace is locked by a live run "
+                           "(kernel-released; a dead holder cannot "
+                           "strand you)",
+                "seq": len(list((ws / ".aeos" / "foreman")
+                                .glob("foreman-*.json"))) + 1
+                if (ws / ".aeos" / "foreman").exists() else 1}
+    try:
+        return _run_locked(ws, apply_mode=apply_mode, repo=repo)
+    finally:
+        lock.release()
+
+
+def _run_locked(ws: Path, *, apply_mode: bool = False,
+                repo: Path | None = None) -> dict:
     pre = survey(ws, repo=repo)
     result = {"kind": "aeos-foreman", "mode": ("apply" if apply_mode
                                                else "survey"),
@@ -350,6 +382,12 @@ def run(ws: Path, *, apply_mode: bool = False,
 # ------------------------------------------------------------ render
 
 def render(result: dict) -> str:
+    if result.get("pre_root") is None and result.get("failure"):
+        # the busy refusal: no findings, no receipt (the lock holder
+        # owns the workspace) — named, one breath, done
+        return ("FOREMAN — refused: " + result["failure"] +
+                "\n  wait for the holder or check for a live process; "
+                "exit code " + str(result["exit_code"]))
     rows = result["findings"]
     mech = [r for r in rows if r["class"] == "mechanical"]
     prop = [r for r in rows if r["class"] == "proposal"]

@@ -50,6 +50,28 @@ def _collect(ws: Path) -> list:
     return members
 
 
+def _write_tar_body(tmp: Path, blobs: dict, manifest: dict) -> None:
+    """The deterministic tar body (sorted members, fixed metadata)."""
+    with tarfile.open(tmp, "w", format=tarfile.PAX_FORMAT) as tar:
+        for rel in sorted(blobs):          # sorted + fixed meta = deterministic
+            data = blobs[rel]
+            info = tarfile.TarInfo(rel)
+            info.size = len(data)
+            info.mtime = 0
+            info.mode = 0o644
+            info.uid = info.gid = 0
+            info.uname = info.gname = ""
+            tar.addfile(info, __import__("io").BytesIO(data))
+        mdata = json.dumps(manifest, sort_keys=True).encode("utf-8")
+        minfo = tarfile.TarInfo("manifest.json")
+        minfo.size = len(mdata)
+        minfo.mtime = 0
+        minfo.mode = 0o644
+        minfo.uid = minfo.gid = 0
+        minfo.uname = minfo.gname = ""
+        tar.addfile(minfo, __import__("io").BytesIO(mdata))
+
+
 def create_backup(ws: Path, out: Path) -> dict:
     ws = Path(ws)
     out = Path(out)
@@ -70,22 +92,14 @@ def create_backup(ws: Path, out: Path) -> dict:
 
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_name(out.name + ".tmp")
-    with tarfile.open(tmp, "w", format=tarfile.PAX_FORMAT) as tar:
-        for rel in sorted(blobs):          # sorted + fixed meta = deterministic
-            data = blobs[rel]
-            info = tarfile.TarInfo(rel)
-            info.size = len(data)
-            info.mtime = 0
-            info.mode = 0o644
-            info.uid = info.gid = 0
-            info.uname = info.gname = ""
-            tar.addfile(info, __import__("io").BytesIO(data))
-        mdata = json.dumps(manifest, sort_keys=True).encode("utf-8")
-        minfo = tarfile.TarInfo("manifest.json")
-        minfo.size = len(mdata)
-        minfo.mtime = 0
-        minfo.mode = 0o644
-        tar.addfile(minfo, __import__("io").BytesIO(mdata))
+    # the atomic-write contract: a failed write leaves NOTHING behind
+    # (found by the v39.2 production gauntlet: file-size starvation
+    # aborted the tar mid-write and left a .tmp corpse behind)
+    try:
+        _write_tar_body(tmp, blobs, manifest)
+    except OSError:
+        tmp.unlink(missing_ok=True)
+        raise
     tmp.replace(out)                        # atomic: no half-written backups
 
     return {"path": str(out), "files": len(members),

@@ -293,6 +293,13 @@ def boot(ws: Path, intent: str = "Ship a verified seed module",
                     from .pipeline import reference_run
                     run = reference_run(ws, intent=intent,
                                         profile=profile)
+                    if run.get("accepted") is False:
+                        # found by the v39.2 production gauntlet: a
+                        # refused run (e.g. the workspace lock is
+                        # held) surfaced as an opaque KeyError instead
+                        # of the refusal's own plain-language reason
+                        raise RuntimeError(
+                            run.get("reason", "the run was refused"))
                     result["run"] = {"accepted": run["accepted"],
                                      "leverage": run["leverage"],
                                      "evidence": run["evidence_file"],

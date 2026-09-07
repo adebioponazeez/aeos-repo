@@ -1,0 +1,93 @@
+PRODUCTION GAUNTLET — v39.2.0
+"test and validate and ensure this build survives real production
+grade constraints."
+
+Method: 11 constraint groups run against the real build — real
+subprocesses, real SIGKILLs at RANDOM offsets, real kernel limits
+(ulimit -f file-size cap, ulimit -v 256MB), real hostile HTTP
+endpoints on loopback (always-500, 30s-slow, then 200), real
+concurrency (4 boots / 2 foremen on one workspace), real corrupted
+state, real hostile paths (spaces + unicode + emoji), real fuzz
+content (10MB run file, binary garbage state, 2k tiny files), real
+scale (bench budgets), and the whole core offline (unshare -rn).
+
+================================================================
+RUN 1 (v39.1.0 build) — 24 pass, 3 fail: THE FINDINGS
+================================================================
+G1 random kills     PASS 15/15 recovered, final boot clean
+G2 concurrent up    FAIL* one winner (rcs 0/4/4/4), workspace
+                    healthy — but losers did not NAME the lock:
+                    a refused run (accepted=False) surfaced as
+                    KeyError: 'leverage' instead of its reason
+G3 concurrent
+   foremen          PASS by timing luck only — the foreman took NO
+                    workspace lock; the race window was real
+G4 starvation       FAIL: ulimit -f 2 during foreman --apply ->
+                    raw traceback (OSError: File too large) AND a
+                    .tmp corpse left in .aeos/backups/ — the
+                    atomic-write contract broken
+G5..G11             PASS (256MB boot; hostile wires bounded;
+                    corruption tolerated; hostile paths; fuzz;
+                    budgets; offline)
+
+FIVE DEFECTS FIXED (v39.2.0), each with a regression test:
+1. foreman takes the kernel-released workspace lock — busy = named
+   refusal, exit 2, no actions, no receipt pretense
+2. action exceptions are NAMED ("backup-drill failed: File too
+   large") and the run stops — the plain-language law applies to
+   the agent itself
+3. _write_tar_body failures clean their tmp: no corpse, ever
+4. ignition speaks a refused run's own reason ("workspace locked:
+   another run holds it (kernel releases it if that run died)")
+5. `aeos backup` names starvation: "BACKUP REFUSED — the disk would
+   not take it" — never a traceback
+
+================================================================
+RUN 2 (v39.2.0 build) — 27/27 GREEN, wall 60s
+================================================================
+[G1] 15 SIGKILLs at RANDOM offsets during boot; every kill must leave recoverable state; a clean boot must follow
+  [PASS] every kill recovered by foreman — 15/15
+  [PASS] final clean boot after chaos
+  [PASS] no traceback in foreman/doctor during chaos
+[G2] 4 simultaneous `aeos up` on ONE workspace: exactly one winner; losers fail NAMED (no traceback, no corruption)
+  [PASS] exactly one winner — rcs=[0, 4, 4, 4]
+  [PASS] losers named the lock, no traceback —   exit code 4 — scripts can branch on the stage; the receipt carries the same wo;   exit code 4 — scripts can branch on the stage; the receipt carries the same wo;   exit code 4 — scripts can branch on the stage; the receipt carries the same wo
+  [PASS] workspace healthy after race
+[G3] 2 simultaneous `foreman --apply` on ONE degraded workspace: must serialize (lock) or fail named — never race
+  [PASS] no traceback from either foreman — rcs=[0, 2]
+  [PASS] exactly one backup produced (no duplicate drill) — backups=1
+[G4] ulimit -f 2 (1KB max file) during foreman --apply: backup write MUST fail NAMED (exit 2), not traceback; no .tmp litter; state intact
+  [PASS] no traceback under starvation — FOREMAN — outcome: FAILED (exit 2)
+  [PASS] failure is named, not silent
+  [PASS] no tmp litter left behind — []
+[G5] full boot under a 256MB address-space cap
+  [PASS] boot completes under 256MB — BOOT — outcome: OK (wall 1.18s)
+[G6] outbox vs hostile endpoints: always-500 (dead letter after 3, bounded), slow (10s timeout, no hang), then 200 (delivered); exactly-once locally
+  [PASS] enqueue works (offline-safe)
+  [PASS] always-500 -> dead letter after 3, bounded — OUTBOX — /tmp/g6-outbox.db
+  [PASS] healthy endpoint delivers —   considered 1 | delivered 1 | failed 0 | dead 0
+  [PASS] slow endpoint bounded by timeout (no hang) — wall 10.1s
+[G7] corrupted artifacts everywhere: torn foreman history, garbage outbox.db, garbage boot receipt — the system CONTINUES (tolerant loads)
+  [PASS] torn foreman history tolerated
+  [PASS] garbage boot receipt tolerated
+  [PASS] garbage outbox named, not fatal
+  [PASS] doctor still healthy through it all
+[G8] workspace path with spaces + unicode + emoji
+  [PASS] boot on hostile path
+  [PASS] foreman heals on hostile path
+  [PASS] deterministic backup on hostile path
+[G9] adversarial content: 10MB run file, binary garbage state, 2k tiny files — verdicted, not crashed
+  [PASS] fuzzed workspace survived foreman
+  [PASS] survey+groom of 2k files bounded (<30s) — wall 1.3s
+[G10] scale budgets: bench (1k) within its declared law budgets on this machine
+  [PASS] bench within declared budgets — GAUGE — quick scale, 7 case(s) (ALL WITHIN BUDGET)
+[G11] the whole gauntlet core with NO network stack (unshare -rn): up + foreman --apply + backup roundtrip
+  [PASS] offline: up + foreman + backup all complete —   caches skipped (recall rebuilds); locks never carried
+GAUNTLET VERDICT: 27 pass, 0 fail — wall 60s
+
+Constraint coverage beyond the storm's structured scenarios:
+random-timing kills (vs fixed-point) · concurrent boots · concurrent
+foremen (locked) · kernel file-size cap (vs simulated ENOSPC) · live
+hostile HTTP (500/slow/200 on loopback) · garbage outbox.db ·
+unicode+emoji+space paths · 10MB/binary fuzz content · 2k-file
+scale timing · full core under unshare -rn.

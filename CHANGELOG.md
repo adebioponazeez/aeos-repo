@@ -3,6 +3,36 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.2.0 — The Gauntlet: Production Constraints, For Real (511 tests)
+- Operator demand: "test and validate and ensure this build
+  survives real production grade constraints." Answered with an
+  11-group gauntlet run against the real build — real subprocesses,
+  real kills at RANDOM offsets, real kernel limits (ulimit -f/-v),
+  real hostile HTTP endpoints, real concurrency, real corruption,
+  real hostile paths. Receipt: evidence/production-gauntlet-v39.txt.
+- **Run 1 found five defects** (that is the gauntlet working):
+  1. two foremen could race on one workspace (no lock);
+  2. an action exception under file-size starvation escaped as a
+     raw traceback (OSError: File too large) — plain-language law
+     violated;
+  3. the failed backup left a .tmp corpse — the atomic-write
+     contract broken;
+  4. a lock-refused run surfaced as KeyError: 'leverage' instead of
+     the refusal's own words;
+  5. `aeos backup` itself tracebacks on ENOSPC.
+- **All five fixed**: the foreman takes the kernel-released
+  workspace lock (busy = named refusal, exit 2); action exceptions
+  are named and stop the run; `_write_tar_body` failures clean
+  their tmp; ignition speaks a refused run's reason; the backup
+  verb names starvation. Five regression tests pin them.
+- **Run 2: 27/27 green** — 15/15 random kills recovered, concurrent
+  boots 1-winner-3-named, concurrent foremen serialized by the lock,
+  starvation named with zero litter, 256MB boot, hostile wires
+  bounded (500 -> dead letter; slow -> 10s timeout, no hang),
+  corrupted state tolerated, hostile paths deterministic, fuzz
+  bounded, bench within budgets, the whole core offline under
+  unshare -rn.
+
 ## v39.1.0 — Cross-Validation: Everything Checked From Source (506 tests)
 - Operator demand: "validate and cross-check that everything
   validates against source spec, aligned with broad aeos goals, and
