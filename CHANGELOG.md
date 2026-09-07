@@ -3,6 +3,38 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v37.0.0 — The Ignition: One Front Door, Plain-Language Failure (476 tests)
+- Operator feedback, kept verbatim in spirit: 35+ verbs and no
+  single production door; and when a real environment fails to
+  load — permissions, disk, state from the future, a missing key —
+  a stack trace is not help. A production engine is judged at
+  boot, in the dark, by someone in a hurry.
+- **`ignition.py` + `aeos up`** (ADR-046): four stages — PREFLIGHT
+  (python, disk, zero-dep law, writable workspace, state schema,
+  torn writes, locks, live-key presence), WORKSPACE (create/heal,
+  in-place schema upgrade), WORK (the reference loop + evidence
+  bundle), SHUTDOWN (a numbered, atomically-written boot receipt).
+  Exit codes scripts can branch on: 0 ok · 2 preflight ·
+  3 workspace · 4 work · 5 shutdown.
+- **The plain-language law**: every FAIL names WHAT HAPPENED and
+  WHAT TO DO in one breath each — never a traceback; key VALUES are
+  never read into receipts (presence only). A failed boot still
+  writes its receipt, and the NEXT boot's preflight reports how the
+  LAST one died ("crashed boot noted: work-failed; atomic writes
+  mean no torn state — continuing").
+- **Found the hard way, fixed the same hour**: `aeos up
+  --save-proof` inside a test run spawned the suite inside the
+  suite — a proof containing itself. Guard: proof commands run with
+  AEOS_PROOF_INNER set; a notary asked for the DEFAULT SUITE
+  COMMAND seeing it refuses ("one proof at a time"). The first
+  guard was too blunt and the notary proved it — this release's own
+  first notarization came back TESTS-FAILED (the guard was refusing
+  honest certificate construction); sharpened, re-notarized,
+  VERIFIED; the failed certificate stays in the ledger as history. First-cause preservation: a receipt-write failure can
+  never overwrite the original boot failure.
+- Doctor row: "boot preflight" (workspace context) — N check(s),
+  which would block `aeos up`. Charter principle 39.
+
 ## v36.0.1 — Validation Patch: The Root Is Reproducible (457 tests)
 - Found by COLD-CLONE validation (the exact discipline v35.1
   taught): `git clone && checkout v36.0.0 && aeos save-proof

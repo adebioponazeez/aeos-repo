@@ -701,6 +701,28 @@ claims now refuses them about itself, with a signature.
 
 ---
 
+## Chapter 24. Ignition Printing Addendum — The Ignition (v37)
+
+Thirty-five verbs is an engine room, not a front door. The operator
+said what operators say: I want to run the thing, and when the
+machine refuses, tell me why and tell me the fix. So the OS gained
+what every OS needs and no agent framework ships: an init system.
+One command walks four stages in order — self-test, workspace,
+work, receipt — and every failure on that walk speaks two sentences:
+what happened, what to do. State from the future says upgrade;
+a locked workspace says who holds it; a missing key names the
+variable without ever reading its value aloud. Exit codes count the
+stage that failed, so scripts can branch without parsing prose. And
+because a boot that dies in the dark must still explain itself,
+every boot writes a numbered receipt — including the failures — so
+the next boot opens by telling you how the last one ended, with the
+quiet reassurance that atomic writes left nothing torn behind. The
+door is one; the language is plain; the history explains itself.
+That is the whole design, and it was paid for by the operator who
+had to boot the machine in the dark.
+
+---
+
 ---
 
 ## Appendix — Volume III Receipts
@@ -715,6 +737,8 @@ claims now refuses them about itself, with a signature.
 - **ADR-045** The Notary: SEF-X handover disposition — merkle
   save-proofs, the edge outbox, capability permanence; vapor
   rejected with reasons.
+- **ADR-046** The Ignition: one front door, staged boot,
+  plain-language failure, the boot ledger, the nested-proof guard.
 
 Reproduce: `pip install -e . && python -m pytest` (161) ·
 `aeos run-demo` (leverage 7.0) · `aeos sponsor` + `aeos factory-demo

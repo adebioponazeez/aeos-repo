@@ -1,11 +1,11 @@
 # AEOS — The AI Engineering OS
 
-**Version 36.0.1 — The Notary. Built, tested, truthful — not proposed.**
+**Version 37.0.0 — The Ignition. Built, tested, truthful — not proposed.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
 governance, evaluation, observability, harness, entropy, learning,
-discovery). v2–v36 ship the platform around it. **457 tests. Zero
+discovery). v2–v37 ship the platform around it. **476 tests. Zero
 runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models are
@@ -16,7 +16,8 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 457 proofs incl. the 9-scenario chaos storm, ~100 seconds
+python -m pytest            # 476 proofs incl. the 9-scenario chaos storm, ~100 seconds
+aeos up                     # v37: THE FRONT DOOR — staged boot (preflight · workspace · work · shutdown); failures speak plain language
 aeos run-demo               # full reference loop, evidence bundle
 aeos factory-demo           # v7: the capability factory (proposals only)
 aeos factory-demo --token S # v7: ...with sponsorship (scoped installs)
@@ -100,10 +101,11 @@ aeos selftest
 | **v35.1** | **Validation patch** | **Independent fresh-clone validation found the scribe/doctor assuming checkouts; now a shared resolver works from ANY install kind, and no-repo-context is an honest WARN** |
 | **v36.0** | **The Notary** | **SEF-X handover, honestly adopted: `aeos save-proof` — completion is a certificate (pre/post Merkle roots + a green command); the edge `aeos outbox` — a local WAL queue behind an explicit wire; capability verbs machine-proven never-removed; the vapor (H-JEPA, Arrow Flight, microVMs) rejected on the record (ADR-045)** |
 | **v36.1** | **Validation patch** | **Cold-clone verification refused v36.0.0's certificate — build metadata (egg-info) was inside the Merkle root; excluded by law now with a regression test, and the tag promise (`--verify --against-tree` from a fresh clone) re-proven before shipping** |
+| **v37.0** | **The Ignition** | **One front door: `aeos up` — staged boot (preflight · workspace · work · shutdown), exit codes scripts can branch on, every FAIL naming what happened AND what to do, a boot ledger that tells the next boot how the last one died, and a nested-proof guard found the hard way** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **457/457 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **476/476 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.
@@ -132,10 +134,10 @@ spent human token.**
 ## Repository layout
 
 ```
-src/aeos/            # 62 modules: kernel (v1) + platform (v2–v36)
-tests/               # 457 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
+src/aeos/            # 63 modules: kernel (v1) + platform (v2–v37)
+tests/               # 476 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
 evidence/            # captured test runs, run bundles, factory runs, dashboard
-docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, 45 ADRs
+docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, 46 ADRs
 book/                # Volumes I–III + v11 addendum (print/), HTML + markdown
 AGENTS.md            # short repo context for coding agents
 CHANGELOG.md         # every version, earned by tests

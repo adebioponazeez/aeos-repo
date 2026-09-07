@@ -1,0 +1,28 @@
+{
+  "aeos_version": "37.0.0",
+  "auth": {
+    "digest": "a3364a74b164c87d393be40dbd83d31a158ee245e236174ff099f554b99a62da",
+    "scheme": "sha256"
+  },
+  "bytes": 1797042,
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "tests/",
+    "-q"
+  ],
+  "drift": {
+    "events": [],
+    "total": 0,
+    "truncated": false
+  },
+  "files": 212,
+  "kind": "aeos-save-proof",
+  "merkle": "sha256; path-bound leaves; pairwise nodes; odd promoted; volatile trees excluded",
+  "outcome": "verified",
+  "post_root": "bd9b0a7860c75e9277a62408d69f6134a2f4285a651345a5402130c4fa32def4",
+  "pre_root": "bd9b0a7860c75e9277a62408d69f6134a2f4285a651345a5402130c4fa32def4",
+  "schema": 1,
+  "test_exit": 0
+}

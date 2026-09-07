@@ -212,6 +212,15 @@ def doctor(ws: Path | None = None) -> dict:
     verdict, detail = outbox_health()
     rows.append(("edge outbox", verdict, detail))
     if ws:
+        from .ignition import post as _post
+        checks = _post(Path(ws))
+        n_fail = sum(1 for c in checks if c.verdict == "FAIL")
+        n_warn = sum(1 for c in checks if c.verdict == "WARN")
+        rows.append(("boot preflight",
+                     "FAIL" if n_fail else ("WARN" if n_warn else "PASS"),
+                     f"{len(checks)} check(s), {n_fail} would block "
+                     f"`aeos up`"
+                     + (f", {n_warn} warn(s)" if n_warn else "")))
         rows.extend(check_workspace(Path(ws)))
     root = repo_root()
     if root is None:

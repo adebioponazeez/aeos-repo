@@ -1,6 +1,6 @@
 # Architecture — AEOS
 
-> **System map at v36** — 62 modules, 457 tests, 45 ADRs, zero
+> **System map at v37** — 63 modules, 476 tests, 46 ADRs, zero
 > runtime dependencies (machine-checked by `aeos doctor`). Layers:
 > **kernel** (contracts, orchestrator, harness, models) · **governance**
 > (governor, sponsorship, boundaries, gates) · **economics** (economics,

@@ -47,6 +47,7 @@ that can't must be written down where it can be audited.*
 | 36 | Claims become checks | `doctor` — the charter's cited tests must exist in the suite, machine-verified | `test_charter_is_load_bearing` |
 | 37 | Documentation tells the truth | `scribe.audit` — README claims checked against live reality; drift FAILs with file:line | `test_the_real_readme_is_truthful_today` |
 | 38 | Done is a certificate, not a sentence | `saveproof.run_notary` — pre/post Merkle roots + a green command = verified; drift and failure are named, never narrated | `test_clean_run_is_verified` |
+| 39 | The door is one, and failure speaks plain language | `ignition.boot` — staged preflight → workspace → work → shutdown; every FAIL names what happened and what to do; the boot ledger tells the next boot how the last one died | `test_every_fail_carries_a_remedy` |
 
 ## PRACTICED — held by discipline, auditable by record
 

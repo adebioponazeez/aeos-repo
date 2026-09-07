@@ -82,10 +82,21 @@ def _outcome(exit_code: int | None, drift_total: int,
 def run_notary(root: Path, command: list[str] | None = None,
                *, key: str | None = None) -> dict:
     """Pre-root, proof command, post-root, certificate. The command
-    runs without a shell, bounded in time, from the tree it proves."""
+    runs without a shell, bounded in time, from the tree it proves.
+    A proof nested inside a proof is refused — but ONLY when the
+    requested command IS the default suite: that is the one real
+    recursion vector (`aeos up --save-proof` inside a test run
+    spawning the suite inside the suite — found the hard way, twice:
+    first too blunt, refusing honest certificate construction, then
+    sharpened to this). Explicit commands are bounded by the caller
+    and are not recursion."""
     root = Path(root)
     from . import __version__
     cmd = list(command) if command is not None else list(PROOF_COMMAND)
+    if cmd == PROOF_COMMAND and os.environ.get("AEOS_PROOF_INNER"):
+        raise SaveProofError(
+            "nested proof refused: this process is already running "
+            "inside a proof command — one proof at a time")
     exec_cmd = cmd
     if cmd == PROOF_COMMAND:               # run the suite with THIS python
         exec_cmd = [sys.executable, "-m", "pytest", "tests/", "-q"]
@@ -93,6 +104,7 @@ def run_notary(root: Path, command: list[str] | None = None,
     pre = capture(root)
     timed_out, exit_code = False, None
     env = dict(os.environ, PYTEST_ADDOPTS="")   # mirror CI: no -qq surprise
+    env["AEOS_PROOF_INNER"] = "1"               # the recursion guard
     try:
         proc = subprocess.run(exec_cmd, cwd=str(root), env=env,
                               capture_output=True, text=True,

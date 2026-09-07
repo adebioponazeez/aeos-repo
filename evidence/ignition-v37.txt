@@ -1,0 +1,51 @@
+IGNITION RECEIPT — v37.0.0 (real captures, this machine)
+================================================================
+
+[1] THE HAPPY BOOT (fresh workspace)
+IGNITION — 4 stages: preflight · workspace · work · shutdown
+  [1/4] PREFLIGHT   4 check(s): 4 pass, all clear
+  [2/4] WORKSPACE   ready
+  [3/4] WORK        accepted — leverage 7.0, evidence bundle written
+  [4/4] SHUTDOWN    boot receipt -> /tmp/ig-demo/.aeos/boots/boot-0001.json
+BOOT — outcome: OK (wall 1.0s)
+
+[2] THE LEDGER REMEMBERS (second boot, same workspace)
+IGNITION — 4 stages: preflight · workspace · work · shutdown
+  [1/4] PREFLIGHT   6 check(s): 6 pass, all clear
+  …receipt #2 written; preflight clean (last boot was ok)
+
+[3] STATE FROM THE FUTURE (a newer aeos wrote this state)
+IGNITION — 4 stages: preflight · workspace · work · shutdown
+IGNITION FAILED at stage 1/4 (preflight)
+  what happened: state schema: memory.jsonl carries schema 99 — state from the future (this aeos supports 1)
+  what to do:    upgrade aeos (pip install -U aeos) or point --workspace at a fresh directory
+  boot receipt:  /tmp/ig-future/.aeos/boots/boot-0001.json
+  exit code 2 — scripts can branch on the stage; the receipt carries the same words
+  exit code: 2
+
+[4] LIVE MODE WITHOUT A KEY (presence checked, value never read)
+  preflight FAIL — live key: live mode requested but no provider key found
+  what to do:    export one of OPENROUTER_API_KEY / ABACUS_API_KEY / OPENAI_API_KEY (and AEOS_LIVE=1); keys are never logged
+
+[5] A CRASHED BOOT, REPORTED BY THE NEXT ONE (the ledger's memory)
+  boot #1 -> work-failed (exit 4) — receipt written even in failure
+IGNITION — 4 stages: preflight · workspace · work · shutdown
+  [1/4] PREFLIGHT   5 check(s): 4 pass, 1 warn — continuing
+  [2/4] WORKSPACE   ready
+  [3/4] WORK        accepted — leverage 7.0, evidence bundle written
+  …and the boot completed: the crash did not poison the workspace
+
+[6] THE NESTED-PROOF GUARD (found the hard way, this version's own tests)
+  refused: nested proof refused: this process is already running inside a proof command — one proof at a time
+
+[7] THE NOTARY REFUSED ITS OWN RELEASE (then approved it)
+    first notarization: outcome TESTS-FAILED — the new recursion
+    guard was too blunt: running the suite under AEOS_PROOF_INNER
+    refused the v36 tests' honest certificate construction.
+    Certificate kept in the ledger (truthful history):
+    save-proof-64ee3efdd5f3-tests-failed.json
+    guard sharpened (refuse only the DEFAULT SUITE command — the
+    real recursion vector; explicit commands are bounded, not
+    recursion) -> re-notarized: VERIFIED, root 4cca54a2d2d5bd00
+    (final shipping root: see the certificate in this commit).
+    Done is a certificate, not a sentence — even for the author.

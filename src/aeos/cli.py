@@ -19,6 +19,17 @@ def main(argv: list[str] | None = None) -> int:
 
     run_p = sub.add_parser("run-demo", help="Execute the reference pipeline")
     run_p.add_argument("--workspace", default="aeos-demo")
+
+    up_p = sub.add_parser("up",
+                          help="v37: THE FRONT DOOR — staged boot: preflight, workspace, work, shutdown; failures speak plain language")
+    up_p.add_argument("--workspace", default="aeos-demo")
+    up_p.add_argument("--intent", default="Ship a verified seed module")
+    up_p.add_argument("--profile", default="balanced",
+                      choices=["control", "balanced", "speed", "cost"],
+                      help="control-cost-speed stance for the work stage")
+    up_p.add_argument("--save-proof", action="store_true",
+                      help="notarize the repo tree after the work stage "
+                           "(needs a checkout context; honest skip otherwise)")
     run_p.add_argument("--intent", default="Ship a verified seed module")
     run_p.add_argument("--live", action="store_true",
                        help="v11: run on a real model (bring your own key)")
@@ -188,6 +199,13 @@ def main(argv: list[str] | None = None) -> int:
         from . import __version__
         print(f"AEOS v{__version__} — harness is the product.")
         return 0
+
+    if args.cmd == "up":
+        from .ignition import boot, render
+        r = boot(Path(args.workspace), args.intent,
+                 save_proof=args.save_proof, profile=args.profile)
+        print(render(r))
+        return r["exit_code"]
 
     if args.cmd == "scribe":
         from .doctor import repo_root
