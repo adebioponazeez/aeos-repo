@@ -58,3 +58,13 @@ IGNITION — 4 stages: preflight · workspace · work · shutdown
     IT. Portability is the matrix's job, and the matrix spoke.
     Fix + permanent guard: test_no_multiline_fstring_expressions
     (ast scan, every module, every future commit).
+
+[9] THE GUARD NEEDED ITS OWN GUARD (v37.0.2)
+    v37.0.1's ast guard reported 270 phantom multiline f-strings on
+    Python 3.10/3.11 — pre-3.12 ast positions inside f-strings are
+    approximations of the whole literal. CI caught it minutes after
+    the tag (red on 3.10/3.11, green on 3.12/3.13 — the mirror
+    image of v37.0.0's failure). Fix: the guard runs where ast is
+    truthful (>=3.12); below that the interpreter's SyntaxError at
+    import IS the guard; and a synthetic-defect test now proves the
+    scanner can fail. A guard that cannot fail protects nothing.

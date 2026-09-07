@@ -74,6 +74,18 @@ unshippable. Third lesson in a row learned from a cold environment:
 fresh clones, dead ports, older Pythons — the warm machine always
 lies a little.
 
+## Addendum (v37.0.2)
+
+The portability guard of v37.0.1 was itself non-portable: pre-3.12
+ast positions inside f-strings are approximations of the whole
+literal, producing 270 phantom violations on 3.10/3.11 (CI caught it
+minutes after the tag). The guard now runs only where ast is
+truthful (>= 3.12); below that the interpreter's own SyntaxError at
+import is the native guard, and a synthetic-defect test proves the
+scanner can actually fail. Fourth cold-environment lesson in a row:
+fresh clones, dead ports, older Pythons, and now the guard needing
+its own guard.
+
 ## Tests
 
 `test_healthy_workspace_is_all_clear`, `test_state_from_the_future_fails_with_remedy`,

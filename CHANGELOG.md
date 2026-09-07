@@ -3,6 +3,21 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v37.0.2 — Guard Patch: A Guard That Cannot Fail Protects Nothing (478 tests)
+- v37.0.1's portability guard was itself non-portable: on Python
+  < 3.12, ast positions INSIDE f-strings are approximations (the
+  whole concatenated literal), so the guard reported 270 phantom
+  violations on the very Pythons it protects — CI caught it within
+  minutes of the tag.
+- Fix: the ast-based guard runs only where ast is truthful (>= 3.12,
+  where development and notarization happen); below 3.12 the
+  INTERPRETER ITSELF is the guard — the 3.12-only syntax is a
+  SyntaxError at import, failing the suite natively (exactly what
+  CI demonstrated on v37.0.0). Plus `test_the_guard_actually_
+  catches_the_pattern`: a synthetic module carrying the exact
+  v37.0.0 defect must be flagged — a guard that cannot fail
+  protects nothing.
+
 ## v37.0.1 — Portability Patch: The Floor Is 3.10 (477 tests)
 - CI caught what the certificate could not: the v37.0.0 notarization
   proves the suite passes ON THE PYTHON THAT RAN IT — portability is

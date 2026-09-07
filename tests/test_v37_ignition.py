@@ -235,22 +235,49 @@ class TestRender:
         assert "exit code 2" in text
 
 class TestPortability:
-    def test_no_multiline_fstring_expressions(self):
-        # v37.0.0 shipped an f-string expression spanning lines —
-        # legal only under PEP 701 (3.12+); the CI matrix on 3.10
-        # refused the whole module. The floor is 3.10, so the guard
-        # is law: no f-string expression may span lines, ever.
+    def _offenders(self, source: str) -> list:
+        """f-string expressions spanning lines (PEP 701, 3.12-only).
+        Must run on >= 3.12, where ast positions inside f-strings are
+        reliable; below that the interpreter itself refuses the
+        syntax at import (the first version of this guard trusted
+        pre-3.12 positions and flagged 270 phantom hits in CI)."""
         import ast
+        offenders = []
+        for node in ast.walk(ast.parse(source)):
+            if isinstance(node, ast.JoinedStr):
+                for v in node.values:
+                    if (isinstance(v, ast.FormattedValue)
+                            and v.lineno != v.end_lineno):
+                        offenders.append(f"line {v.lineno}")
+        return offenders
+
+    def test_no_multiline_fstring_expressions(self):
+        # the floor is 3.10; the guard runs where ast is truthful
+        if sys.version_info < (3, 12):
+            pytest.skip("pre-3.12: the interpreter itself refuses "
+                        "this syntax at import — the native guard")
         import aeos
         pkg = Path(aeos.__file__).resolve().parent
         offenders = []
         for py in sorted(pkg.glob("*.py")):
-            tree = ast.parse(py.read_text(encoding="utf-8"))
-            for node in ast.walk(tree):
-                if isinstance(node, ast.JoinedStr):
-                    for v in node.values:
-                        if (isinstance(v, ast.FormattedValue)
-                                and v.lineno != v.end_lineno):
-                            offenders.append(f"{py.name}:{v.lineno}")
+            offenders += [f"{py.name}:{o}"
+                          for o in self._offenders(
+                              py.read_text(encoding="utf-8"))]
         assert not offenders, \
             f"3.10-illegal multiline f-string: {offenders}"
+
+    def test_the_guard_actually_catches_the_pattern(self):
+        # a guard that cannot fail protects nothing: synthetic bad
+        # module (the exact v37.0.0 defect) must be flagged
+        if sys.version_info < (3, 12):
+            pytest.skip("pattern only parses on 3.12+; below that "
+                        "the interpreter refuses it natively")
+        bad = ("ledger = {}\n"
+               "x = (f\"boot #{ledger.get('boot_seq')} ended: \"\n"
+               "     f\"{ledger.get('outcome')} (stage: "
+               "{ledger.get('failed_stage',\n"
+               "                                   '-')})\")\n")
+        assert self._offenders(bad), "the scanner went blind"
+        good = ("prev = ledger.get('failed_stage', '-')\n"
+                "x = f\"{ledger.get('outcome')} (stage: {prev})\"\n")
+        assert not self._offenders(good)

@@ -82,7 +82,7 @@ VOL3_TITLES = {
     "title": "10,000,000&times; AI ENGINEERING",
     "sub1": "Volume III &mdash; The Arc Completed",
     "sub2": "The Charter, the Gauge, the Scribe, the Notary, the Ignition and the truthful README (v33&ndash;v37) &middot; the System at v37.0.0",
-    "vol": "Ignition printing (v37) &middot; 477 tests &middot; 63 modules &middot; 46 ADRs &middot; zero dependencies",
+    "vol": "Ignition printing (v37) &middot; 478 tests &middot; 63 modules &middot; 46 ADRs &middot; zero dependencies",
 }
 
 VOL2_TITLES = {
