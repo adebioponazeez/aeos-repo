@@ -497,7 +497,7 @@ def reference_run(workspace: Path, intent: str = "Ship a verified seed module",
     lock = WorkspaceLock(workspace / ".aeos" / "workspace.lock")
     if not lock.acquire(blocking=False):
         return {"accepted": False,
-                "reason": "workspace not available: the lock is "
+                "reason": "workspace not available: "
                           + lock.refusal_reason(),
                 "environment": environment_scan(workspace)}
     try:

@@ -1,0 +1,91 @@
+HOLDOUT — v39.4.0
+"continue: holdout/digital-twin separation, then re-verified
+against real production-grade constraints, and ensure shipping,
+PR and deployment-grade certification."
+
+================================================================
+ENVIRONMENT DISCLOSURE (this receipt names its environment)
+================================================================
+Producing environment: THIS sandbox — non-root `user`, Linux
+6.1.158+, CPython 3.13.14 host, no docker/root. Wheel verified on
+real uv-managed CPython 3.10.21 / 3.11.16 / 3.12.14. Not proved:
+other OSes/kernels/filesystems, CPython < 3.10.
+
+================================================================
+WHAT SHIPPED — the holdout (ADR-050)
+================================================================
+A sealed scenario vault OUTSIDE the repo and every workspace
+(~/.aeos/holdout; nonce 0600; zlib + HMAC-keystream sealing;
+sha256 + hmac + merkle manifest; tamper refuses to run, named).
+Families are public law — hostile intents verdicted, determinism,
+refusal named, economics governed, leverage numbered; instances
+are seeded PER INSTALL (two installs hold different holdout sets,
+tested). `aeos holdout --run` verifies the seal, evaluates a
+throwaway DIGITAL TWIN of the workspace, renders a VERDICT-ONLY
+report (scenario content never leaves the vault), and proves the
+original byte-identical after (order-stable tree digest, tested).
+Grading has teeth: a regression to unnamed refusals fails the
+family (tested). Honest scope on the record: boundary-based
+separation, not same-user adversarial security.
+
+Live receipt (default vault, real workspace):
+  HOLDOUT — 5/5 families, PASS — hostile 6/6 verdicted;
+  determinism identical canonical bundles; refusal named
+  ("the lock file could not be opened: Permission…");
+  economics metered; leverage 7.0. Original workspace
+  byte-identical. 11 holdout tests in the suite.
+
+================================================================
+RE-VERIFICATION AGAINST PRODUCTION CONSTRAINTS
+================================================================
+Full suite (host, editable):   527 passed, 1 skipped (live-opt-in)
+Production gauntlet:           27/27 (G1 kills, G2 concurrent boots,
+                               G3 foremen, G4 starvation, G5 256MB,
+                               G6 hostile wire, G7 corrupted state,
+                               G8 hostile paths, G9 fuzz, G10
+                               scale, G11 offline)
+Field gauntlet (environments): 20/20 (empty env, read-only
+                               workspace/HOME, true 256KB-tmpfs
+                               ENOSPC, 64M tmpfs, shadow package,
+                               deep unicode LC_ALL=C, TZ/locale,
+                               non-root)
+Wheel on CPython 3.10.21:      525 passed, 3 skipped (2 are
+                               3.12-gated syntax tests, by design)
+Wheel on CPython 3.11.16:      525 passed, 3 skipped
+Wheel on CPython 3.12.14:      527 passed, 1 skipped
+Wheel holdout CLI:             5/5 families PASS on all three
+Scribe:                        7 claims, 0 drift
+Doctor:                        8 checks, 0 failed
+
+================================================================
+HONESTY ABOUT THE PROCESS — what re-verification caught
+================================================================
+1. The gauntlet re-run caught a real, rare defect: the boot
+   preflight's writable probe used a FIXED path — two simultaneous
+   boots could unlink each other's probe and misreport a WRITABLE
+   workspace as unwritable (the 1-in-N rc=2 in the concurrent-boot
+   group). Reproduced deterministically: 51/320 misreports under a
+   threaded hammer. Fixed with a unique auto-cleaning probe: 0/320.
+   Regression-tested permanently in the suite.
+2. The first wheel verification run FAILED on the wheel but passed
+   on the host — because the wheel had been built before the last
+   fix landed (missing-workspace guard). Caught by exactly the
+   verify-the-wheel law this project adopted at v39.3; the wheel
+   was rebuilt from the final tree and everything re-run green.
+   Built is not tested.
+3. A missing --workspace tracebacks raw on the first pass — now a
+   named refusal with remedy. The plain-language law extends to
+   CLI edges.
+
+================================================================
+SHIPPING — PR, not a direct push
+================================================================
+Branch: v39.4.0-holdout → pull request → CI (proofs on 3.10/
+3.11/3.12/3.13) → merge to main → tag v39.4.0 → release.
+Cold-clone verification and doctor HEALTHY required before the
+release is called shipped.
+
+VERDICT: the dark-factory validation's #1 gap is closed with
+teeth; every constraint battery is green on the final artifacts
+(host tree AND wheel, four interpreters); the process's own
+stumbles are on the record above.

@@ -128,8 +128,8 @@ class WorkspaceLock:
             return ("the lock file could not be opened: "
                     f"{self.last_error} — check permissions/disk on "
                     "the workspace")
-        return ("held by a live run (kernel-released; a dead holder "
-                "cannot strand you)")
+        return ("the lock is held by a live run (kernel-released; "
+                "a dead holder cannot strand you)")
 
     def release(self) -> None:
         if self._fh is not None:
