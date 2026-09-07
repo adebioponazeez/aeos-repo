@@ -492,7 +492,7 @@ enterprise prototype — are not built; everything beneath them is.
 constitution. The pieces AEOS has proven: cross-org federation with
 quarantine (Phase 8), economics with budgets and dividends (Phase
 3), a charter that is machine-checked load-bearing law (this
-project's PRINCIPLES.md — 40 principles, each with mechanism and
+project's PRINCIPLES.md — 41 principles, each with mechanism and
 test), and an OS that can grow safely (Phase 12). The pieces the
 rung still demands: business-workflow ontologies, long-horizon
 financial accountability, and multi-tenant governance at

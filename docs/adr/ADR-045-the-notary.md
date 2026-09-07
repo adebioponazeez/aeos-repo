@@ -60,6 +60,27 @@ itself a certificate in the ledger (`evidence/save-proofs/`), and
 `git checkout v36.0.0 && aeos save-proof --verify <cert>
 --against-tree` re-proves the tag's tree matches the certificate.
 
+## Addendum (v39.1.0) — reconciliation completeness
+
+Two items the original table compressed, now stated precisely:
+
+1. **The automatic-rollback kernel was TRANSLATED, not adopted.**
+   SEF-X 4.1 demands "instantaneous rollback (git reset --hard
+   combined with snapshot restoration)" on any save-proof mismatch.
+   AEOS refuses auto-execution of rollback: a mismatch is NAMED
+   (outcome `drifted`, files listed), the doctor FAILs the ledger
+   row, and `aeos restore` is a drilled, fail-closed verb — but the
+   decision to restore is a human's (or a filed foreman proposal),
+   because silent destructive commands violate the charter's
+   authority law (no self-modification without a spent human
+   token). Verification is automatic; remedy is authorized.
+2. **v39 closed 3.2 organically.** SEF-X's "Automated Debugging &
+   Self-Healing Pipeline" and its loop diagram's "Drift Healing
+   Agent" are the FOREMAN (v39): bounded self-healing — survey,
+   mechanical remediation, re-measurement, deduped memory — with
+   proposals staying human. Adopted by building the honest version,
+   not the diagram's label.
+
 ## Addendum (v36.0.1)
 
 Cold-clone validation refused v36.0.0's certificate: build metadata

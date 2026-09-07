@@ -1,0 +1,64 @@
+CROSS-VALIDATION RECEIPT — v39.1.0
+"validate and cross-check that everything validates against source
+spec, and aligned with broad aeos goals and how have you reconciled
+sef-x-omni-os" — executed from the source PDFs, not memory of them.
+
+Sources: the founding master-builder spec (48 pp, 57 numbered
+requirements) and the SEF-X / OMNI-OS handover spec (33 pp), both
+re-extracted from the operator's uploaded PDFs for this run.
+
+================================================================
+RUN 1 — the audit audited (findings admitted)
+================================================================
+[L1] founding spec: 57 requirements; SPEC-AUDIT covers 57/57.
+     33 modules cited: all exist. Cited verbs: all real.
+     13 cited tests: all exist.
+[L2] SEF-X: every ADOPTED claim traced to the real SEF-X text;
+     every REJECTED item present in SEF-X AND reasoned in ADR-045;
+     all mechanism modules exist.
+[L3] FOUR STALE FINDINGS — the audit was one version behind v39:
+     - modules: audit said 63, live 64
+     - tags: audit said 15, live 17
+     - principles: audit said 40, charter has 41
+     - footer re-audit owed (its own law: re-audit every major
+       version) + the v39 foreman absent from the audit
+
+================================================================
+FIXES SHIPPED (v39.1.0)
+================================================================
+- SPEC-AUDIT: all four counts corrected; req 47 now carries the
+  foreman; re-audit addendum appended.
+- ADR-045 addendum — reconciliation completeness, stated precisely:
+  1. SEF-X's AUTOMATIC-ROLLBACK KERNEL was TRANSLATED, not adopted:
+     a save-proof mismatch is NAMED (outcome drifted, files listed),
+     the doctor FAILs the ledger row, `aeos restore` is drilled and
+     fail-closed — but the decision to restore is a human's, because
+     silent destructive commands violate the charter's authority
+     law. Verification is automatic; remedy is authorized.
+  2. SEF-X 3.2's "Automated Debugging & Self-Healing Pipeline" and
+     its loop's "Drift Healing Agent" ARE the v39 foreman: bounded
+     self-healing, proposals staying human.
+- THE AUDIT'S COUNTS ARE NOW MACHINE-CHECKED LAW:
+  test_audit_counts_match_live_reality + test_audit_artifacts_are_
+  real (the exact staleness class run 1 caught can never recur).
+
+================================================================
+RUN 2 — everything validates (same method, post-fix)
+================================================================
+CROSS-VALIDATION RUN 2 (post-fix) — v39.1.0
+============================================================
+[L1] founding spec: 57 requirements; audit covers 57/57; missing: NONE
+     artifacts: 33 modules cited (0 missing), 1 verbs cited (0 absent), 14 tests cited (0 absent)
+[L2] SEF-X: adopted traced to source: True; rejected present+reasoned: True; mechanisms exist: True; rollback translation on record: True; foreman=drift-healing-agent on record: True
+[L3] freshness: audit modules 64 == live 64; audit principles 41 == charter 41: True
+     live tree: 506 tests | 64 modules | 48 ADRs | 37 commands
+
+VERDICT: ALL GREEN — everything validates against source
+
+AEOS-GOALS ALIGNMENT (the standing validators, all run this day):
+- charter load-bearing: 38 cited tests all exist (doctor row PASS)
+- zero runtime dependencies: 64 modules scanned, 0 violations
+- README truthful: 7 claims, 0 drift (scribe)
+- offline by default: full boot under unshare -rn proven (v37 receipt)
+- determinism: backups byte-identical (v37 receipt)
+- suite: 506 passed, 1 skipped — CI x4 (3.10-3.13) on this commit

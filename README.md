@@ -1,11 +1,11 @@
 # AEOS — The AI Engineering OS
 
-**Version 39.0.0 — The Foreman. Built, tested, truthful — not proposed.**
+**Version 39.1.0 — The Foreman. Built, tested, truthful — not proposed.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
 governance, evaluation, observability, harness, entropy, learning,
-discovery). v2–v39 ship the platform around it. **504 tests. Zero
+discovery). v2–v39 ship the platform around it. **506 tests. Zero
 runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models are
@@ -16,7 +16,7 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 504 proofs incl. the 9-scenario chaos storm, ~105 seconds
+python -m pytest            # 506 proofs incl. the 9-scenario chaos storm, ~105 seconds
 aeos up                     # v37: THE FRONT DOOR — staged boot (preflight · workspace · work · shutdown); failures speak plain language
 aeos foreman [--apply]      # v39: THE AUTONOMOUS OPERATOR — surveys the workspace, fixes the mechanical class, files proposals; receipts for everything
 aeos run-demo               # full reference loop, evidence bundle
@@ -107,10 +107,11 @@ aeos selftest
 | **v37.2** | **Guard patch** | **The portability guard itself was non-portable (pre-3.12 ast positions inside f-strings are approximate — 270 phantom hits on 3.10/3.11); it now runs only where ast is truthful, the interpreter is the native guard below, and a synthetic-defect test proves the scanner can actually fail** |
 | **v38.0** | **The Curriculum** | **The founding master-builder spec audited requirement-by-requirement (57 verdicts, `docs/SPEC-AUDIT.md`); Volume IV ships the mandated 13-phase curriculum — every phase grounded in shipped modules, commands, and tests; the ladder's last two rungs honestly named as gaps** |
 | **v39.0** | **The Foreman** | **The autonomous operator, Omarchy-style: one command, opinionated defaults — `aeos foreman` surveys the workspace (schema, torn writes, retention, backup posture, boot ledger, outbox, README drift), fixes the mechanical class in dependency order with `--apply`, files the rest as proposals, verifies by re-measurement, and remembers deduped; every run Merkle-rooted and receipted. No printing this release — the product is the code** |
+| **v39.1** | **Cross-validation patch** | **Everything re-validated from the source PDFs, not memory: founding spec 57/57 covered with all cited artifacts real; SEF-X reconciliation traced to source (every adopted claim, every rejected item reasoned); four stale audit findings caught and fixed; the auto-rollback translation put on the record; audit counts are now machine-checked law** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **504/504 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **506/506 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.
@@ -140,7 +141,7 @@ spent human token.**
 
 ```
 src/aeos/            # 64 modules: kernel (v1) + platform (v2–v39)
-tests/               # 504 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
+tests/               # 506 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
 evidence/            # captured test runs, run bundles, factory runs, dashboard
 docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, spec audit, 48 ADRs
 book/                # Volumes I–IV + v11 addendum (print/), HTML + markdown

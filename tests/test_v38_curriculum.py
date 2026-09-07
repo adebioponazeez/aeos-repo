@@ -80,3 +80,38 @@ class TestSpecAudit:
         m = re.search(r"\| 50 \|.*?see the receipt below", text, re.S)
         assert m and m.group(0).count("✓") == 16, \
             "the 16-clause DoD must be answered clause by clause"
+
+class TestAuditFreshness:
+    """v39.1: the founding-spec audit was found one version stale by
+    cross-validation from the source PDFs. Its counts and artifacts
+    are now machine-checked law — the audit cannot drift again."""
+
+    def test_audit_counts_match_live_reality(self):
+        text = AUDIT.read_text(encoding="utf-8")
+        from aeos.scribe import reality
+        real = reality(REPO)
+        m = re.search(r"(\d+) modules", text)
+        assert m, "audit does not state a module count"
+        assert int(m.group(1)) == real["modules"], \
+            f"audit says {m.group(1)} modules; live tree has {real['modules']}"
+        principles = re.findall(
+            r"^\| (\d+) \|",
+            (REPO / "docs" / "PRINCIPLES.md").read_text(encoding="utf-8"),
+            re.M)
+        m2 = re.search(r"(\d+) compiled principles", text)
+        assert m2, "audit does not state a principle count"
+        assert int(m2.group(1)) == len(principles), \
+            f"audit says {m2.group(1)} principles; charter has {len(principles)}"
+
+    def test_audit_artifacts_are_real(self):
+        text = AUDIT.read_text(encoding="utf-8")
+        mods = sorted(set(re.findall(r"`([a-z_]+\.py)`", text)))
+        assert mods, "artifact scan went blind"
+        missing = [m for m in mods
+                   if not (REPO / "src" / "aeos" / m).exists()]
+        assert not missing, f"audit cites modules that do not exist: {missing}"
+        from aeos.scribe import reality
+        cmds = reality(REPO)["commands"]
+        verbs = sorted(set(re.findall(r"`aeos ([a-z][a-z0-9-]+)", text)))
+        absent = [v for v in verbs if v not in cmds]
+        assert not absent, f"audit cites verbs absent from the CLI: {absent}"

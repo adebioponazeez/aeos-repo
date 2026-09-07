@@ -15,9 +15,9 @@ what is outdated.* Verdicts are SATISFIED (artifact named), PARTIAL
 |---|---|---|---|
 | 1 | North star | SATISFIED | README: "the harness is the product" — models are slots, reliability is deterministic code |
 | 2 | The 10,000,000× principle | SATISFIED | The leverage metric (`triangle.py`, `leverage.py`): outcomes per human intervention, measured per run |
-| 3 | Primary execution command | SATISFIED | `aeos up` (v37) — the one front door; 35+ verbs beneath it |
-| 4 | Operating philosophy | SATISFIED | docs/PRINCIPLES.md — 40 compiled principles, each with mechanism + test |
-| 5 | Core architecture | SATISFIED | docs/ARCHITECTURE.md — 63 modules, system map |
+| 3 | Primary execution command | SATISFIED | `aeos up` (v37) — the one front door; 30+ verbs beneath it |
+| 4 | Operating philosophy | SATISFIED | docs/PRINCIPLES.md — 41 compiled principles, each with mechanism + test |
+| 5 | Core architecture | SATISFIED | docs/ARCHITECTURE.md — 64 modules, system map |
 | 6 | Human executive layer | SATISFIED | Sponsorship tokens (one-shot, scoped); authority console; the autonomy governor's ceiling is human-issued power |
 | 7 | AI executive | SATISFIED | `governor.py` — autonomy levels earned by measured reliability, never assumed |
 | 8 | AI chief architect | SATISFIED | `codesign.py` — design slates (conservative/least-privilege/reviewer-first), human sponsors one variant |
@@ -64,7 +64,7 @@ what is outdated.* Verdicts are SATISFIED (artifact named), PARTIAL
 | # | Requirement (short) | Verdict | Where it lives |
 |---|---|---|---|
 | 46 | Execution priority | SATISFIED | 478 tests + 47 ADRs of decisions made by doing |
-| 47 | Autonomous project management | SATISFIED | Reference loop runs unattended; boot ledger remembers; resume completes |
+| 47 | Autonomous project management | SATISFIED | Reference loop runs unattended; boot ledger remembers; resume completes — and since v39 the FOREMAN operates the shop between visits: surveys, fixes the mechanical class, files proposals, remembers |
 | 48 | Failure protocol | SATISFIED | `aeos up` plain-language failures (v37); storm drills; fail-closed restores |
 | 49 | Stop conditions | SATISFIED | Budgets are law; hard $ cap on live; dead-letter stop; governor ceilings |
 | 50 | Definition of Done (16 clauses) | SATISFIED | All 16: architecture ✓ specs ✓ agents ✓ skills ✓ context ✓ memory ✓ harness ✓ orchestration ✓ evaluation ✓ security ✓ observability ✓ repo ✓ reference implementation ✓ docs ✓ book ✓ examples ✓ — see the receipt below |
@@ -101,7 +101,7 @@ Requirement 53 (project ladder):
 Requirement 52 (curriculum): **Volume IV, this version** — the 13
 phases, every mandated section, grounded in shipped artifacts.
 Requirement 54: this audit. Requirement 55 (versioning): semver +
-"versions are earned by tests" (ADR-008), 15 tags. Requirement 56
+"versions are earned by tests" (ADR-008), 17 tags. Requirement 56
 (the meta-loop): `meta.py` with retirement floors, sponsorship-gated.
 Requirement 57 (final command): the loop continues — Volume IV is
 its second full turn.
@@ -122,3 +122,23 @@ its second full turn.
 
 *Audited at v38.0.0. The audit is itself versioned history: re-audit
 at every major version, and never let it flatter.*
+
+## Addendum — re-audit at v39.1.0 (cross-validated from source)
+
+An independent cross-validation was run from the source PDFs (not
+from memory): the founding spec's 57 numbered requirements extracted
+afresh and checked against this audit (57/57 covered); every module
+the audit cites verified to exist in src/ (33/33); every cited test
+verified in the suite (13/13); the SEF-X reconciliation verified
+against the real SEF-X text (every adopted claim traced to source,
+every rejected item present AND reasoned). The run found FOUR stale
+findings — the audit was one version behind v39 — all fixed in this
+version: modules 63→64, tags 15→17, principles 40→41, and the v39
+foreman now on the record (it strengthens reqs 47/48: an agent that
+surveys, remediates the mechanical class, verifies by
+re-measurement, and remembers). The audit's counts are now LAW:
+`test_audit_counts_match_live_reality` fails the suite if they
+drift again. Also on the record (ADR-045 addendum): SEF-X's
+automatic-rollback kernel was translated, not adopted — drift is
+NAMED and restore is drilled, but the decision to restore stays
+human, per the charter's authority law.

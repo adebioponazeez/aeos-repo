@@ -3,6 +3,31 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.1.0 — Cross-Validation: Everything Checked From Source (506 tests)
+- Operator demand: "validate and cross-check that everything
+  validates against source spec, aligned with broad aeos goals, and
+  how have you reconciled sef-x-omni-os." Executed from the source
+  PDFs, not from memory of them.
+- **Founding spec**: 57/57 requirements re-extracted from the PDF
+  and covered by docs/SPEC-AUDIT.md; all 33 modules the audit cites
+  exist; all cited tests exist; all cited verbs exist in the live
+  CLI.
+- **SEF-X reconciliation**: every ADOPTED claim verified present in
+  the real SEF-X text; every REJECTED item verified present AND
+  reasoned in ADR-045. Two compressed items stated precisely now
+  (ADR-045 addendum): the auto-rollback kernel was TRANSLATED, not
+  adopted (drift is NAMED, restore is drilled, the decision stays
+  human — charter authority law), and v39's foreman IS SEF-X 3.2's
+  self-healing pipeline / drift-healing agent, built honestly.
+- **Four stale audit findings caught and fixed**: modules 63->64,
+  tags 15->17, principles 40->41, footer re-audit owed (its own
+  law: re-audit every major version). The audit now carries a
+  re-audit addendum and its counts are MACHINE-CHECKED LAW
+  (test_audit_counts_match_live_reality,
+  test_audit_artifacts_are_real) — the audit cannot drift again.
+- Receipt: evidence/cross-validation-v39.txt (run 1 with findings,
+  run 2 all green).
+
 ## v39.0.0 — The Foreman: The Autonomous Operator (504 tests)
 - Operator direction, kept verbatim in spirit: "all the above is
   for you to actually use it to produce a compelling production
