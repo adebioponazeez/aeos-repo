@@ -3,6 +3,39 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.6.0 — The Graph Language: Declarative Workflows (565 tests)
+- The dark-factory roadmap's #3 gap, closed: declarative workflow
+  graphs + per-node model routing (Fabro's core ergonomics,
+  compiled into AEOS law). `aeos graph --file plan.dot --style
+  routing.style [--run]`.
+- The language is a NAMED DOT SUBSET: digraph, node statements
+  with [attrs], `->` chains, subgraph clusters, // and # comments,
+  quoted strings. Every error is a plain-language GraphError with
+  a line number — never a SyntaxError traceback.
+- Clusters are nested harnesses: `subgraph cluster_build` compiles
+  to ONE parent task whose subplan is the cluster's nodes — the
+  v39.5 recursion, now declarative. Cross-level edges attach
+  through the parent (no phantom nodes); intra-cluster edges stay
+  inside; nesting deeper than MAX_SUBPLAN_DEPTH is a NAMED compile
+  error ("recursion is a tool, not a trap").
+- Routing stylesheets: INI sections matched by fnmatch on task
+  names (a nested-harness parent also matches its cluster name),
+  PER-KEY FALLBACK — each key takes the first matching section
+  that defines it; [*] is the fallback. Keys: model, agent,
+  max_attempts.
+- SAFETY LAW, compile-enforced (ADR-052): stylesheets route, they
+  never declassify. `class=` on a stylesheet section or on an edge
+  is a NAMED refusal — classification lives on the node where the
+  agent acts, and a routing layer that could move classes could
+  hide danger.
+- The compiled graph is the SAME TaskSpec the orchestrator
+  already runs: same governor classification, same hooks
+  (task/wave/subplan points fire through the compiled graph),
+  same gates. A declarative graph gets zero new trust.
+- Examples ship in-repo: examples/ship-graph.dot +
+  examples/routing.style (research routes to echo-fast; the build
+  cluster gets max_attempts=3; everyone falls back to echo).
+
 ## v39.5.0 — Hooks & Recursion: Interception First-Class (539 tests)
 - Cole Medin's advocacy, compiled into law: hooks are THE critical
   mechanism — decoupled from the agent (infrastructure-level),
