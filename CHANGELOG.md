@@ -3,6 +3,32 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.5.0 — Hooks & Recursion: Interception First-Class (539 tests)
+- Cole Medin's advocacy, compiled into law: hooks are THE critical
+  mechanism — decoupled from the agent (infrastructure-level),
+  composable (ordered registrations on a closed vocabulary of named
+  points), and they REDIRECT, not just reject. New `hooks.py`: a
+  thread-safe HookBus with task.pre/post, wave.pre/post,
+  subplan.pre, and refusal points; HookVeto is a named refusal in
+  plain language; a pre-hook may rewrite an action class
+  (WRITE->READ) preserving intent while removing danger; observer
+  errors are collected and named — an observer can never crash the
+  run it observes. `aeos hooks` inspects the surface;
+  `--register-demo` runs a live veto demo.
+- Recursive harness graphs (the Recursive Agent Harness pattern,
+  arXiv:2606.13643): the recursive unit is a full harness, not a
+  model call. TaskSpec gains `subplan`; a task with a subplan
+  expands into a NESTED Orchestrator with its own waves, governor,
+  gates and events (subplan.start/end, depth-stamped), MAX_DEPTH=3
+  — deeper nesting refuses NAMED ("recursion is a tool, not a
+  trap"); child failures fail the parent named; hooks compose
+  through every level.
+- Honest scope (ADR-051): hooks are in-process callables inside
+  the OS trust boundary — guardrails against agent behavior, not a
+  plugin sandbox against hostile code; subplans are runtime
+  constructs (durable checkpoints store settled parent state, the
+  child re-derives — idempotent handlers, spec §14).
+
 ## v39.4.0 — The Holdout: Digital-Twin Separation (527 tests)
 - The dark-factory validation's #1 honest gap, closed: evaluation
   the agent cannot overfit to. Scenarios live OUTSIDE the codebase

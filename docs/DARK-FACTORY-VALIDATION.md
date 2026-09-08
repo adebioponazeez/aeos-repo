@@ -1,6 +1,6 @@
 # DARK FACTORY VALIDATION — AEOS v39.3.0
 
-*Audited at v39.4.0 · 65 modules · 527 tests · 50 ADRs · zero runtime
+*Audited at v39.5.0 · 66 modules · 539 tests · 51 ADRs · zero runtime
 dependencies. References: IndyDevDan's public course listings and site
 (agenticengineer.com — no paid content accessed), the 2026 dark-software-
 factory literature (Fabro, BrainGu Guber, the BCG Plation report,
@@ -88,6 +88,36 @@ single-host, offline-first law — each is load-bearing, not accidental.
 5. **SSE/live streaming UI** — events are durable JSONL; not streamed.
 6. **Distributed scale** — checkpoint schema is portable to a broker
    (named in BENCHMARK-2026); single-host today.
+
+## Part IV — Hooks & recursion (Cole Medin; Recursive Agent Harnesses)
+
+Audited at v39.5.0 after the operator asked: "has it been woven with
+hooks as critical as advocated by Cole Medin and recursive state
+machine nested harness graph scaffolds?"
+
+**Verdict at v39.4.0: semantics present, surfaces missing.** The
+governor already WAS an access + pre-execution hook (ALLOW /
+CHECKPOINT / DENY, keyed to the earned autonomy ladder), and
+CHECKPOINT was redirect-not-reject in effect — but hooks were
+hardwired, and the graph scaffolds (orchestrator waves, colony
+DAGs) were flat: no task could expand into a sub-harness.
+
+**Closed at v39.5.0** (ADR-051):
+
+| Reference claim | AEOS mechanism | Status |
+|---|---|---|
+| Hooks are the critical mechanism (Medin: bash-command hook as guardrail) | `hooks.py` — first-class HookBus, named points, ordered registrations, `aeos hooks` inspection + live veto demo | **CLOSED** |
+| Hooks decoupled from the agent, infrastructure-level | bus emits from orchestrator seams; model-independent by construction (ADR-002 kernel untouched) | **CLOSED** |
+| Redirect, don't just reject | pre-hook may rewrite action class (WRITE→READ) — intent preserved, danger removed (tested) | **CLOSED** |
+| Veto names its reason | HookVeto: plain-language refusal, never a traceback; flows to refusal observers | **CLOSED** |
+| Observers can't crash the run | observer exceptions collected + named; run continues (tested) | **CLOSED** |
+| The recursive unit is a full harness (RAH, arXiv:2606.13643) | `TaskSpec.subplan` → nested Orchestrator: own waves, governor, gates, depth-stamped events | **CLOSED** |
+| Recursion bounded, not a trap | MAX_SUBPLAN_DEPTH=3; deeper refuses NAMED; refusal hooks observe it | **CLOSED** |
+| State-grounded invocation (Recuris: skills on current state) | skills promote from measured repetition; context assembly is state-tiered (v10 ContextOS) — partial: invocation is not yet per-state-event | **PARTIAL** |
+| Latent recursive loops (RecursiveMAS) | out of scope: AEOS recursion is control-flow, not latent-space co-training | **N/A by design** |
+| Medin's five autonomy levels / takeover point | L0–L7 ladder, earned + revocable; sponsorship tokens are the takeover point | **EXCEEDS** (pre-existing) |
+| Medin's provider independence (harness = prompts + files, agent swappable) | ModelAdapter seam, zero vendor SDKs, EchoModel default | **EXCEEDS** (pre-existing) |
+| Medin's Archon (dark-factory runner) / heartbeat | foreman + holdout + field-tested offline law | **PARITY** (pre-existing) |
 
 ## Sources
 

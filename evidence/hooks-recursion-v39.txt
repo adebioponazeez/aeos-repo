@@ -1,0 +1,85 @@
+HOOKS & RECURSION — v39.5.0
+"has all the above been designed, taken and weaved with hooks as
+critical as advocated by Cole Medin and recursive state machine
+nested harness graph scaffolds?"
+
+================================================================
+ENVIRONMENT DISCLOSURE (this receipt names its environment)
+================================================================
+Producing environment: THIS sandbox — non-root `user`, Linux
+6.1.158+, CPython 3.13.14 host. Not proved: other OSes/kernels,
+CPython < 3.10 (wheel matrix of prior receipts still stands for
+the v39.4 wheel; the v39.5 tree is verified here + CI 3.10–3.13).
+
+================================================================
+THE HONEST AUDIT (what was and was not woven, at v39.4.0)
+================================================================
+Present already, as semantics: the governor WAS an access +
+pre-execution hook (ALLOW/CHECKPOINT/DENY keyed to the earned
+autonomy ladder); CHECKPOINT was redirect-not-reject in effect;
+attach_persistence was a (monkey-patch) hook.
+Missing as SURFACES: no first-class hook bus (no named points, no
+ordered registration, no inspectability, no veto/redirect API);
+and the graph scaffolds were FLAT — orchestrator waves and colony
+DAGs could not nest: no task could expand into a sub-harness.
+Verdict: partially woven. Closed at v39.5.0.
+
+================================================================
+WHAT SHIPPED (ADR-051)
+================================================================
+1. HOOKS AS A FIRST-CLASS SURFACE (Cole Medin, compiled):
+   - closed vocabulary of named points on the harness scaffold:
+     task.pre/post, wave.pre/post, subplan.pre, refusal
+   - ordered, thread-safe, inspectable registrations
+     (`aeos hooks`; `--register-demo` runs a live veto)
+   - pre-hooks VETO (HookVeto: the message IS the reason, plain
+     language, never a traceback) or REDIRECT (rewrite the action
+     class WRITE->READ: intent preserved, danger removed)
+   - observers can never crash the run they observe (errors
+     collected + named)
+   - decoupled from the agent: the bus emits from orchestrator
+     seams; the kernel logic never moved (ADR-002)
+2. RECURSIVE HARNESS GRAPHS (Recursive Agent Harness pattern,
+   arXiv:2606.13643 — "the recursive unit is a full harness, not
+   a model call"):
+   - TaskSpec.subplan: a task with a subplan expands into a
+     NESTED Orchestrator — its own waves, governor decisions,
+     gates, and depth-stamped events (subplan.start/end)
+   - a recursive STATE MACHINE in the honest sense: a state that
+     expands into a sub-state-machine, bounded and observed
+   - MAX_SUBPLAN_DEPTH = 3: deeper refuses NAMED — "recursion is
+     a tool, not a trap" — and the refusal flows to the refusal
+     hooks like every refusal
+   - child failure fails the parent NAMED ("subplan unresolved")
+   - hooks compose through every level of nesting
+Live demo receipt (aeos hooks --register-demo):
+     safe task   -> SUCCEEDED
+     destructive -> ESCALATED (vetoed NAMED by the hook)
+
+Honest scope (ADR-051): hooks are in-process callables inside the
+OS trust boundary — guardrails against agent behavior, not a
+plugin sandbox against hostile code. Subplans are runtime
+constructs; durable checkpoints store the parent's settled state
+and the child re-derives (idempotent handlers, spec §14).
+
+================================================================
+RE-VERIFICATION AGAINST PRODUCTION CONSTRAINTS (final tree)
+================================================================
+Suite (host):                  539 passed, 1 skipped
+Production gauntlet:           27/27 (11 groups, wall 52s)
+Field gauntlet (environments): 20/20 (9 groups, wall 10s)
+Holdout (fresh vault, new
+nonce -> different instances): 5/5 families PASS
+Scribe:                        7 claims, 0 drift
+Doctor:                        8 checks, 0 failed
+Hooks-in-pipeline law:         reference pipeline runs green with
+                               hooks emitting end-to-end (tested)
+Thread-safety law:             4-task parallel wave, hook saw all
+                               4 tasks exactly once (tested)
+Depth-cap law:                 5-deep chain refused NAMED at 3
+                               (tested)
+Redirect law:                  WRITE downgraded to READ at L1 ran
+                               and succeeded (tested)
+
+SHIPPING: branch v39.5.0-hooks -> CI on the branch (proofs
+3.10/3.11/3.12/3.13) -> merge to main -> tag v39.5.0 -> release.

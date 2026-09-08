@@ -78,6 +78,11 @@ def main(argv: list[str] | None = None) -> int:
 
     ben_p = sub.add_parser("bench", help="v34: the performance envelope — measured, budgeted receipts")
     ben_p.add_argument("--workspace", default="aeos-demo")
+    hk_p = sub.add_parser("hooks",
+                          help="v39.5: the hook surface — named lifecycle points, ordered registrations, veto/redirect semantics")
+    hk_p.add_argument("--register-demo", action="store_true",
+                      help="register a demo guardrail hook and run a tiny plan to show veto/redirect in action")
+
     ho_p = sub.add_parser("holdout",
                           help="v39.4: sealed holdout scenarios vs a digital twin — evaluation the agent cannot overfit to")
     ho_p.add_argument("--init", action="store_true",
@@ -210,6 +215,56 @@ def main(argv: list[str] | None = None) -> int:
     fed_p.add_argument("--workspace", default="aeos-federation")
 
     args = parser.parse_args(argv)
+
+    if args.cmd == "hooks":
+        from .hooks import BUS
+        if args.register_demo:
+            from .hooks import HookVeto
+
+            def guard(payload):
+                if payload.get("action_class") == "DESTRUCTIVE":
+                    raise HookVeto(
+                        "demo guardrail: destructive work needs a human")
+                return payload
+
+            BUS.register("task.pre", guard, name="demo-guardrail")
+            from .contracts import (ActionClass, AgentSpec, Envelope,
+                                    Evidence, TaskSpec, Verdict)
+            from .evaluation import Evaluator
+            from .governor import Governor
+            from .models import EchoModel
+            from .observability import EventLog
+            from .orchestrator import Orchestrator
+            import tempfile
+            ag = AgentSpec(name="a", mission="m", inputs=["i"],
+                           outputs=["o"], tools=["t"], constraints=["c"],
+                           success_criteria=["s"], evaluation_criteria=["e"],
+                           escalation_conditions=["x"],
+                           termination_conditions=["t"], writes=[])
+            orch = Orchestrator(
+                agents={"a": ag},
+                handlers={"a": lambda t, o: Envelope(
+                    agent="a", objective=t.description, claims=["ran"],
+                    evidence=[Evidence(kind="gate", detail="ran",
+                                       verdict=Verdict.PASS)])},
+                model=EchoModel(), governor=Governor(log=EventLog()),
+                evaluator=Evaluator(), log=EventLog(),
+                workspace=Path(tempfile.mkdtemp()))
+            orch.run("demo", [
+                TaskSpec(name="safe", description="d", agent="a"),
+                TaskSpec(name="danger", description="d", agent="a",
+                         action_class=ActionClass.DESTRUCTIVE)])
+            states = orch.runs[0].states
+            print("HOOKS DEMO — one plan, one guardrail hook:")
+            print(f"  safe task   -> {states['safe'].value}")
+            print(f"  destructive -> {states['danger'].value} "
+                  "(vetoed NAMED by the hook)")
+            print(BUS.describe())
+            for r in BUS.registered():
+                BUS.unregister(r)
+            return 0
+        print(BUS.describe())
+        return 0
 
     if args.cmd == "holdout":
         import sys

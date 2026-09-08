@@ -17,7 +17,7 @@ what is outdated.* Verdicts are SATISFIED (artifact named), PARTIAL
 | 2 | The 10,000,000× principle | SATISFIED | The leverage metric (`triangle.py`, `leverage.py`): outcomes per human intervention, measured per run |
 | 3 | Primary execution command | SATISFIED | `aeos up` (v37) — the one front door; 30+ verbs beneath it |
 | 4 | Operating philosophy | SATISFIED | docs/PRINCIPLES.md — 41 compiled principles, each with mechanism + test |
-| 5 | Core architecture | SATISFIED | docs/ARCHITECTURE.md — 65 modules, system map |
+| 5 | Core architecture | SATISFIED | docs/ARCHITECTURE.md — 66 modules, system map |
 | 6 | Human executive layer | SATISFIED | Sponsorship tokens (one-shot, scoped); authority console; the autonomy governor's ceiling is human-issued power |
 | 7 | AI executive | SATISFIED | `governor.py` — autonomy levels earned by measured reliability, never assumed |
 | 8 | AI chief architect | SATISFIED | `codesign.py` — design slates (conservative/least-privilege/reviewer-first), human sponsors one variant |
