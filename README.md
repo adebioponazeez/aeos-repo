@@ -1,11 +1,11 @@
 # AEOS — The AI Engineering OS
 
-**Version 39.4.0 — The Holdout. Evaluation the agent cannot overfit to — sealed scenarios, digital twins.**
+**Version 39.5.0 — Hooks & Recursion. Interception as a first-class surface; harnesses nested as graphs.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
 governance, evaluation, observability, harness, entropy, learning,
-discovery). v2–v39 ship the platform around it. **527 tests. Zero
+discovery). v2–v39 ship the platform around it. **539 tests. Zero
 runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models are
@@ -16,7 +16,7 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 527 proofs incl. the 9-scenario chaos storm, ~120 seconds
+python -m pytest            # 539 proofs incl. the 9-scenario chaos storm, ~120 seconds
 aeos up                     # v37: THE FRONT DOOR — staged boot (preflight · workspace · work · shutdown); failures speak plain language
 aeos foreman [--apply]      # v39: THE AUTONOMOUS OPERATOR — surveys the workspace, fixes the mechanical class, files proposals; receipts for everything
 aeos run-demo               # full reference loop, evidence bundle
@@ -111,10 +111,11 @@ aeos selftest
 | **v39.2** | **The Gauntlet** | **Production-constraint testing for real: 11 scenario groups (random-timing SIGKILLs, concurrent boots, concurrent foremen, file-size/memory starvation, hostile wires, corrupted state, hostile paths, fuzz content, scale, offline) — run 1 found five defects, all fixed with regression tests; run 2 27/27 green; the failures now speak plain language and the atomic-write contract holds under starvation** |
 | **v39.3** | **The Field Test** | **Resilience beyond one sandbox: a 9-group field gauntlet run in genuinely different environments (empty env, read-only workspace, read-only HOME, a real 256KB tmpfs for true ENOSPC, a 64MB tmpfs workspace, shadow packages, deep unicode paths under LC_ALL=C, TZ/locale flips, non-root) — run 2 found two defect classes: a raw PermissionError when the lock file cannot be opened and a raw ENOSPC when history cannot be appended; both fixed — refusals now name their reason (lock held vs cannot-open), history and receipts degrade best-effort, and the run verdict survives; the wheel additionally verified on CPython 3.10/3.11/3.12** |
 | **v39.4** | **The Holdout** | **Digital-twin separation, the dark factory's sharpest pattern: evaluation scenarios sealed in a vault OUTSIDE the repo and every workspace (per-install nonce, zlib+keystream, sha256+hmac+merkle integrity — tamper refuses to run), run against a throwaway TWIN of the workspace — the original is proven byte-identical after every holdout; families are public law (hostile intents verdicted, determinism, named refusals, governed economics, numbered leverage), instances are seeded per install so an agent that reads the source still cannot know the tests; reports are verdict-only — scenario content never leaves the vault** |
+| **v39.5** | **Hooks & Recursion** | **Interception as a first-class surface (Cole Medin's critical mechanism, compiled): a named-point hook bus — task/wave/subplan pre+post, refusal observers — ordered, thread-safe, decoupled from the agent; pre-hooks can VETO (a named refusal, never a traceback) or REDIRECT (rewrite the action class, intent preserved, danger removed); observers can never crash the run they observe. And recursive harness graphs (the Recursive Agent Harness pattern): a task with a subplan expands into a full NESTED orchestrator — its own waves, governor, gates, events — depth-capped at 3 so recursion is a tool, not a trap; `aeos hooks --register-demo` shows a guardrail vetoing destructive work live** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **527/527 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **539/539 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.
@@ -143,10 +144,10 @@ spent human token.**
 ## Repository layout
 
 ```
-src/aeos/            # 65 modules: kernel (v1) + platform (v2–v39)
-tests/               # 527 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
+src/aeos/            # 66 modules: kernel (v1) + platform (v2–v39)
+tests/               # 539 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
 evidence/            # captured test runs, run bundles, factory runs, dashboard
-docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, spec audit, dark-factory validation, 50 ADRs
+docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, spec audit, dark-factory validation, 51 ADRs
 book/                # Volumes I–IV + v11 addendum (print/), HTML + markdown
 AGENTS.md            # short repo context for coding agents
 CHANGELOG.md         # every version, earned by tests

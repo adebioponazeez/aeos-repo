@@ -217,6 +217,12 @@ class TaskSpec:
     uid: str = field(default_factory=lambda: _uid("task"))
     started_at: float | None = None
     ended_at: float | None = None
+    # ---- v39.5: recursive harness graphs (ADR-051) ----
+    # A task with a subplan EXPANDS into a nested orchestrator run:
+    # the recursive unit is a full harness, not a model call. Runtime
+    # construct only — durable checkpoints store the parent's settled
+    # state; the child re-derives (idempotent handlers, spec §14).
+    subplan: "list[TaskSpec] | None" = None
 
     # ---- v2.0: durable runtime support (state survives the process) ----
 

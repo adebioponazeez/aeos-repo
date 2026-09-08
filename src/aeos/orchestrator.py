@@ -25,7 +25,10 @@ from .contracts import (ActionClass, AgentSpec, Envelope, TaskSpec, TaskState,
 from .evaluation import Evaluator
 from .governor import Governor
 from .models import ModelAdapter
+from .hooks import BUS, HookBus, HookVeto
 from .observability import EventLog
+
+MAX_SUBPLAN_DEPTH = 3   # recursion is a tool, not a trap (ADR-051)
 
 
 @dataclass
@@ -55,7 +58,8 @@ class Orchestrator:
                  handlers: dict[str, Handler], model: ModelAdapter,
                  governor: Governor, evaluator: Evaluator,
                  log: EventLog, workspace: Path,
-                 max_workers: int = 4) -> None:
+                 max_workers: int = 4,
+                 hooks: HookBus | None = None, depth: int = 0) -> None:
         self.agents = agents
         self.handlers = handlers
         self.model = model
@@ -65,6 +69,8 @@ class Orchestrator:
         self.workspace = workspace
         self.max_workers = max_workers
         self.runs: list[RunReport] = []
+        self.hooks = hooks if hooks is not None else BUS
+        self.depth = depth
 
     # ---------------------------------------------------------------- plan
     def validate_graph(self, tasks: list[TaskSpec]) -> list[str]:
@@ -128,12 +134,18 @@ class Orchestrator:
             report.waves += 1
             self.log.emit("wave.start", number=wave_no,
                           tasks=[t.name for t in runnable])
+            self.hooks.emit_post("wave.pre", {   # pre-point, observer law
+                "wave": wave_no, "tasks": [t.name for t in runnable],
+                "depth": self.depth})
             with ThreadPoolExecutor(max_workers=self.max_workers) as pool:
                 futures = {pool.submit(self._execute_task, t): t for t in runnable}
                 for fut in futures:
                     fut.result()
             for t in runnable:
                 pending[t.name] = t
+            self.hooks.emit_post("wave.post", {
+                "wave": wave_no, "depth": self.depth,
+                "states": {t.name: t.state.value for t in runnable}})
 
         if repair:
             for name, t in list(pending.items()):
@@ -155,10 +167,39 @@ class Orchestrator:
     def _execute_task(self, task: TaskSpec) -> None:
         task.started_at = time.time()
         task.attempts += 1
+        # ---- v39.5 hook seam (ADR-051): pre-execution interception.
+        # A hook may VETO (named refusal) or REDIRECT (rewrite the
+        # action class / description — intent preserved, danger removed).
+        try:
+            redirected = self.hooks.emit_pre("task.pre", {
+                "task": task.name, "agent": task.agent,
+                "action_class": task.action_class.value,
+                "description": task.description, "depth": self.depth})
+        except HookVeto as veto:
+            task.state = TaskState.ESCALATED
+            self.log.emit("task.escalated", task=task.name,
+                          why=f"hook veto: {veto.reason}")
+            self.hooks.emit_post("refusal", {
+                "where": "task.pre", "task": task.name, "depth": self.depth,
+                "reason": f"hook veto: {veto.reason}"})
+            task.ended_at = time.time()
+            return
+        if redirected.get("action_class") != task.action_class.value:
+            try:
+                from .contracts import ActionClass as _AC
+                task.action_class = _AC(redirected["action_class"])
+                self.log.emit("task.redirected", task=task.name,
+                              action_class=task.action_class.value,
+                              why="hook redirect, intent preserved")
+            except ValueError:
+                pass                      # unknown class: keep the original
         decision = self.governor.decide(task.action_class, task.uid)
         if decision.decision.value == "DENY":
             task.state = TaskState.ESCALATED
             self.log.emit("task.escalated", task=task.name, why=decision.reason)
+            self.hooks.emit_post("refusal", {
+                "where": "governor", "task": task.name,
+                "depth": self.depth, "reason": decision.reason})
             task.ended_at = time.time()
             return
         if decision.decision.value == "CHECKPOINT":
@@ -176,6 +217,15 @@ class Orchestrator:
         task.state = TaskState.RUNNING
         self.log.emit("task.started", task=task.name, agent=task.agent,
                       attempt=task.attempts)
+        # ---- v39.5 recursive harness graphs (ADR-051): a task with a
+        # subplan expands into a NESTED orchestrator — its own waves,
+        # governor, gates and events — depth-capped, never a trap.
+        if task.subplan is not None:
+            self._run_subplan(task)
+            self.hooks.emit_post("task.post", {
+                "task": task.name, "depth": self.depth,
+                "state": task.state.value, "subplan": True})
+            return
         try:
             handler = self.handlers[task.agent]
             envelope = handler(task, self)
@@ -198,11 +248,70 @@ class Orchestrator:
                 task.ended_at = time.time()
                 self.log.emit("task.succeeded", task=task.name,
                               duration_s=round(task.ended_at - (task.started_at or task.ended_at), 4))
+            self.hooks.emit_post("task.post", {
+                "task": task.name, "depth": self.depth,
+                "state": task.state.value})
         except Exception as exc:
             task.state = TaskState.FAILED
             self.governor.observe_outcome(False)
             task.ended_at = time.time()
             self.log.emit("task.failed", task=task.name, why=f"exception: {exc}")
+            self.hooks.emit_post("task.post", {
+                "task": task.name, "depth": self.depth,
+                "state": task.state.value, "exception": str(exc)})
+
+
+    def _run_subplan(self, task: TaskSpec) -> None:
+        """Expand a task into a nested harness run (RAH pattern)."""
+        if self.depth + 1 > MAX_SUBPLAN_DEPTH:
+            task.state = TaskState.FAILED
+            task.ended_at = time.time()
+            why = (f"subplan recursion deeper than {MAX_SUBPLAN_DEPTH} — "
+                   "refusing: recursion is a tool, not a trap")
+            self.log.emit("task.failed", task=task.name, why=why)
+            self.hooks.emit_post("refusal", {
+                "where": "subplan.depth", "task": task.name,
+                "depth": self.depth, "reason": why})
+            self.governor.observe_outcome(False)
+            return
+        try:
+            self.hooks.emit_pre("subplan.pre", {
+                "task": task.name, "depth": self.depth,
+                "children": [c.name for c in (task.subplan or [])]})
+        except HookVeto as veto:
+            task.state = TaskState.ESCALATED
+            task.ended_at = time.time()
+            self.log.emit("task.escalated", task=task.name,
+                          why=f"hook veto: {veto.reason}")
+            self.hooks.emit_post("refusal", {
+                "where": "subplan.pre", "task": task.name,
+                "depth": self.depth, "reason": f"hook veto: {veto.reason}"})
+            return
+        child = Orchestrator(agents=self.agents, handlers=self.handlers,
+                             model=self.model, governor=self.governor,
+                             evaluator=self.evaluator, log=self.log,
+                             workspace=self.workspace,
+                             max_workers=self.max_workers,
+                             hooks=self.hooks, depth=self.depth + 1)
+        self.log.emit("subplan.start", parent=task.name,
+                      depth=self.depth + 1,
+                      children=[c.name for c in task.subplan])
+        report = child.run(task.name, list(task.subplan), repair=True)
+        ok = report.accepted
+        task.ended_at = time.time()
+        self.log.emit("subplan.end", parent=task.name,
+                      depth=self.depth + 1, accepted=ok,
+                      summary=report.summary_line())
+        if ok:
+            task.state = TaskState.SUCCEEDED
+            self.governor.observe_outcome(True)
+        else:
+            failed = [n for n, st in report.states.items()
+                      if st is not TaskState.SUCCEEDED]
+            task.state = TaskState.FAILED
+            self.governor.observe_outcome(False)
+            self.log.emit("task.failed", task=task.name,
+                          why=f"subplan unresolved: {failed}")
 
 
 # ----------------------------------------------------------------- helpers

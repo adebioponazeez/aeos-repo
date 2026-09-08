@@ -1,6 +1,6 @@
 # Runbook — operating AEOS at v32
 
-*The operator's journey, current as of v39.4.0 (65 modules, 527 tests,
+*The operator's journey, current as of v39.5.0 (66 modules, 539 tests,
 zero dependencies). If this file and reality disagree, `aeos doctor`
 is the tiebreaker.*
 

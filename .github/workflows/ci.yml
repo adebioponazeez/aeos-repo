@@ -23,7 +23,7 @@ jobs:
           pip install -e .[dev]
       - name: Selftest
         run: aeos selftest
-      - name: The proofs (527 tests, chaos storm included)
+      - name: The proofs (539 tests, chaos storm included)
         id: proofs1
         continue-on-error: true   # one disclosed retry may recover; a
         run: python -m pytest tests/ -q   # retry failure fails the job
