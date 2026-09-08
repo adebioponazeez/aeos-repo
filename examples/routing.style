@@ -1,0 +1,14 @@
+# AEOS routing stylesheet — INI sections matched by fnmatch on task
+# names (a nested-harness parent also matches its cluster_* name).
+# PER-KEY FALLBACK: each key takes the first matching section
+# that defines it — specific patterns first, [*] as the fallback.
+# SAFETY LAW: model/agent/max_attempts only. A stylesheet that tries
+# to set class= is REFUSED at compile time — routing never declassifies.
+[research*]
+model=echo-fast
+
+[cluster_build]
+max_attempts=3
+
+[*]
+model=echo

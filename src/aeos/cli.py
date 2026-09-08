@@ -78,6 +78,16 @@ def main(argv: list[str] | None = None) -> int:
 
     ben_p = sub.add_parser("bench", help="v34: the performance envelope — measured, budgeted receipts")
     ben_p.add_argument("--workspace", default="aeos-demo")
+    gr_p = sub.add_parser("graph",
+                          help="v39.6: workflows as declarative DOT — clusters compile to nested harnesses; stylesheets route, never declassify")
+    gr_p.add_argument("--file", default=None,
+                      help="workflow file (DOT subset: digraph, nodes with [attrs], -> edges, subgraph cluster_*)")
+    gr_p.add_argument("--style", default=None,
+                      help="routing stylesheet (INI [fnmatch-pattern] sections: model=, agent=, max_attempts=)")
+    gr_p.add_argument("--workspace", default="aeos-graph-demo")
+    gr_p.add_argument("--run", action="store_true",
+                      help="execute the compiled plan (demo roster; the same governor/hooks/gates as every run)")
+
     hk_p = sub.add_parser("hooks",
                           help="v39.5: the hook surface — named lifecycle points, ordered registrations, veto/redirect semantics")
     hk_p.add_argument("--register-demo", action="store_true",
@@ -215,6 +225,89 @@ def main(argv: list[str] | None = None) -> int:
     fed_p.add_argument("--workspace", default="aeos-federation")
 
     args = parser.parse_args(argv)
+
+    if args.cmd == "graph":
+        from .graphlang import GraphError, compile_graph, render_plan
+        if not args.file:
+            print("GRAPH — no --file given. Try: aeos graph --file "
+                  "examples/ship-graph.dot --style examples/routing.style")
+            return 2
+        f = Path(args.file)
+        if not f.exists():
+            print(f"GRAPH REFUSED — workflow file not found: {f}")
+            return 2
+        style_text = None
+        if args.style:
+            sp = Path(args.style)
+            if not sp.exists():
+                print(f"GRAPH REFUSED — stylesheet not found: {sp}")
+                return 2
+            style_text = sp.read_text(encoding="utf-8")
+        try:
+            tasks = compile_graph(f.read_text(encoding="utf-8"),
+                                  style=style_text)
+        except GraphError as exc:
+            print(f"GRAPH REFUSED — {exc}")
+            return 2
+        print(render_plan(tasks))
+        if not args.run:
+            print("  (dry run — add --run to execute under the governor,"
+                  "  hooks and gates like every plan)")
+            return 0
+        # --run: the demo roster (deterministic engines; the same
+        # kernel path every plan takes)
+        from .contracts import (ActionClass, AgentSpec, Envelope, Evidence,
+                                Verdict)
+        from .evaluation import Evaluator
+        from .governor import Governor
+        from .hooks import BUS
+        from .models import EchoModel
+        from .observability import EventLog
+        from .orchestrator import Orchestrator
+        import tempfile
+
+        def spec(name, *classes):
+            return AgentSpec(name=name, mission=f"m-{name}", inputs=["i"],
+                             outputs=["o"], tools=["t"], constraints=["c"],
+                             success_criteria=["s"],
+                             evaluation_criteria=["e"],
+                             escalation_conditions=["x"],
+                             termination_conditions=["t"], writes=[],
+                             action_classes=list(classes) or
+                             [ActionClass.READ])
+        roster = {"executive": spec("executive", ActionClass.READ,
+                                    ActionClass.WRITE),
+                  "researcher": spec("researcher", ActionClass.NETWORK),
+                  "builder": spec("builder", ActionClass.WRITE),
+                  "evaluator": spec("evaluator")}
+
+        def handler(agent):
+            def h(task, orch):
+                return Envelope(
+                    agent=agent, objective=task.description,
+                    claims=[f"{agent} handled {task.name}"],
+                    evidence=[Evidence(kind="gate", detail=f"{task.name} ran",
+                                       verdict=Verdict.PASS)])
+            return h
+
+        log = EventLog()
+        orch = Orchestrator(
+            agents=roster,
+            handlers={n: handler(n) for n in roster},
+            model=EchoModel(), governor=Governor(log=log),
+            evaluator=Evaluator(), log=log,
+            workspace=Path(args.workspace), hooks=BUS)
+        rep = orch.run("graph", tasks)
+        print(rep.summary_line())
+        routed = [(t.name, t.model) for t in tasks if t.model]
+        if routed:
+            print(f"  routing: {', '.join(f'{n}->{m}' for n, m in routed)}")
+        sub_events = [e for e in log.events()
+                      if e.kind in ("subplan.start", "subplan.end")]
+        for e in sub_events:
+            print(f"  {e.kind}: {e.detail}")
+        print("GRAPH RUN — " + ("ACCEPTED" if rep.accepted else "REFUSED"))
+        return 0 if rep.accepted else 1
 
     if args.cmd == "hooks":
         from .hooks import BUS

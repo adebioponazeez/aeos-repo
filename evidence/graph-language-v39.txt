@@ -1,0 +1,87 @@
+THE GRAPH LANGUAGE — v39.6.0
+"continue" — the roadmap's next honest gap, closed: declarative
+workflow graphs + per-node routing (Fabro's core ergonomics),
+composed with v39.5's hooks and recursion.
+
+================================================================
+ENVIRONMENT DISCLOSURE (this receipt names its environment)
+================================================================
+Producing environment: THIS sandbox — non-root `user`, Linux
+6.1.158+, CPython 3.13.14 host; wheel verified on real
+uv-managed CPython 3.10.21 / 3.11.16 / 3.12.14 (fresh venvs).
+Not proved: other OSes/kernels/filesystems, CPython < 3.10.
+
+================================================================
+WHAT SHIPPED (ADR-052)
+================================================================
+1. THE LANGUAGE — a NAMED DOT SUBSET: digraph, node [attrs],
+   -> chains, subgraph cluster_*, // and # comments, quoted
+   strings. Every error a plain-language GraphError with a line
+   number — never a SyntaxError traceback (tested: lexer,
+   parser, semantics all name their failures).
+2. CLUSTERS ARE NESTED HARNESSES: subgraph cluster_build compiles
+   to ONE parent task whose subplan is the cluster's nodes —
+   the v39.5 recursion, declarative. Cross-level edges attach
+   through the parent (no phantom nodes — a real parser bug
+   found and fixed during the build); same-cluster edges
+   declared at the parent level are placed inside; nesting
+   deeper than MAX_SUBPLAN_DEPTH is a NAMED compile error.
+3. ROUTING STYLESHEETS: INI sections matched by fnmatch on task
+   names (a nested-harness parent also matches its cluster
+   name); PER-KEY FALLBACK — each key takes the first matching
+   section that defines it, [*] is the fallback. Keys: model,
+   agent, max_attempts.
+4. THE SAFETY LAW, COMPILE-ENFORCED: stylesheets route, they
+   NEVER declassify. class= on a stylesheet section or an edge
+   is a NAMED refusal — classification lives on the node where
+   the agent acts; a routing layer that could move classes
+   could hide danger. Regression-tested in both places.
+5. ZERO NEW TRUST: the compiled graph is the SAME TaskSpec the
+   orchestrator runs — governor classifies every task, hooks
+   fire at every point (wave/task/subplan through the compiled
+   graph — tested), gates grade every envelope. Declarative
+   buys ergonomics, not immunity.
+Live receipt (aeos graph --file examples/ship-graph.dot --style
+examples/routing.style --run):
+   7 task(s) compiled; build cluster -> nested harness
+   (subplan.start/end depth=1); routing research->echo-fast,
+   build max_attempts=3 via [cluster_build], all else echo;
+   GRAPH RUN — ACCEPTED.
+
+================================================================
+HONESTY ABOUT THE PROCESS
+================================================================
+- Found and fixed during the build: cross-level edges made the
+  PARSER create phantom empty nodes in the parent graph (the
+  "node 'core' has no agent" misfire) — edges are now stored raw
+  and resolved at compile time.
+- Found and fixed: dependency direction inverted in the first
+  compile (a -> b must mean b depends on a) — caught by the
+  direction test, not by luck.
+- Routing semantics sharpened twice from the shipped example:
+  last-match-wins -> first-match-wins -> PER-KEY FALLBACK (the
+  CSS habit), and cluster names now match their parent tasks.
+- The count fixed point: scribe counts passed+failed, so the
+  truthful claim is the green-state total (565), reached and
+  verified stable.
+
+================================================================
+RE-VERIFICATION AGAINST PRODUCTION CONSTRAINTS (final artifacts)
+================================================================
+Suite (host, editable):       565 passed, 1 skipped
+Production gauntlet:          27/27 (11 groups, wall 55s)
+Field gauntlet (environments):20/20 (9 groups, wall 10s)
+Holdout (fresh vault, new
+nonce -> new instances):      5/5 families PASS
+Wheel on CPython 3.10.21:     563 passed, 3 skipped (2 are
+                              3.12-gated syntax tests, by design)
+Wheel on CPython 3.11.16:     563 passed, 3 skipped
+Wheel on CPython 3.12.14:     565 passed, 1 skipped
+Wheel graph CLI:              ACCEPTED on all three
+Scribe:                       7 claims, 0 drift
+Doctor:                       8 checks, 0 failed
+Examples in-repo:             examples/ship-graph.dot,
+                              examples/routing.style
+
+SHIPPING: branch v39.6.0-graph -> CI on the branch (proofs
+3.10/3.11/3.12/3.13) -> merge to main -> tag v39.6.0 -> release.

@@ -223,6 +223,11 @@ class TaskSpec:
     # construct only — durable checkpoints store the parent's settled
     # state; the child re-derives (idempotent handlers, spec §14).
     subplan: "list[TaskSpec] | None" = None
+    # ---- v39.6: declarative routing (ADR-052) ----
+    # A routing hint from a stylesheet: WHICH adapter this node
+    # prefers. Routing may pick a model; it may NEVER change the
+    # action class — stylesheets route, they do not declassify.
+    model: str | None = None
 
     # ---- v2.0: durable runtime support (state survives the process) ----
 

@@ -1,0 +1,21 @@
+// AEOS workflow graph — the declarative process, version-controlled
+// and diffable. Clusters compile to NESTED HARNESSES (subplans);
+// every task still passes the governor, hooks and gates.
+digraph ship {
+  define   [label="Formalize the intent into one testable objective", agent="executive"];
+  research [label="Ground the objective in current, sourced facts", agent="researcher", class="NETWORK"];
+  define -> research;
+
+  subgraph cluster_build {
+    // a nested harness: its own waves, gates, depth-stamped events
+    core [label="Build the core module", agent="builder", class="WRITE"];
+    cli  [label="Build the CLI against it", agent="builder", class="WRITE"];
+    core -> cli;
+  }
+  research -> core;
+
+  evaluate [label="Grade the evidence, not the narrative", agent="evaluator"];
+  release  [label="Ship the verified bundle", agent="executive", class="WRITE"];
+  cli -> evaluate;
+  evaluate -> release;
+}
