@@ -1,0 +1,68 @@
+THE LIVE SHOPFLOOR — v39.7.0
+"continue" — the roadmap's gap #5 closed: events streamed LIVE.
+
+================================================================
+ENVIRONMENT DISCLOSURE (this receipt names its environment)
+================================================================
+Producing environment: THIS sandbox — non-root `user`, Linux
+6.1.158+, CPython 3.13.14 host; wheel verified on real uv-managed
+CPython 3.10.21 / 3.11.16 / 3.12.14 (fresh venvs). Not proved:
+other OSes/kernels/filesystems, CPython < 3.10.
+
+================================================================
+WHAT SHIPPED (ADR-053)
+================================================================
+`aeos stream --workspace <ws>` — the live shopfloor:
+- SSE over the Consulate pattern (stdlib ThreadingHTTPServer,
+  read-only): GET /events serves text/event-stream — the newest
+  .aeos/runs/*-events.jsonl replayed, then tailed live (0.4s
+  poll), rolling over automatically when a newer run starts.
+- GET / — a self-contained console: one HTML page, inline CSS/JS,
+  NO CDN, no framework (offline law); live feed, per-kind
+  counters, client-side filter, failure/success highlighting.
+- GET /health — workspace, events file, count, uptime.
+- READ-ONLY BY LAW: POST/PUT/DELETE are named 405s ("the shopfloor
+  streams events; it never accepts commands — the write surface
+  is the CLI, under the governor"). Streaming adds zero new truth:
+  every event served is the same durable line already on disk.
+- Loopback by default; --bind widens only by explicit operator
+  decision. Named refusals: busy port, missing workspace, no run
+  history (with remedy), unknown path. Never a traceback.
+LIVE DEMO (this receipt's environment): server bound and serving
+a REAL workspace while real `aeos foreman --apply` cycles feed it
+— health OK, SSE delivering, run roll-over exercised.
+
+Honest scope (ADR-053): the tail is polling, not inotify (stdlib
+law); one workspace per server (scoped, not a fleet dashboard);
+no auth on the stream — loopback-bound and read-only, and
+exposing it beyond loopback should sit behind a real proxy.
+
+================================================================
+HONESTY ABOUT THE PROCESS
+================================================================
+- The first test run hung for minutes — fault-handler trace showed
+  the truth: a test helper read() the /events body, and an SSE
+  stream NEVER EOFs. The hang was the stream WORKING; the helper
+  was wrong. Tests now treat /events as a stream (and the lesson
+  is on the record in ADR-053).
+- The fixture's wait-for-bind never actually connected (lazy
+  HTTPConnection) — replaced with a real socket probe.
+
+================================================================
+RE-VERIFICATION AGAINST PRODUCTION CONSTRAINTS (final artifacts)
+================================================================
+Suite (host, editable):       577 passed, 1 skipped
+Production gauntlet:          27/27 (11 groups, wall 55s)
+Field gauntlet (environments):20/20 (9 groups, wall 11s)
+Holdout (fresh vault, new
+nonce -> new instances):      5/5 families PASS
+Wheel on CPython 3.10.21:     575 passed, 3 skipped (2 are
+                              3.12-gated syntax tests, by design)
+Wheel on CPython 3.11.16:     575 passed, 3 skipped
+Wheel on CPython 3.12.14:     577 passed, 1 skipped
+Wheel stream smoke:           server up + health OK on all three
+Scribe:                       7 claims, 0 drift
+Doctor:                       8 checks, 0 failed
+
+SHIPPING: branch v39.7.0-stream -> CI on the branch (proofs
+3.10/3.11/3.12/3.13) -> merge to main -> tag v39.7.0 -> release.

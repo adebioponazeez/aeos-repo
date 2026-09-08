@@ -1,6 +1,6 @@
 # DARK FACTORY VALIDATION — AEOS v39.3.0
 
-*Audited at v39.6.0 · 67 modules · 565 tests · 52 ADRs · zero runtime
+*Audited at v39.7.0 · 68 modules · 577 tests · 53 ADRs · zero runtime
 dependencies. References: IndyDevDan's public course listings and site
 (agenticengineer.com — no paid content accessed), the 2026 dark-software-
 factory literature (Fabro, BrainGu Guber, the BCG Plation report,
@@ -62,7 +62,7 @@ The 2026 references agree on a pattern list. Mapping, with verdicts:
 | 7 | Layered evaluation, independent judges, holdouts (BCG; abaditya digital twins) | deterministic judges + weights (`evals.py`); chaos storm ×9; production gauntlet ×11; field test ×9 groups; **v39.4 Holdout: sealed per-install scenario vault outside the repo, digital-twin runs, verdict-only reports, tamper-refusing seals** | **PARITY/EXCEEDS** — closed at v39.4.0 (scope honestly bounded in ADR-050: boundary-based separation, not same-user adversarial security) |
 | 8 | Deterministic workflow graphs (Fabro DOT pipelines) | `orchestrator.py` — dependency-ordered parallel waves; durable PlanCheckpoint after every task; **v39.6 `graphlang.py`: workflows as a named DOT subset, clusters compile to nested harnesses, every error named — plus `colony.py` DAGs** | **PARITY** |
 | 9 | Multi-model routing / ensembles (Fabro stylesheets) | `models.py` adapter protocol; provider adapters; triangle control/cost/speed per run; **v39.6 routing stylesheets: fnmatch sections, per-key fallback, `TaskSpec.model` hints — compile-enforced: routing never declassifies** | **PARITY** — closed at v39.6.0 (production adapter selection stays at handler-build time, stated in ADR-052) |
-| 10 | Run observability, durable events (Fabro SSE) | `fleet.py` JSONL event bus; `otel.py`/`otlp.py` OTel export; `telemetry.py`; console/visualizer | **PARITY** (no SSE stream / web UI) |
+| 10 | Run observability, durable events (Fabro SSE) | `fleet.py` JSONL event bus; `otel.py`/`otlp.py` OTel export; `telemetry.py`; console/visualizer; **v39.7 Live Shopfloor: SSE streaming (`aeos stream`) — backlog replay, live tail, run roll-over, self-contained read-only console, loopback by default** | **PARITY** |
 | 11 | Checkpointing every stage (Fabro git checkpointing) | copy-on-write harness checkpoints; atomic writes; Merkle-verified backup/restore | **PARITY** (filesystem-level; not git-branch-per-stage) |
 | 12 | Split-and-merge parallelism (mindstudio; abaditya git worktrees) | orchestrator PARALLEL WAVES with per-task workspaces, then MERGE | **PARITY** (in-process workspaces, not git worktrees) |
 | 13 | Autonomy ladder (mindstudio 5-level spectrum) | v5 ladder L1–L7, earned promote/demote, governor EMA feedback, destructive checkpoints even at L6 | **EXCEEDS** (7 levels, earned + revocable, law-tested) |
@@ -78,13 +78,13 @@ single-host, offline-first law — each is load-bearing, not accidental.
 
 ## Part III — Honest gaps (the roadmap)
 
+0. *(closed at v39.7.0 — SSE/live streaming: `aeos stream`, the Live Shopfloor; see `stream.py` and ADR-053)*
 0. *(closed at v39.6.0 — declarative workflow graphs + per-node routing stylesheets; see `graphlang.py` and ADR-052)*
 0. *(closed at v39.4.0 — holdout/digital-twin separation; see `holdout.py` and ADR-050)*
 1. **VM/container execution isolation** — process isolation only;
    stdlib-only forbids docker. The seam is `sandbox_runner.py`.
 4. **Git-native checkpointing** — worktree-per-agent, branch-per-task;
    AEOS checkpoints the filesystem, not the git graph.
-5. **SSE/live streaming UI** — events are durable JSONL; not streamed.
 6. **Distributed scale** — checkpoint schema is portable to a broker
    (named in BENCHMARK-2026); single-host today.
 
