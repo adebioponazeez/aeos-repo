@@ -1,11 +1,11 @@
 # AEOS — The AI Engineering OS
 
-**Version 39.6.0 — The Graph Language. The process itself, declarative: DOT workflows, nested-harness clusters, routing stylesheets.**
+**Version 39.7.0 — The Live Shopfloor. Events streamed live: SSE + console, read-only, stdlib all the way down.**
 
 A working, model-agnostic operating system for agentic engineering. v1.0
 shipped the kernel (contracts, orchestration, context, memory, skills,
 governance, evaluation, observability, harness, entropy, learning,
-discovery). v2–v39 ship the platform around it. **565 tests. Zero
+discovery). v2–v39 ship the platform around it. **577 tests. Zero
 runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models are
@@ -16,7 +16,7 @@ runtime dependencies.**
 
 ```bash
 pip install -e .            # zero runtime dependencies
-python -m pytest            # 565 proofs incl. the 9-scenario chaos storm, ~120 seconds
+python -m pytest            # 577 proofs incl. the 9-scenario chaos storm, ~120 seconds
 aeos up                     # v37: THE FRONT DOOR — staged boot (preflight · workspace · work · shutdown); failures speak plain language
 aeos foreman [--apply]      # v39: THE AUTONOMOUS OPERATOR — surveys the workspace, fixes the mechanical class, files proposals; receipts for everything
 aeos run-demo               # full reference loop, evidence bundle
@@ -113,10 +113,11 @@ aeos selftest
 | **v39.4** | **The Holdout** | **Digital-twin separation, the dark factory's sharpest pattern: evaluation scenarios sealed in a vault OUTSIDE the repo and every workspace (per-install nonce, zlib+keystream, sha256+hmac+merkle integrity — tamper refuses to run), run against a throwaway TWIN of the workspace — the original is proven byte-identical after every holdout; families are public law (hostile intents verdicted, determinism, named refusals, governed economics, numbered leverage), instances are seeded per install so an agent that reads the source still cannot know the tests; reports are verdict-only — scenario content never leaves the vault** |
 | **v39.5** | **Hooks & Recursion** | **Interception as a first-class surface (Cole Medin's critical mechanism, compiled): a named-point hook bus — task/wave/subplan pre+post, refusal observers — ordered, thread-safe, decoupled from the agent; pre-hooks can VETO (a named refusal, never a traceback) or REDIRECT (rewrite the action class, intent preserved, danger removed); observers can never crash the run they observe. And recursive harness graphs (the Recursive Agent Harness pattern): a task with a subplan expands into a full NESTED orchestrator — its own waves, governor, gates, events — depth-capped at 3 so recursion is a tool, not a trap; `aeos hooks --register-demo` shows a guardrail vetoing destructive work live** |
 | **v39.6** | **The Graph Language** | **The process itself goes declarative: workflows as version-controlled Graphviz DOT (a named subset — every syntax error named, never a traceback); `subgraph cluster_*` compiles to a NESTED HARNESS (the v39.5 recursion, now declarative); routing stylesheets (INI sections matched by fnmatch, per-key fallback) pick the adapter per node — and the safety law is compile-enforced: stylesheets route, they NEVER declassify (`class=` on a stylesheet or edge is a named refusal); the compiled graph is the same TaskSpec the orchestrator runs — same governor, hooks, gates — a declarative graph gets zero new trust; `aeos graph --file examples/ship-graph.dot --run` executes one live** |
+| **v39.7** | **The Live Shopfloor** | **Events streamed LIVE (the roadmap's SSE gap closed): Server-Sent Events over stdlib http.server — the workspace's newest run stream replayed, then tailed live, rolling over when a newer run starts; a self-contained console (inline CSS/JS, zero CDN, offline law) with live event feed, per-kind counters and filtering; the surface is READ-ONLY by law (GET only — POST/PUT/DELETE are named 405s: the write surface stays the CLI under the governor); loopback by default, opened wider only by explicit operator flag; `aeos stream --workspace <ws>`** |
 
 ## What v7 proves (reproduced in `evidence/`)
 
-- **565/565 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
+- **577/577 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
 - **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
   leverage ratio **7.0** (7 outcomes, 0 human interventions), full
   evidence bundle + dashboard.
@@ -145,10 +146,10 @@ spent human token.**
 ## Repository layout
 
 ```
-src/aeos/            # 67 modules: kernel (v1) + platform (v2–v39)
-tests/               # 565 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
+src/aeos/            # 68 modules: kernel (v1) + platform (v2–v39)
+tests/               # 577 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
 evidence/            # captured test runs, run bundles, factory runs, dashboard
-docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, spec audit, dark-factory validation, 52 ADRs
+docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, spec audit, dark-factory validation, 53 ADRs
 book/                # Volumes I–IV + v11 addendum (print/), HTML + markdown
 AGENTS.md            # short repo context for coding agents
 CHANGELOG.md         # every version, earned by tests

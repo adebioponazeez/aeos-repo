@@ -3,6 +3,29 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.7.0 — The Live Shopfloor: Events Streamed Live (577 tests)
+- The dark-factory roadmap's gap #5, closed: events were durable
+  JSONL but nothing streamed them. `aeos stream --workspace <ws>`
+  serves the shopfloor live.
+- SSE over the same stdlib pattern as the Consulate (v31):
+  ThreadingHTTPServer, GET /events (text/event-stream) — the
+  newest .aeos/runs/*-events.jsonl replayed from the start, then
+  tailed live (0.4s poll), rolling over automatically when a NEWER
+  run file appears. Streaming adds zero new truth: every event is
+  the same durable line already on disk.
+- The console (GET /): one self-contained HTML page — inline CSS/
+  JS, no CDN, no framework (offline law); live feed, per-kind
+  counters, client-side filter, failure/success highlighting.
+- READ-ONLY BY LAW: POST/PUT/DELETE are named 405s ("the
+  shopfloor streams events; it never accepts commands — the write
+  surface is the CLI, under the governor"). Loopback by default;
+  --bind widens only by explicit operator decision.
+- Named refusals everywhere: busy port, missing workspace, no run
+  history (with remedy), unknown path. Never a traceback.
+- Found while testing the tests: an SSE stream never EOFs, so a
+  test helper that read() the body hung forever — the hang was
+  the STREAM WORKING; the tests now treat /events as a stream.
+
 ## v39.6.0 — The Graph Language: Declarative Workflows (565 tests)
 - The dark-factory roadmap's #3 gap, closed: declarative workflow
   graphs + per-node model routing (Fabro's core ergonomics,

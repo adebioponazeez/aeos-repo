@@ -78,6 +78,13 @@ def main(argv: list[str] | None = None) -> int:
 
     ben_p = sub.add_parser("bench", help="v34: the performance envelope — measured, budgeted receipts")
     ben_p.add_argument("--workspace", default="aeos-demo")
+    st_p = sub.add_parser("stream",
+                          help="v39.7: the live shopfloor — SSE event stream + console, read-only, loopback by default")
+    st_p.add_argument("--workspace", default="aeos-demo")
+    st_p.add_argument("--bind", default="127.0.0.1",
+                      help="default 127.0.0.1 (loopback law); widen explicitly at your own risk")
+    st_p.add_argument("--port", type=int, default=8787)
+
     gr_p = sub.add_parser("graph",
                           help="v39.6: workflows as declarative DOT — clusters compile to nested harnesses; stylesheets route, never declassify")
     gr_p.add_argument("--file", default=None,
@@ -225,6 +232,17 @@ def main(argv: list[str] | None = None) -> int:
     fed_p.add_argument("--workspace", default="aeos-federation")
 
     args = parser.parse_args(argv)
+
+    if args.cmd == "stream":
+        from .stream import ShopfloorServer
+        ws = Path(args.workspace)
+        if not (ws / ".aeos").exists():
+            print(f"SHOPFLOOR REFUSED — no .aeos in {ws}: the shopfloor "
+                  "attaches to REAL run history; run `aeos up --workspace "
+                  f"{ws}` first")
+            return 2
+        return ShopfloorServer(ws, bind=args.bind,
+                               port=args.port).start()
 
     if args.cmd == "graph":
         from .graphlang import GraphError, compile_graph, render_plan
