@@ -70,10 +70,8 @@ def sc_kill_storm(ws: Path) -> StormRow:
         proc.kill()                      # SIGKILL: no cleanup ever runs
         proc.wait()
     ok = _completed_run(ws)
-    note = ""
     if not ok:                              # F-07: one disclosed retry —
         ok = _completed_run(ws)             # loaded runners get one pass
-        note = " (recovered on retry)"
     return StormRow("kill -9 storm x3 + recovery", ok,
                     "power cut mid-run thrice; final run accepted" if ok
                     else "recovery run FAILED")
@@ -161,11 +159,11 @@ def sc_socket_blackout(ws: Path) -> StormRow:
             idx.close()
             EventBus(ws / ".aeos" / "e2.jsonl").publish("TICK", "storm")
         ok = b["accepted"] is True
-    except Exception as exc:
-        ok = False
-    return StormRow("total socket blackout", ok,
-                    "zero network calls; run+recall+fleet completed"
-                    if ok else f"network dependency leaked: {exc}")
+        why = "zero network calls; run+recall+fleet completed"
+    except Exception as exc:      # capture INSIDE: `as` names unbind at
+        ok = False                # block exit — interpolating outside was
+        why = f"network dependency leaked: {exc}"   # a latent NameError
+    return StormRow("total socket blackout", ok, why)
 
 
 def sc_memory_cap(ws: Path) -> StormRow:
@@ -176,7 +174,6 @@ def sc_memory_cap(ws: Path) -> StormRow:
         limit = 256 * 1024 * 1024
         resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
     import functools
-    cap2 = cap
     run = functools.partial(
         subprocess.run, _run_cmd(ws), capture_output=True, text=True,
         timeout=240)

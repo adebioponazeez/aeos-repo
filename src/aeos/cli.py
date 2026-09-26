@@ -11,6 +11,52 @@ import time
 from pathlib import Path
 
 
+def _demo_orchestrator(workspace, log=None, hooks=None):
+    """One demo factory for every surface that executes a plan live
+    (graph --run, hooks --register-demo). The audit's first
+    de-disjointing law: the demo path is a product path or it is
+    a lie — ONE roster, ONE handler shape, ONE wiring."""
+    from .contracts import (ActionClass, AgentSpec, Envelope, Evidence,
+                            Verdict)
+    from .evaluation import Evaluator
+    from .governor import Governor
+    from .hooks import BUS
+    from .models import EchoModel
+    from .observability import EventLog
+    from .orchestrator import Orchestrator
+
+    def spec(name, *classes):
+        return AgentSpec(name=name, mission=f"m-{name}", inputs=["i"],
+                         outputs=["o"], tools=["t"], constraints=["c"],
+                         success_criteria=["s"], evaluation_criteria=["e"],
+                         escalation_conditions=["x"],
+                         termination_conditions=["t"], writes=[],
+                         action_classes=list(classes) or [ActionClass.READ])
+
+    roster = {"executive": spec("executive", ActionClass.READ,
+                                ActionClass.WRITE),
+              "researcher": spec("researcher", ActionClass.NETWORK),
+              "builder": spec("builder", ActionClass.WRITE),
+              "evaluator": spec("evaluator")}
+
+    def handler(agent):
+        def h(task, orch):
+            return Envelope(
+                agent=agent, objective=task.description,
+                claims=[f"{agent} handled {task.name}"],
+                evidence=[Evidence(kind="gate", detail=f"{task.name} ran",
+                                   verdict=Verdict.PASS)])
+        return h
+
+    log = log if log is not None else EventLog()
+    return Orchestrator(agents=roster,
+                        handlers={n: handler(n) for n in roster},
+                        model=EchoModel(), governor=Governor(log=log),
+                        evaluator=Evaluator(), log=log,
+                        workspace=Path(workspace),
+                        hooks=hooks if hooks is not None else BUS)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="aeos",
@@ -67,7 +113,7 @@ def main(argv: list[str] | None = None) -> int:
     obx_e.add_argument("--payload", required=True, help="the record (text/JSON)")
     obx_e.add_argument("--key", default=None,
                        help="idempotency key (default: sha256 of endpoint+payload)")
-    obx_s = obx_sub.add_parser("status", help="queue counts — no side effects")
+    obx_sub.add_parser("status", help="queue counts — no side effects")
     obx_f = obx_sub.add_parser("flush",
                                help="replay pending rows to ONE explicit endpoint")
     obx_f.add_argument("--endpoint", required=True,
@@ -91,7 +137,7 @@ def main(argv: list[str] | None = None) -> int:
                       help="workflow file (DOT subset: digraph, nodes with [attrs], -> edges, subgraph cluster_*)")
     gr_p.add_argument("--style", default=None,
                       help="routing stylesheet (INI [fnmatch-pattern] sections: model=, agent=, max_attempts=)")
-    gr_p.add_argument("--workspace", default="aeos-graph-demo")
+    gr_p.add_argument("--workspace", default="aeos-demo")
     gr_p.add_argument("--run", action="store_true",
                       help="execute the compiled plan (demo roster; the same governor/hooks/gates as every run)")
 
@@ -164,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
     mcp_p.add_argument("--workspace", default="aeos-demo",
                        help="v31: workspace for --serve-http --roundtrip calls")
 
-    col_p = sub.add_parser("colony", help="v25: explicit graph orchestration demo")
+    sub.add_parser("colony", help="v25: explicit graph orchestration demo")
     tel_p = sub.add_parser("telemetry", help="v22: cache telemetry — hit rate and effective tokens")
     tel_p.add_argument("--live", action="store_true",
                        help="read a live provider response (requires AEOS_LIVE=1)")
@@ -272,49 +318,17 @@ def main(argv: list[str] | None = None) -> int:
             print("  (dry run — add --run to execute under the governor,"
                   "  hooks and gates like every plan)")
             return 0
-        # --run: the demo roster (deterministic engines; the same
-        # kernel path every plan takes)
-        from .contracts import (ActionClass, AgentSpec, Envelope, Evidence,
-                                Verdict)
-        from .evaluation import Evaluator
-        from .governor import Governor
-        from .hooks import BUS
-        from .models import EchoModel
+        # --run: ONE demo factory for every live surface (audit law:
+        # the demo path is a product path); events stream LIVE into
+        # the workspace's runs dir so `aeos stream` shows graph runs
+        from .harness import Harness
         from .observability import EventLog
-        from .orchestrator import Orchestrator
-        import tempfile
-
-        def spec(name, *classes):
-            return AgentSpec(name=name, mission=f"m-{name}", inputs=["i"],
-                             outputs=["o"], tools=["t"], constraints=["c"],
-                             success_criteria=["s"],
-                             evaluation_criteria=["e"],
-                             escalation_conditions=["x"],
-                             termination_conditions=["t"], writes=[],
-                             action_classes=list(classes) or
-                             [ActionClass.READ])
-        roster = {"executive": spec("executive", ActionClass.READ,
-                                    ActionClass.WRITE),
-                  "researcher": spec("researcher", ActionClass.NETWORK),
-                  "builder": spec("builder", ActionClass.WRITE),
-                  "evaluator": spec("evaluator")}
-
-        def handler(agent):
-            def h(task, orch):
-                return Envelope(
-                    agent=agent, objective=task.description,
-                    claims=[f"{agent} handled {task.name}"],
-                    evidence=[Evidence(kind="gate", detail=f"{task.name} ran",
-                                       verdict=Verdict.PASS)])
-            return h
-
-        log = EventLog()
-        orch = Orchestrator(
-            agents=roster,
-            handlers={n: handler(n) for n in roster},
-            model=EchoModel(), governor=Governor(log=log),
-            evaluator=Evaluator(), log=log,
-            workspace=Path(args.workspace), hooks=BUS)
+        ws = Path(args.workspace)
+        ws.mkdir(parents=True, exist_ok=True)
+        ev_path = (Harness(ws).state_dir("runs")
+                   / f"{int(time.time())}-events.jsonl")
+        log = EventLog(sink=ev_path)
+        orch = _demo_orchestrator(ws, log=log)
         rep = orch.run("graph", tasks)
         print(rep.summary_line())
         routed = [(t.name, t.model) for t in tasks if t.model]
@@ -325,6 +339,8 @@ def main(argv: list[str] | None = None) -> int:
         for e in sub_events:
             print(f"  {e.kind}: {e.detail}")
         print("GRAPH RUN — " + ("ACCEPTED" if rep.accepted else "REFUSED"))
+        print(f"  events (live): {ev_path}")
+        print(f"  shopfloor: aeos stream --workspace {ws}")
         return 0 if rep.accepted else 1
 
     if args.cmd == "hooks":
@@ -339,31 +355,12 @@ def main(argv: list[str] | None = None) -> int:
                 return payload
 
             BUS.register("task.pre", guard, name="demo-guardrail")
-            from .contracts import (ActionClass, AgentSpec, Envelope,
-                                    Evidence, TaskSpec, Verdict)
-            from .evaluation import Evaluator
-            from .governor import Governor
-            from .models import EchoModel
-            from .observability import EventLog
-            from .orchestrator import Orchestrator
+            from .contracts import ActionClass, TaskSpec
             import tempfile
-            ag = AgentSpec(name="a", mission="m", inputs=["i"],
-                           outputs=["o"], tools=["t"], constraints=["c"],
-                           success_criteria=["s"], evaluation_criteria=["e"],
-                           escalation_conditions=["x"],
-                           termination_conditions=["t"], writes=[])
-            orch = Orchestrator(
-                agents={"a": ag},
-                handlers={"a": lambda t, o: Envelope(
-                    agent="a", objective=t.description, claims=["ran"],
-                    evidence=[Evidence(kind="gate", detail="ran",
-                                       verdict=Verdict.PASS)])},
-                model=EchoModel(), governor=Governor(log=EventLog()),
-                evaluator=Evaluator(), log=EventLog(),
-                workspace=Path(tempfile.mkdtemp()))
+            orch = _demo_orchestrator(tempfile.mkdtemp())
             orch.run("demo", [
-                TaskSpec(name="safe", description="d", agent="a"),
-                TaskSpec(name="danger", description="d", agent="a",
+                TaskSpec(name="safe", description="d", agent="executive"),
+                TaskSpec(name="danger", description="d", agent="executive",
                          action_class=ActionClass.DESTRUCTIVE)])
             states = orch.runs[0].states
             print("HOOKS DEMO — one plan, one guardrail hook:")
@@ -599,7 +596,7 @@ def main(argv: list[str] | None = None) -> int:
             print("  free space or point --out elsewhere; nothing "
                   "was written (atomic contract)")
             return 1
-        print(f"BACKUP — deterministic, manifest-verified")
+        print("BACKUP — deterministic, manifest-verified")
         print(f"  {r['files']} file(s), {r['bytes'] // 1024} KB -> {r['path']}")
         print(f"  sha256: {r['sha256']}")
         print("  caches skipped (recall rebuilds); locks never carried")
@@ -704,8 +701,8 @@ def main(argv: list[str] | None = None) -> int:
         from .mcp_http import MCPHTTPClient
         from .mcp_http_server import Consulate
         with Consulate(args.bind, args.port) as c:
-            print(f"CONSULATE — AEOS over HTTP, read-only by law "
-                  f"(ADR-040)")
+            print("CONSULATE — AEOS over HTTP, read-only by law "
+                  "(ADR-040)")
             print(f"  listening: {c.url} (bind {c.bind})"
                   f"{' — LOOPBACK ONLY' if c.bind == '127.0.0.1' else ''}")
             if not args.roundtrip:
@@ -788,7 +785,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "telemetry":
         import os as _os
-        from .telemetry import UsageSnapshot, effective_tokens, parse_usage
+        from .telemetry import effective_tokens, parse_usage
         if args.live:
             if _os.environ.get("AEOS_LIVE") != "1":
                 print("live telemetry needs explicit opt-in: AEOS_LIVE=1 "

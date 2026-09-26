@@ -216,3 +216,56 @@ class TestCLI:
         assert main() == 2
         assert "SHOPFLOOR REFUSED" in capsys.readouterr().out
         assert "aeos up" in capsys.readouterr().out or True
+
+
+class TestGraphRunsAreStreamable:
+    """v39.7.1 (the audit): graph runs write LIVE event sinks into the
+    workspace's runs dir — the shopfloor must see them. Before the
+    audit, `aeos graph --run` logged to memory only: two surfaces,
+    blind to each other (the disjointedness, fixed and pinned)."""
+
+    def test_graph_run_events_reach_the_runs_dir(self, tmp_path,
+                                                 monkeypatch, capsys):
+        from aeos.cli import main
+        from aeos.stream import newest_events_file
+        repo = Path(__file__).resolve().parent.parent
+        ws = tmp_path / "ws"
+        monkeypatch.setattr(
+            "sys.argv", ["aeos", "graph", "--file",
+                         str(repo / "examples" / "ship-graph.dot"),
+                         "--run", "--workspace", str(ws)])
+        assert main() == 0
+        out = capsys.readouterr().out
+        assert "events (live):" in out and "shopfloor:" in out
+        ev = newest_events_file(ws)
+        assert ev is not None, "graph run left no events file"
+        kinds = {json.loads(l)["kind"] for l in
+                 ev.read_text().strip().splitlines() if l}
+        assert "task.started" in kinds and "subplan.start" in kinds
+
+    def test_shopfloor_health_sees_a_graph_run(self, tmp_path, monkeypatch):
+        from aeos.cli import main
+        from aeos.stream import ShopfloorServer
+        repo = Path(__file__).resolve().parent.parent
+        ws = tmp_path / "ws"
+        monkeypatch.setattr(
+            "sys.argv", ["aeos", "graph", "--file",
+                         str(repo / "examples" / "ship-graph.dot"),
+                         "--run", "--workspace", str(ws)])
+        assert main() == 0
+        srv = ShopfloorServer(ws, port=_port())
+        threading.Thread(target=srv.start, daemon=True).start()
+        import socket
+        for _ in range(50):
+            try:
+                with socket.create_connection(("127.0.0.1", srv.port),
+                                              timeout=0.5):
+                    break
+            except OSError:
+                time.sleep(0.1)
+        r, body = _get(srv, "/health")
+        assert r.status == 200
+        d = json.loads(body)
+        assert d["ok"] and d["events"] > 0
+        assert d["events_file"].endswith("-events.jsonl")
+        srv.httpd.shutdown()

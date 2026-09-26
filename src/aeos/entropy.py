@@ -12,13 +12,11 @@ Three small engines, one loop (spec §§ 22–24):
 
 from __future__ import annotations
 
-from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
-from .contracts import MemoryClass, SkillSpec, TaskState, Verdict
-from .memory import MemoryRecord, MemoryStore
+from .memory import MemoryStore
 from .skills import SkillsRegistry
 
 

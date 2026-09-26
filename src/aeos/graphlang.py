@@ -25,7 +25,6 @@ from __future__ import annotations
 import fnmatch
 import re
 from dataclasses import dataclass
-from pathlib import Path
 
 from .contracts import ActionClass, TaskSpec
 from .orchestrator import MAX_SUBPLAN_DEPTH
@@ -312,7 +311,7 @@ def compile_graph(src: str, style: str | None = None) -> list[TaskSpec]:
                         and child_of[a] is child_of[b]:
                     # intra-cluster edge declared at the parent level:
                     # it belongs INSIDE the nested harness
-                    sub = byname = {t.name: t for t in ta.subplan}
+                    sub = {t.name: t for t in ta.subplan}
                     if a in sub and b in sub:
                         dep(sub[a], sub[b])
                     continue
@@ -430,7 +429,6 @@ def render_plan(tasks: list[TaskSpec]) -> str:
                 walk(t.subplan, indent + "    ")
 
     walk(tasks, "  ")
-    n = len(tasks)
 
     def count(ts: list[TaskSpec]) -> int:
         return sum(1 + (count(t.subplan) if t.subplan else 0) for t in ts)

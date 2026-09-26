@@ -8,7 +8,6 @@ the skills registry adjudicates, the human approves above L3.
 
 from __future__ import annotations
 
-from dataclasses import field
 from typing import Optional
 
 from .contracts import SkillSpec

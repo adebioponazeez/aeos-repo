@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Iterable, Sequence
+from typing import Iterable
 
 from .contracts import ContextTier
 

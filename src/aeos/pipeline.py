@@ -14,12 +14,11 @@ graph, gates and guarantees execute unchanged.
 from __future__ import annotations
 
 import json
-import time
 from pathlib import Path
 
 from . import __version__
-from .contracts import (ActionClass, AgentSpec, AutonomyLevel, Envelope,
-                        TaskSpec, TaskState, Verdict)
+from .contracts import (ActionClass, AgentSpec, Envelope, TaskSpec,
+                        TaskState)
 from .context_os import ContextOS, ContextTier, ContextUnit
 from .discovery import CapabilityDiscovery
 from .entropy import EntropyScanner
@@ -27,7 +26,7 @@ from .evaluation import Evaluator
 from .governor import Governor
 from .harness import Harness
 from .learning import LearningLoop
-from .memory import MemoryRecord, MemoryStore
+from .memory import MemoryStore
 from .models import EchoModel, ModelCall
 from .observability import EventLog
 from .orchestrator import Orchestrator
@@ -283,8 +282,7 @@ def _reference_run(workspace: Path, intent: str = "Ship a verified seed module",
             else profile)
     workspace.mkdir(parents=True, exist_ok=True)
     log = EventLog()
-    costs = CostTracker() if "CostTracker" in dir() else None
-    from .economics import Budget as _Budget, CostTracker as _CT
+    from .economics import CostTracker as _CT
     costs = _CT()
     live = model is not None
     if live:
@@ -354,7 +352,7 @@ def _reference_run(workspace: Path, intent: str = "Ship a verified seed module",
                  action_class=ActionClass.WRITE),
     ]
 
-    checkpoint = harness.snapshot("pre-run")
+    harness.snapshot("pre-run")
 
     from .economics import interventions_from_events, leverage_ratio
     if not live:   # list-price estimate on model hints (simulation only)
@@ -528,10 +526,9 @@ def factory_demo(workspace: Path, *, token: str | None = None) -> dict:
 
     log = EventLog()
     skills = SkillsRegistry()
-    from .contracts import MemoryClass, SkillSpec
-    from .memory import MemoryRecord
+    from .contracts import SkillSpec
     from .sponsorship import Sponsorship
-    memory = MemoryStore(workspace / ".aeos" / "factory-memory.jsonl")
+    MemoryStore(workspace / ".aeos" / "factory-memory.jsonl")
     # seed the registry with a proven skill so discovery has substance
     skills.register(SkillSpec(
         name="verify-first", purpose="phase:evaluator:EXECUTE verify claims first",

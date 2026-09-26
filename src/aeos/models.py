@@ -9,8 +9,8 @@ system model-independent: swap the adapter, keep the guarantees.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Callable, Protocol, Sequence
+from dataclasses import dataclass
+from typing import Callable, Protocol
 
 from .contracts import Envelope
 

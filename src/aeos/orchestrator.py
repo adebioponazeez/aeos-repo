@@ -12,8 +12,6 @@ agent promised, not the other way round (SSSF rule 9, generalized).
 
 from __future__ import annotations
 
-import fnmatch
-import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field

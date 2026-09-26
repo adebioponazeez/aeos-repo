@@ -13,7 +13,12 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .contracts import Envelope, Evidence, Verdict
+from typing import TYPE_CHECKING
+
+from .contracts import Envelope, Verdict
+
+if TYPE_CHECKING:                         # the regression book lives in
+    from .research import RegressionBook  # research; we need the annotation
 
 
 @dataclass

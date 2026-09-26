@@ -13,7 +13,6 @@ from __future__ import annotations
 import hashlib
 import json
 import tarfile
-import time
 from pathlib import Path
 
 from .vault import STATE_SCHEMA, SchemaError
