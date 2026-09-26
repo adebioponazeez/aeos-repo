@@ -11,7 +11,7 @@ from __future__ import annotations
 import fnmatch
 import json
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
@@ -46,7 +46,7 @@ class SweepScheduler:
         return results
 
     def next_due(self, now: float | None = None) -> str | None:
-        t = now if now is not None else time.time()
+        now if now is not None else time.time()
         due = [(job.last_run + job.interval_s, name)
                for name, job in self.jobs.items()]
         return min(due)[1] if due else None

@@ -27,12 +27,10 @@ import os
 import shlex
 import shutil
 import subprocess
-import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Protocol
+from typing import Protocol
 
-from .adapters import AdapterError, ErrorKind
 from .contracts import Envelope, TaskSpec
 from .harness import Harness
 from .observability import EventLog

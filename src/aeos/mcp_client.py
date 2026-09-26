@@ -10,7 +10,6 @@ from __future__ import annotations
 import json
 import select
 import subprocess
-import sys
 from dataclasses import dataclass, field
 
 PROTOCOL_VERSION = "2025-06-18"

@@ -3,6 +3,38 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.7.1 — The Reckoning: the audit that stopped the treadmill (579 tests)
+- The operator's challenge, answered with evidence: "why is
+  everything disjointed... less than 40% of what's supposed to
+  have been done thoroughly, end-to-end?" The full audit ships as
+  docs/STATE-OF-AEOS.md — the honest spine matrix scores
+  end-to-end completeness at 3.5/9 steps (~39%): the operator's
+  number was right.
+- The audit found and fixed REAL latent defects that 577 tests
+  never caught:
+  1. storm.py: the socket-blackout FAILURE path interpolated an
+     unbound `exc` — if the scenario ever failed, the harness
+     would crash with NameError instead of naming the failure
+     (the failure path had never been exercised);
+  2. pipeline.py: a vestigial `dir()`-guarded CostTracker line —
+     dead-but-weird code hiding the real import below it;
+  3. evaluation.py: a quoted annotation with no import — benign
+     at runtime, wrong for every type checker.
+- Hygiene zero: pyflakes went 87 findings -> 0 (unused imports,
+  dead locals, placeholder-less f-strings) — including one
+  autoflake casualty caught by the suite itself (READONLY_TOOLS
+  re-export, now pinned by __all__).
+- De-disjointing down payment: `aeos graph --run` now writes a
+  LIVE event sink into the workspace runs dir — the shopfloor
+  streams graph runs (regression-tested); ONE shared demo
+  factory replaces two duplicated rosters (the demo path is a
+  product path or it is a lie); graph default workspace aligned
+  to aeos-demo.
+- The plan forward is in the report: the Spine (one command,
+  end-to-end), First Light (one real model call, operator opt-in
+  required), the Front Door Diet (CLI consolidation), and
+  Outside Eyes.
+
 ## v39.7.0 — The Live Shopfloor: Events Streamed Live (577 tests)
 - The dark-factory roadmap's gap #5, closed: events were durable
   JSONL but nothing streamed them. `aeos stream --workspace <ws>`

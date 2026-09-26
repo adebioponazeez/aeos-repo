@@ -27,7 +27,7 @@ from __future__ import annotations
 import os
 import sys
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 EXIT_OK = 0
@@ -368,7 +368,7 @@ def boot(ws: Path, intent: str = "Ship a verified seed module",
 def render(result: dict) -> str:
     """Human speech: stages on the way up, remedy in one breath on
     the way down."""
-    stages = result.get("stages", [])
+    result.get("stages", [])
     n_checks = len(result.get("checks", []))
     n_pass = sum(1 for c in result.get("checks", [])
                  if c["verdict"] == "PASS")
@@ -382,7 +382,7 @@ def render(result: dict) -> str:
         lines.append(f"  [1/4] PREFLIGHT   {n_checks} check(s): "
                      f"{n_pass} pass, {w}")
         notes = result.get("notes") or []
-        lines.append(f"  [2/4] WORKSPACE   ready"
+        lines.append("  [2/4] WORKSPACE   ready"
                      + (f" ({'; '.join(notes)})" if notes else ""))
         run = result.get("run", {})
         lines.append(f"  [3/4] WORK        accepted — leverage "

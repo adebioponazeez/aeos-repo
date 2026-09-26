@@ -22,7 +22,6 @@ import hashlib
 import hmac
 import json
 import os
-import shlex
 import subprocess
 import sys
 from pathlib import Path

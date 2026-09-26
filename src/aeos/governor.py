@@ -12,7 +12,6 @@ table is data — auditable, testable, overridable only explicitly.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Callable
 
 from .contracts import ActionClass, AutonomyLevel, Decision
 from .observability import EventLog

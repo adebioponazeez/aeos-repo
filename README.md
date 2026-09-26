@@ -1,137 +1,85 @@
 # AEOS — The AI Engineering OS
 
-**Version 39.7.0 — The Live Shopfloor. Events streamed live: SSE + console, read-only, stdlib all the way down.**
+**Version 39.7.1 — The Reckoning. A working, model-agnostic operating system for agentic engineering — audited end-to-end, with its gaps on the front page.**
 
-A working, model-agnostic operating system for agentic engineering. v1.0
-shipped the kernel (contracts, orchestration, context, memory, skills,
-governance, evaluation, observability, harness, entropy, learning,
-discovery). v2–v39 ship the platform around it. **577 tests. Zero
-runtime dependencies.**
+A typed-envelope kernel (contracts, orchestration, context,
+memory, skills, governance, evaluation, observability, harness,
+entropy, learning, discovery) plus the platform around it:
+factory, federation, live-model seam, companions, recall,
+durable plans, hooks, declarative graphs, sealed holdouts and a
+live shopfloor. **579 tests. Zero runtime dependencies.**
 
-> The law of this codebase: **the harness is the product.** Models are
-> interchangeable slots; every reliability property is enforced by
-> deterministic code you can read end-to-end.
+> The law of this codebase: **the harness is the product.** Models
+> are interchangeable slots; every reliability property is enforced
+> by deterministic code you can read end-to-end.
+
+## The honest state (read this first)
+
+AEOS is **two true things at once**: mechanism coverage against its
+specifications is ~85% (machine-checked in
+[docs/SPEC-AUDIT.md](docs/SPEC-AUDIT.md),
+[docs/TAC-COMPLIANCE.md](docs/TAC-COMPLIANCE.md) and
+[docs/DARK-FACTORY-VALIDATION.md](docs/DARK-FACTORY-VALIDATION.md))
+— and **end-to-end product completeness is ~39%** (the spine
+matrix in [docs/STATE-OF-AEOS.md](docs/STATE-OF-AEOS.md)): the
+parts are tested but not yet assembled into one flow, and **no
+real model has ever executed a task through this system** (the
+live seam exists, metered and capped, awaiting the operator's
+explicit opt-in). The full audit, the root causes, and the
+close-the-gap plan (Spine → First Light → Front Door Diet →
+Outside Eyes) are in the state report.
 
 ## Quick start
 
 ```bash
-pip install -e .            # zero runtime dependencies
-python -m pytest            # 577 proofs incl. the 9-scenario chaos storm, ~120 seconds
-aeos up                     # v37: THE FRONT DOOR — staged boot (preflight · workspace · work · shutdown); failures speak plain language
-aeos foreman [--apply]      # v39: THE AUTONOMOUS OPERATOR — surveys the workspace, fixes the mechanical class, files proposals; receipts for everything
-aeos run-demo               # full reference loop, evidence bundle
-aeos factory-demo           # v7: the capability factory (proposals only)
-aeos factory-demo --token S # v7: ...with sponsorship (scoped installs)
-aeos dashboard              # static Studio run report
-aeos sponsor --scope S      # v8: issue a persistent, scoped, one-shot token
-aeos console                # v8: the authority console
-aeos federation-demo        # v10: quarantine -> revalidate -> sponsored install
-aeos live-check             # v11: resolved live config — zero spend
-aeos companions             # v12: Pi CLI / DeerFlow status + enable hints
-aeos run-demo --profile control|speed|cost   # v13: pick your trade
-aeos triangle               # v13: the measured control/cost/speed receipt
-aeos dividend               # v14: memory economics — compression, negative marginal, rent
-aeos recall                 # v15: layered FTS recall — keys, snippets, full records
-aeos fleet                  # v16: fleet CRUD + live event stream (see dashboard --live)
-aeos resume                 # v17: durable plans — crash, resume, side effects once
-aeos leverage-audit         # v18: the 12 leverage points audited against disk
-aeos standards [--init]     # v19: operator law as [STD-n] — plans must cite it
-aeos mcp                    # v21: MCP client demo — handshake, tools, UNTRUSTED
-aeos telemetry              # v22: cache hit rate + effective tokens
-aeos eval                   # v23: the system grades its own laws
-aeos otel                   # v24: fleet stream -> OTel spans
-aeos mcp --serve            # v24: AEOS as a read-only MCP server (roundtrip)
-aeos colony                 # v25: explicit graph orchestration
-aeos vault                  # v26: fault-tolerance posture + environment scan
-aeos storm                  # v27: THE NUCLEAR TEST — kill storms, torn files, disk full, blackout
-aeos groom [--keep-runs N]  # v28: retention + schema migration (archives, never deletes)
-aeos backup / restore       # v29: deterministic backups, verified fail-closed restores
-aeos soak [--runs N]        # v29: sustained-operation receipt (live: opt-in, dollar-capped)
-aeos mcp --http-url URL     # v30: streamable-HTTP MCP transport (endpoint-explicit)
-aeos otel --push URL        # v30: OTLP/HTTP push with typed retries (receipt, never a hang)
-aeos mcp --serve-http       # v31: the consulate — read-only over HTTP, loopback by default
-aeos doctor                 # v32+: audits claims — zero-dep scan, charter citations, health
-aeos bench [--full]         # v34: the performance envelope — 10k-scale receipts, budgets are law
-aeos scribe                 # v35: documentation that cannot drift — README claims vs live reality
-aeos save-proof             # v36: the notary — Merkle roots + a green command = a completion certificate
-aeos outbox status          # v36: the edge outbox — local WAL queue (enqueue/flush, wire stays explicit)
-OPENROUTER_API_KEY=... aeos run-demo --live   # v11: real models, metered, $2 cap
-aeos selftest
+pip install -e .                 # zero runtime dependencies
+python -m pytest                 # 579 proofs incl. the 9-scenario chaos storm, ~2 min
+
+# the front doors
+aeos up [--workspace ws]         # staged boot: preflight · workspace · work · shutdown
+aeos foreman --workspace ws --apply   # the autonomous operator: survey, fix, verify, receipt
+aeos graph --file examples/ship-graph.dot --style examples/routing.style --run
+                                 # declarative DOT workflow; clusters are nested harnesses
+aeos stream --workspace ws       # the live shopfloor: SSE + console, read-only
+aeos holdout --init && aeos holdout --run --workspace ws
+                                 # sealed evaluation the agent cannot overfit to
+aeos run-demo                    # the reference loop end-to-end, evidence bundle
+aeos doctor                      # the system audits itself
 ```
 
-## The version ladder (all shipped, all tested)
+## The command surfaces (36 commands, grouped)
 
-| Version | Name | What landed |
-|---|---|---|
-| v1.0 | Production Baseline | The kernel: 15 modules, 68 tests, reference pipeline |
-| v1.1 | Hardening | Secret redaction, gate library, entropy coverage |
-| v2.0 | Multi-Agent Platform | Provider adapters + error taxonomy + circuit breaker + **fusion**; durable resumable runtime; MCP-idiom tool layer (untrusted by default) |
-| v3.0 | Capability OS | Content-hashed capability catalog; **sponsorship tokens**; multi-tenant governance |
-| v4.0 | Economics | Cost tracking, budgets (ALLOW/CHECKPOINT/DENY), OUTCOME VALUE / HUMAN ATTENTION metric |
-| v5.0 | Research & Ops | Autonomous research with untrusted-source discipline; sweep scheduler; regression book (failures become gates) |
-| v6.0 | Meta-Loop | Bounded self-improvement: retire/tune proposals, hard floors, ADR stubs, sponsorship-gated |
-| **v7.0** | **Capability Factory** | **L7 live: measure → design → sandbox-validate → propose → sponsored install. Studio dashboard.** |
-| v8.0 | Distance | HTTP transports on the taxonomy; A2A-style remote workers; **process-isolated sandboxes** (killed on wall clock); persistent sponsorships + console |
-| v9.0 | Co-Design | Design **slates**: conservative / minimal-privilege / reviewer-first, least-privilege scored, human sponsors one variant |
-| **v10.0** | **Federation** | **The cross-org market: IMPORT IS QUARANTINE; TRUSTED only via local sandbox; provenance-bearing export** |
-| **v11.0** | **Live Models** | **OpenRouter / Abacus RouteLLM / OpenAI behind the seam: taxonomy at the wire, metered usage, inline $-budget cutoff, keys never logged** |
-| **v12.0** | **Companions** | **Pi CLI + DeerFlow as bounded nodes: fs-diff artifacts (never self-report), boundary revert for rogue agents, wall-clock kill, untrusted-source quarantine** |
-| **v13.0** | **The Triangle** | **Control/Cost/Speed as one dial: 4 stances moving all knobs together, immutable floors, and the trade MEASURED per run with a receipt** |
-| **v14.0** | **The Dividend** | **Negative marginal token consumption: measured distillation, cache-stable canonical-JSON prefixes, per-class token ledgers, and MEMORY MUST PAY RENT** |
-| **v15.0** | **The Recall** | **Retrieval pays in layers: FTS5 keys → snippets → full records, budgeted, savings on every bundle** |
-| **v16.0** | **The Fleet** | **One orchestrator, fleet CRUD, append-only event stream — observability as replayable proof** |
-| **v17.0** | **The Resume** | **Durable plans: atomic checkpoints after every task; crash, resume, side effects exactly once** |
-| **v18.0** | **The Rubric** | **The 12 leverage points as an auditable rubric — PASS requires evidence on disk** |
-| **v19.0** | **The Standards** | **Success is planned: operator law registered as [STD-n]; uncited plans are refused** |
-| **v20.0** | **The Emissaries** | **Companions round 2: aider + headless Claude under the Pi law — fs-verified, phantom-refused, boundary-reverted** |
-| **v21.0** | **The Protocol** | **MCP client, stdlib stateless core; imported tools are UNTRUSTED material** |
-| **v22.0** | **The Horizon** | **Cache telemetry (hit rate, effective tokens), the global benchmark, and the seams named** |
-| **v23.0** | **The Mirror** | **Eval suites: predicate judges, weights, thresholds; the self-eval grades AEOS's own six laws** |
-| **v24.0** | **The Bridges** | **MCP server mode (read-only by law) + OTel span export — the ecosystem's protocols, both directions** |
-| **v25.0** | **The Colony** | **Explicit graph orchestration: requires + conditions, failures block, cycles BLOCK — never hang** |
-| **v26.0** | **The Vault** | **Fault tolerance: atomic durable writes, torn-write quarantine, kernel-released locks, provable offline** |
-| **v27.0** | **The Storm** | **Chaos as a command: kill -9 storms, torn files, disk-full, garbage, 256MB cap, socket blackout — 8/8 survived, receipts permanent** |
-| **v28.0** | **The Shipyard** | **Deployment closure: LICENSE + CI matrix in-repo, schema-versioned state that fails closed on the future, `aeos groom` retention** |
-| **v29.0** | **The Soak** | **Deterministic verified backups (drill = storm scenario 9/9) + sustained-operation receipts; live soak opt-in and dollar-capped** |
-| **v30.0** | **The Embassy** | **HTTP transports, loopback-proven: streamable-HTTP MCP client + OTLP push with typed retries — endpoint-explicit, default still offline** |
-| **v31.0** | **The Consulate** | **MCP HTTP server mode: one tool law, two transports; read-only over the wire, loopback by default; sdist+wheel twine-PASSED and the name verified free** |
-| **v32.0** | **The Physician** | **The system audits itself: ADR-002 machine-checked (57 modules, 0 violations), workspace + repo health, PASS/WARN/FAIL — a doctor that flatters is not a doctor** |
-| **v33.0** | **The Charter** | **The constitution machine-checked: every cited test verified to exist; the v27→v33 upgrade drill is a test; PyPI last mile automated and inert until opt-in** |
-| **v34.0** | **The Gauge** | **The performance envelope measured at 10k scale with law budgets; two real defects found and fixed (O(1) tail, graph-scaled wave cap); limits named, not hidden** |
-| **v35.0** | **The Scribe** | **Documentation that cannot drift: README claims machine-checked against live reality; four real stale claims found and fixed on first run** |
-| **v35.1** | **Validation patch** | **Independent fresh-clone validation found the scribe/doctor assuming checkouts; now a shared resolver works from ANY install kind, and no-repo-context is an honest WARN** |
-| **v36.0** | **The Notary** | **SEF-X handover, honestly adopted: `aeos save-proof` — completion is a certificate (pre/post Merkle roots + a green command); the edge `aeos outbox` — a local WAL queue behind an explicit wire; capability verbs machine-proven never-removed; the vapor (H-JEPA, Arrow Flight, microVMs) rejected on the record (ADR-045)** |
-| **v36.1** | **Validation patch** | **Cold-clone verification refused v36.0.0's certificate — build metadata (egg-info) was inside the Merkle root; excluded by law now with a regression test, and the tag promise (`--verify --against-tree` from a fresh clone) re-proven before shipping** |
-| **v37.0** | **The Ignition** | **One front door: `aeos up` — staged boot (preflight · workspace · work · shutdown), exit codes scripts can branch on, every FAIL naming what happened AND what to do, a boot ledger that tells the next boot how the last one died, and a nested-proof guard found the hard way** |
-| **v37.1** | **Portability patch** | **CI's 3.10/3.11 matrix caught a PEP 701 f-string (multi-line expression, 3.12-only) that local 3.13 parsed happily — fixed, plus an AST guard test so the whole class is impossible to ship again** |
-| **v37.2** | **Guard patch** | **The portability guard itself was non-portable (pre-3.12 ast positions inside f-strings are approximate — 270 phantom hits on 3.10/3.11); it now runs only where ast is truthful, the interpreter is the native guard below, and a synthetic-defect test proves the scanner can actually fail** |
-| **v38.0** | **The Curriculum** | **The founding master-builder spec audited requirement-by-requirement (57 verdicts, `docs/SPEC-AUDIT.md`); Volume IV ships the mandated 13-phase curriculum — every phase grounded in shipped modules, commands, and tests; the ladder's last two rungs honestly named as gaps** |
-| **v39.0** | **The Foreman** | **The autonomous operator, Omarchy-style: one command, opinionated defaults — `aeos foreman` surveys the workspace (schema, torn writes, retention, backup posture, boot ledger, outbox, README drift), fixes the mechanical class in dependency order with `--apply`, files the rest as proposals, verifies by re-measurement, and remembers deduped; every run Merkle-rooted and receipted. No printing this release — the product is the code** |
-| **v39.1** | **Cross-validation patch** | **Everything re-validated from the source PDFs, not memory: founding spec 57/57 covered with all cited artifacts real; SEF-X reconciliation traced to source (every adopted claim, every rejected item reasoned); four stale audit findings caught and fixed; the auto-rollback translation put on the record; audit counts are now machine-checked law** |
-| **v39.2** | **The Gauntlet** | **Production-constraint testing for real: 11 scenario groups (random-timing SIGKILLs, concurrent boots, concurrent foremen, file-size/memory starvation, hostile wires, corrupted state, hostile paths, fuzz content, scale, offline) — run 1 found five defects, all fixed with regression tests; run 2 27/27 green; the failures now speak plain language and the atomic-write contract holds under starvation** |
-| **v39.3** | **The Field Test** | **Resilience beyond one sandbox: a 9-group field gauntlet run in genuinely different environments (empty env, read-only workspace, read-only HOME, a real 256KB tmpfs for true ENOSPC, a 64MB tmpfs workspace, shadow packages, deep unicode paths under LC_ALL=C, TZ/locale flips, non-root) — run 2 found two defect classes: a raw PermissionError when the lock file cannot be opened and a raw ENOSPC when history cannot be appended; both fixed — refusals now name their reason (lock held vs cannot-open), history and receipts degrade best-effort, and the run verdict survives; the wheel additionally verified on CPython 3.10/3.11/3.12** |
-| **v39.4** | **The Holdout** | **Digital-twin separation, the dark factory's sharpest pattern: evaluation scenarios sealed in a vault OUTSIDE the repo and every workspace (per-install nonce, zlib+keystream, sha256+hmac+merkle integrity — tamper refuses to run), run against a throwaway TWIN of the workspace — the original is proven byte-identical after every holdout; families are public law (hostile intents verdicted, determinism, named refusals, governed economics, numbered leverage), instances are seeded per install so an agent that reads the source still cannot know the tests; reports are verdict-only — scenario content never leaves the vault** |
-| **v39.5** | **Hooks & Recursion** | **Interception as a first-class surface (Cole Medin's critical mechanism, compiled): a named-point hook bus — task/wave/subplan pre+post, refusal observers — ordered, thread-safe, decoupled from the agent; pre-hooks can VETO (a named refusal, never a traceback) or REDIRECT (rewrite the action class, intent preserved, danger removed); observers can never crash the run they observe. And recursive harness graphs (the Recursive Agent Harness pattern): a task with a subplan expands into a full NESTED orchestrator — its own waves, governor, gates, events — depth-capped at 3 so recursion is a tool, not a trap; `aeos hooks --register-demo` shows a guardrail vetoing destructive work live** |
-| **v39.6** | **The Graph Language** | **The process itself goes declarative: workflows as version-controlled Graphviz DOT (a named subset — every syntax error named, never a traceback); `subgraph cluster_*` compiles to a NESTED HARNESS (the v39.5 recursion, now declarative); routing stylesheets (INI sections matched by fnmatch, per-key fallback) pick the adapter per node — and the safety law is compile-enforced: stylesheets route, they NEVER declassify (`class=` on a stylesheet or edge is a named refusal); the compiled graph is the same TaskSpec the orchestrator runs — same governor, hooks, gates — a declarative graph gets zero new trust; `aeos graph --file examples/ship-graph.dot --run` executes one live** |
-| **v39.7** | **The Live Shopfloor** | **Events streamed LIVE (the roadmap's SSE gap closed): Server-Sent Events over stdlib http.server — the workspace's newest run stream replayed, then tailed live, rolling over when a newer run starts; a self-contained console (inline CSS/JS, zero CDN, offline law) with live event feed, per-kind counters and filtering; the surface is READ-ONLY by law (GET only — POST/PUT/DELETE are named 405s: the write surface stays the CLI under the governor); loopback by default, opened wider only by explicit operator flag; `aeos stream --workspace <ws>`** |
+| Surface | Commands |
+|---|---|
+| **Run** | `up` · `run-demo` · `foreman` · `graph` · `factory-demo` · `colony` · `resume` · `soak` |
+| **Inspect** | `doctor` · `scribe` · `triangle` · `leverage-audit` · `dividend` · `recall` · `bench` · `telemetry` · `eval` · `selftest` |
+| **Operate** | `backup` · `restore` · `groom` · `storm` · `vault` · `save-proof` · `outbox` · `dashboard` · `console` · `stream` |
+| **Extend** | `sponsor` · `skills via factory` · `mcp` (client/serve/serve-http) · `otel` · `companions` · `federation-demo` · `hooks` · `holdout` · `standards` · `fleet` · `live-check` |
 
-## What v7 proves (reproduced in `evidence/`)
+(Consolidation of these surfaces is planned — see the state
+report, Phase D.)
 
-- **577/577 tests passing** (+1 opt-in live smoke) — and the storm runs inside the suite: SIGKILL mid-run x3 with recovery, torn power-cut files quarantined, disk-full leaving evidence byte-intact, garbage inputs verdicted, a full run under a 256MB cap, and a total socket blackout completed — the system is provably offline and power-cut resistant.
-- **Reference run:** 7/7 tasks, governor earns L5 from reliability 1.0,
-  leverage ratio **7.0** (7 outcomes, 0 human interventions), full
-  evidence bundle + dashboard.
-- **Factory, no token:** 2 candidates validated in sandbox, 2 proposals,
-  **0 installs** — every install refused and logged.
-- **Factory, scoped token:** exactly the scoped capability installed;
-  the second candidate **refused on scope mismatch**. One token, one
-  power, one use.
-- **Live sponsor flow:** `aeos sponsor --scope factory:install:builder-specialist`
-  → factory installs exactly `builder-specialist`, refuses the rest.
-- **Federation:** foreign unit → QUARANTINED; install refused **with a
-  valid token in hand**; local revalidation → PASS → sponsored install.
-- **Process sandbox:** a hung candidate is killed at its wall clock; a
-  poisoned input yields a written verdict, never a stack trace.
+## What is proven (reproduced in `evidence/`)
+
+- **579/579 tests passing** (+1 opt-in live smoke) — the chaos
+  storm runs inside the suite: SIGKILL mid-run ×3 with recovery,
+  torn power-cut files quarantined, disk-full leaving evidence
+  byte-intact, garbage inputs verdicted, a full run under 256MB,
+  and a total socket blackout completed.
+- **Constraint batteries, run for real:** an 11-group production
+  gauntlet (27/27) and a 9-group field gauntlet (20/20 — empty
+  env, read-only workspace/HOME, true tmpfs ENOSPC, unicode under
+  LC_ALL=C, non-root) — which between them found and fixed eleven
+  real defects across v39.2–v39.4.
+- **The wheel, not just the checkout:** installed and verified on
+  real CPython 3.10/3.11/3.12 on every release since v39.3.
+- **Reference run:** 7/7 tasks, governor earns L5 from
+  reliability 1.0, leverage ratio **7.0**, full evidence bundle.
+- **Factory, no token:** proposals only — every install refused
+  and logged. **With a scoped token:** exactly the scoped
+  capability installed, one use.
+- **Federation:** foreign unit → quarantined; install refused with
+  a valid token in hand; local revalidation → sponsored install.
 
 ## The four invariants (unchanged since v1, still tested)
 
@@ -140,17 +88,34 @@ aeos selftest
 3. **No autonomy without reliability** — the ladder moves on evidence.
 4. **No memory without validation** — failure never becomes folklore.
 
-v6/v7 add the fifth, and hardest-won: **no self-modification without a
+Plus the fifth, hardest-won: **no self-modification without a
 spent human token.**
+
+## Milestones (full history in [CHANGELOG.md](CHANGELOG.md))
+
+| Era | Versions | What landed |
+|---|---|---|
+| Kernel | v1–v6 | Typed envelopes, governor L0–L7, gates, factory + sponsorship, meta-loop |
+| Platform | v7–v20 | Live-model seam, federation, companions, triangle, dividend, recall, fleet, resume, leverage rubric, standards |
+| Protocols | v21–v31 | MCP client + read-only server (both transports), OTel, colony, vault, storm, shipyard, soak, consulate |
+| Self-audit | v32–v38 | Doctor, charter machine-checked, gauge, scribe, notary, outbox, ignition, curriculum |
+| Production proofs | v39.0–v39.2 | Foreman, cross-validation from source PDFs, the production gauntlet |
+| Real environments | v39.3–v39.4 | Field test (wheel verified on 3.10–3.12), the sealed holdout |
+| Composition era | v39.5–v39.7 | Hooks + recursion, declarative graph language, live shopfloor |
+| **The Reckoning** | **v39.7.1** | **The end-to-end audit: spine scored, latent defects fixed, hygiene zero, the integration plan** |
 
 ## Repository layout
 
 ```
 src/aeos/            # 68 modules: kernel (v1) + platform (v2–v39)
-tests/               # 577 tests incl. adversarial + e2e + factory + federation + live-wire + chaos storm
-evidence/            # captured test runs, run bundles, factory runs, dashboard
-docs/                # architecture, security, runbook, dossier, principles charter, TAC audit, global benchmark, deployment review, publishing guide, envelope, spec audit, dark-factory validation, 53 ADRs
-book/                # Volumes I–IV + v11 addendum (print/), HTML + markdown
+tests/               # 579 tests incl. adversarial + e2e + factory + federation + chaos storm
+evidence/            # captured receipts: gauntlets, field test, holdout, shopfloor, save-proofs
+docs/                # STATE-OF-AEOS (the audit), architecture, security, runbook, dossier,
+                     # principles charter, TAC audit, global benchmark, spec audit,
+                     # dark-factory validation, publishing guide, 54 ADRs
+examples/            # ship-graph.dot + routing.style (the declarative workflow)
+harness → /home/user/harness/   # the gauntlet programs (kept outside the repo)
+book/                # Volumes I–IV + v11 addendum, HTML + markdown
 AGENTS.md            # short repo context for coding agents
 CHANGELOG.md         # every version, earned by tests
 ```
@@ -160,7 +125,8 @@ CHANGELOG.md         # every version, earned by tests
 Original code, MIT. Principles absorbed with attribution from the
 public canon — `disler/super-simple-software-factory` (agent
 proposes / code disposes; typed envelopes; evidence gates; write
-boundaries), `fusion-harness` (combine compute), `the-verifier-agent`
-(independent verification), hooks-based observability, MCP/SEP-2085
-posture, the 2026 harness-engineering canon. See
-`docs/RESEARCH-DOSSIER.md` and `docs/adr/`.
+boundaries), `fusion-harness`, `the-verifier-agent`, MCP/SEP-2085
+posture, the 2026 harness-engineering canon (IndyDevDan, Cole
+Medin, the dark-factory literature — mapped in
+[docs/DARK-FACTORY-VALIDATION.md](docs/DARK-FACTORY-VALIDATION.md)).
+See `docs/RESEARCH-DOSSIER.md` and `docs/adr/`.

@@ -19,7 +19,6 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
-import time
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path

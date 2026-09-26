@@ -1,0 +1,8 @@
+  routing: define->echo, research->echo-fast, evaluate->echo, release->echo, build->echo
+  subplan.start: {'parent': 'build', 'depth': 1, 'children': ['core', 'cli']}
+  subplan.end: {'parent': 'build', 'depth': 1, 'accepted': True, 'summary': '2/2 tasks succeeded in 2 waves, 0 repair cycle(s), 0.00s'}
+GRAPH RUN — ACCEPTED
+  events (live): aeos-demo/.aeos/runs/1790426736-events.jsonl
+  shopfloor: aeos stream --workspace aeos-demo
+1790426736-events.jsonl
+1790426736-events.jsonl -> 38 events: wave.start, governor.allow, task.started, gate.checked, governor.level, task.succeeded, wave.start, governor.allow

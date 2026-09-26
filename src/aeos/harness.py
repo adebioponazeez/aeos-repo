@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import fnmatch
 import json
-import shutil
 import time
 from dataclasses import dataclass, field
 from pathlib import Path

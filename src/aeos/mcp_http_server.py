@@ -17,6 +17,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from .mcp_server import READONLY_TOOLS, UnknownMethod, handle_request
 
+__all__ = ["READONLY_TOOLS", "UnknownMethod", "handle_request",
+           "Consulate"]   # the tool LAW is public surface, not an accident
+# READONLY_TOOLS is re-exported: the consulate's tool LAW is part
+# of its public surface (tests pin it; clients rely on it)
+
 MAX_BODY_BYTES = 1_000_000
 MAX_DRAIN_BYTES = 8_000_000     # drain up to this much before refusing
 
