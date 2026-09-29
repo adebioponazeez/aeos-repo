@@ -1,0 +1,12 @@
+  routing: define->echo, research->echo-fast, evaluate->echo, release->echo, build->echo
+SPINE RUN — ACCEPTED
+  plan:      operator-graph
+  summary:   5/5 tasks succeeded in 5 waves, 0 repair cycle(s), 0.91s
+  leverage:  5.0 | governor: L5_CONTINUOUS_AUTONOMY (reliability 1.0)
+  lessons:   7 | proposals: 6
+  evidence:  /tmp/spine-receipt/.aeos/evidence/bundle.json
+  events (live): /tmp/spine-receipt/.aeos/runs/1790677311-events.jsonl
+  shopfloor: aeos stream --workspace /tmp/spine-receipt
+  holdout:   aeos holdout --run --workspace /tmp/spine-receipt
+$ curl :8767/health   (stream --workspace /tmp/spine-receipt)
+{"ok": true, "workspace": "/tmp/spine-receipt", "events_file": "1790677311-events.jsonl", "events": 38, "uptime_s": 1.5}

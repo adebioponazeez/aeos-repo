@@ -8,6 +8,23 @@ auditing what exists: import graphs, pyflakes, CLI inventory,
 integration traces, and a step-by-step walk of the end-to-end
 path an operator would actually take.*
 
+> **POST-SPINE UPDATE (v39.8.0).** Phase B of the plan below has
+> shipped: an operator's graph now executes on the REFERENCE
+> pipeline (`aeos run --graph plan.dot`; ADR-055) — real roster,
+> real handlers, real artifacts, live events on one bus, memory
+> that accumulates the graph's own lessons, contract law at the
+> door. Spine steps **2 (intent → plan)** and **7 (operator
+> watches live)** move to WORKS: end-to-end completeness
+> **~39% → ~50%**. The integration also surfaced two latent
+> defects the audit had not found (the builder's literal-name
+> branching that silently mis-built; the example graph's WRITE task
+> on the READ-only executive) — both fixed, both regression-tested.
+> The two named gaps that remain: **step 4, First Light** (no real
+> model has yet executed a task — operator opt-in required) and
+> **step 9, closing the loop** (the foreman's lessons do not shape
+> the next plan). The matrix below is the v39.7.1 baseline, kept
+> as audited.
+
 ---
 
 ## 1. What was actually built (the inventory)
