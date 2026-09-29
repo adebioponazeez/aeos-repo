@@ -1,0 +1,34 @@
+FULL VERIFICATION SWEEP — v40.0.0 (b2001c4), 2026-09-29T17:45Z
+Every line below is a captured run from this sweep — nothing composed.
+
+$ python3 -m pytest
+  599 passed, 1 skipped in 213.39s
+
+$ python3 harness/gauntlet.py
+  GAUNTLET VERDICT: 27 pass, 0 fail — wall 53s
+
+$ python3 harness/field-gauntlet.py
+  FIELD TEST RUN 1: 20 pass, 0 fail — wall 10s
+
+$ aeos scribe
+SCRIBE — 7 claim(s) checked, 0 drift(s) (TRUTHFUL)
+
+$ aeos doctor
+DOCTOR — 8 check(s): 0 failed, 1 warned (ATTENTION)
+
+$ python3 -m pyflakes src/aeos/*.py
+  (no findings — pyflakes 0)
+
+$ aeos run --graph examples/ship-graph.dot --style examples/routing.style --workspace /tmp/verify-ws
+  plan:      operator-graph
+  summary:   5/5 tasks succeeded in 5 waves, 0 repair cycle(s), 0.90s
+  memory:    7 lesson(s) recalled from prior runs; 0 cited in the spec
+  leverage:  5.0 | governor: L5_CONTINUOUS_AUTONOMY (reliability 1.0)
+  lessons:   7 | proposals: 6
+  evidence:  /tmp/verify-ws/.aeos/evidence/bundle.json
+  events (live): /tmp/verify-ws/.aeos/runs/1790703913-events.jsonl
+  shopfloor: aeos stream --workspace /tmp/verify-ws
+  holdout:   aeos holdout --run --workspace /tmp/verify-ws
+
+$ curl :8769/health   (aeos stream --workspace /tmp/verify-ws, the shopfloor sees the run)
+{"ok": true, "workspace": "/tmp/verify-ws", "events_file": "1790703913-events.jsonl", "events": 38, "uptime_s": 1.5}
