@@ -57,11 +57,98 @@ def _demo_orchestrator(workspace, log=None, hooks=None):
                         hooks=hooks if hooks is not None else BUS)
 
 
+def _spine(workspace, intent=None, tasks=None, graph_file=None,
+           style_file=None, profile="balanced") -> int:
+    """v39.8 THE SPINE (ADR-055): one command, end to end. The
+    reference objective — or an operator's compiled graph — executes
+    on the REFERENCE pipeline: real roster, real handlers, real
+    evidence law. The bundle, leverage, memory and learning are the
+    product's, not a demo's; events stream LIVE into the runs dir
+    (the one bus the shopfloor tails)."""
+    from .graphlang import render_plan
+    from .pipeline import reference_run
+
+    if tasks is None and graph_file is not None:
+        from .graphlang import GraphError, compile_graph
+        style_text = None
+        if style_file:
+            sp = Path(style_file)
+            if not sp.exists():
+                print(f"RUN REFUSED — stylesheet not found: {sp}")
+                return 2
+            style_text = sp.read_text(encoding="utf-8")
+        try:
+            tasks = compile_graph(
+                Path(graph_file).read_text(encoding="utf-8"),
+                style=style_text)
+        except GraphError as exc:
+            print(f"RUN REFUSED — {exc}")
+            return 2
+    if tasks is not None:
+        print(render_plan(tasks))
+        routed = [(t.name, t.model) for t in tasks if t.model]
+        if routed:
+            print(f"  routing: {', '.join(f'{n}->{m}' for n, m in routed)}")
+    if intent is None:
+        intent = (f"Execute the workflow graph {Path(graph_file).name}"
+                  if tasks is not None else
+                  "Ship a verified seed module")
+    try:
+        bundle = reference_run(Path(workspace), intent, tasks=tasks,
+                               live_events=True, profile=profile)
+    except ValueError as exc:        # contract law: unknown agent/class
+        print(f"RUN REFUSED — {exc}")
+        return 2
+    if not bundle.get("accepted"):
+        print("SPINE RUN — REFUSED")
+        if bundle.get("reason"):
+            print(f"  reason: {bundle['reason']}")
+        else:
+            for d in bundle.get("states_detail", []):
+                if d["state"] in ("FAILED", "ESCALATED"):
+                    print(f"  {d['state'].lower()}: {d['name']} "
+                          f"(agent {d['agent']}, {d['attempts']} attempt(s))")
+            print(f"  summary: {bundle.get('summary')}")
+            print(f"  why:     task.failed events in "
+                  f"{bundle.get('events_file')}")
+        return 1
+    print("SPINE RUN — ACCEPTED")
+    print(f"  plan:      {bundle.get('plan_origin')}")
+    print(f"  summary:   {bundle.get('summary')}")
+    print(f"  leverage:  {bundle.get('leverage')} | governor: "
+          f"{bundle.get('governor_level')} "
+          f"(reliability {bundle.get('governor_reliability')})")
+    print(f"  lessons:   {bundle.get('learning_lessons')} | proposals: "
+          f"{len(bundle.get('promotion_proposals') or [])}")
+    print(f"  evidence:  {bundle.get('evidence_file')}")
+    print(f"  events (live): {bundle.get('events_file')}")
+    print(f"  shopfloor: aeos stream --workspace {workspace}")
+    print(f"  holdout:   aeos holdout --run --workspace {workspace}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="aeos",
         description="AI Engineering OS — reference pipeline and inspection tools")
     sub = parser.add_subparsers(dest="cmd", required=True)
+
+    spine_p = sub.add_parser(
+        "run",
+        help="v39.8: THE SPINE — one command end-to-end: the reference "
+             "objective or --graph plan.dot on the REFERENCE pipeline "
+             "(no demo path); events stream live to the shopfloor")
+    spine_p.add_argument("--workspace", default="aeos-demo")
+    spine_p.add_argument("--intent", default=None,
+                         help="the operator's objective "
+                              "(default: the reference objective)")
+    spine_p.add_argument("--graph", default=None, metavar="DOT",
+                         help="a DOT workflow (e.g. examples/ship-graph.dot)")
+    spine_p.add_argument("--style", default=None,
+                         help="routing stylesheet for --graph")
+    spine_p.add_argument("--profile", default="balanced",
+                         choices=["control", "balanced", "speed", "cost"],
+                         help="the control-cost-speed stance for this run")
 
     run_p = sub.add_parser("run-demo", help="Execute the reference pipeline")
     run_p.add_argument("--workspace", default="aeos-demo")
@@ -313,35 +400,17 @@ def main(argv: list[str] | None = None) -> int:
         except GraphError as exc:
             print(f"GRAPH REFUSED — {exc}")
             return 2
-        print(render_plan(tasks))
         if not args.run:
-            print("  (dry run — add --run to execute under the governor,"
-                  "  hooks and gates like every plan)")
+            print(render_plan(tasks))
+            print("  (dry run — add --run to execute on the reference"
+                  "  pipeline: the spine, no demo path)")
             return 0
-        # --run: ONE demo factory for every live surface (audit law:
-        # the demo path is a product path); events stream LIVE into
-        # the workspace's runs dir so `aeos stream` shows graph runs
-        from .harness import Harness
-        from .observability import EventLog
-        ws = Path(args.workspace)
-        ws.mkdir(parents=True, exist_ok=True)
-        ev_path = (Harness(ws).state_dir("runs")
-                   / f"{int(time.time())}-events.jsonl")
-        log = EventLog(sink=ev_path)
-        orch = _demo_orchestrator(ws, log=log)
-        rep = orch.run("graph", tasks)
-        print(rep.summary_line())
-        routed = [(t.name, t.model) for t in tasks if t.model]
-        if routed:
-            print(f"  routing: {', '.join(f'{n}->{m}' for n, m in routed)}")
-        sub_events = [e for e in log.events()
-                      if e.kind in ("subplan.start", "subplan.end")]
-        for e in sub_events:
-            print(f"  {e.kind}: {e.detail}")
-        print("GRAPH RUN — " + ("ACCEPTED" if rep.accepted else "REFUSED"))
-        print(f"  events (live): {ev_path}")
-        print(f"  shopfloor: aeos stream --workspace {ws}")
-        return 0 if rep.accepted else 1
+        # --run: THE SPINE (v39.8, ADR-055) — the compiled graph
+        # executes on the REFERENCE pipeline: same roster, same
+        # handlers, same evidence law. The demo roster is gone from
+        # this path; the pipeline's own live sink feeds the shopfloor.
+        return _spine(args.workspace, tasks=tasks, graph_file=f,
+                      profile="balanced")
 
     if args.cmd == "hooks":
         from .hooks import BUS
@@ -974,6 +1043,17 @@ def main(argv: list[str] | None = None) -> int:
             "spend": "0.00 — this command never calls the wire",
         }, indent=2))
         return 0
+
+    if args.cmd == "run":
+        graph_file = None
+        if args.graph:
+            graph_file = Path(args.graph)
+            if not graph_file.exists():
+                print(f"RUN REFUSED — workflow file not found: {graph_file}")
+                return 2
+        return _spine(args.workspace, intent=args.intent,
+                      graph_file=graph_file, style_file=args.style,
+                      profile=args.profile)
 
     if args.cmd == "run-demo":
         from .pipeline import reference_run

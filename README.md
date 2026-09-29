@@ -1,13 +1,13 @@
 # AEOS — The AI Engineering OS
 
-**Version 39.7.1 — The Reckoning. A working, model-agnostic operating system for agentic engineering — audited end-to-end, with its gaps on the front page.**
+**Version 39.8.0 — The Spine. A working, model-agnostic operating system for agentic engineering — one command end-to-end, with its remaining gaps on the front page.**
 
 A typed-envelope kernel (contracts, orchestration, context,
 memory, skills, governance, evaluation, observability, harness,
 entropy, learning, discovery) plus the platform around it:
 factory, federation, live-model seam, companions, recall,
 durable plans, hooks, declarative graphs, sealed holdouts and a
-live shopfloor. **579 tests. Zero runtime dependencies.**
+live shopfloor. **588 tests. Zero runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models
 > are interchangeable slots; every reliability property is enforced
@@ -20,38 +20,44 @@ specifications is ~85% (machine-checked in
 [docs/SPEC-AUDIT.md](docs/SPEC-AUDIT.md),
 [docs/TAC-COMPLIANCE.md](docs/TAC-COMPLIANCE.md) and
 [docs/DARK-FACTORY-VALIDATION.md](docs/DARK-FACTORY-VALIDATION.md))
-— and **end-to-end product completeness is ~39%** (the spine
-matrix in [docs/STATE-OF-AEOS.md](docs/STATE-OF-AEOS.md)): the
-parts are tested but not yet assembled into one flow, and **no
-real model has ever executed a task through this system** (the
+— and, since v39.8.0, **end-to-end product completeness is ~50%**
+(up from ~39% at the audit): one command (`aeos run --graph
+plan.dot`) now compiles an operator's workflow and executes it on
+the reference pipeline — real roster, real handlers, real evidence
+law, live events, accumulating memory, no demo path anywhere. What
+remains open is named in [docs/STATE-OF-AEOS.md](docs/STATE-OF-AEOS.md):
+**no real model has ever executed a task through this system** (the
 live seam exists, metered and capped, awaiting the operator's
-explicit opt-in). The full audit, the root causes, and the
-close-the-gap plan (Spine → First Light → Front Door Diet →
-Outside Eyes) are in the state report.
+explicit opt-in — "First Light"), and the foreman's lessons do not
+yet shape the next plan (closing the loop).
 
 ## Quick start
 
 ```bash
 pip install -e .                 # zero runtime dependencies
-python -m pytest                 # 579 proofs incl. the 9-scenario chaos storm, ~2 min
+python -m pytest                 # 588 proofs incl. the 9-scenario chaos storm, ~2 min
 
-# the front doors
+# THE SPINE — one command, end to end
+aeos run --graph examples/ship-graph.dot --style examples/routing.style
+                                 # your DOT workflow on the REFERENCE pipeline:
+                                 # real roster + handlers + evidence law, live events
+aeos run                         # ...or the reference objective through the same spine
+
+# the other doors
 aeos up [--workspace ws]         # staged boot: preflight · workspace · work · shutdown
 aeos foreman --workspace ws --apply   # the autonomous operator: survey, fix, verify, receipt
-aeos graph --file examples/ship-graph.dot --style examples/routing.style --run
-                                 # declarative DOT workflow; clusters are nested harnesses
+aeos graph --file plan.dot       # compile + dry-run a DOT workflow (--run = the spine)
 aeos stream --workspace ws       # the live shopfloor: SSE + console, read-only
 aeos holdout --init && aeos holdout --run --workspace ws
                                  # sealed evaluation the agent cannot overfit to
-aeos run-demo                    # the reference loop end-to-end, evidence bundle
 aeos doctor                      # the system audits itself
 ```
 
-## The command surfaces (36 commands, grouped)
+## The command surfaces (37 commands, grouped)
 
 | Surface | Commands |
 |---|---|
-| **Run** | `up` · `run-demo` · `foreman` · `graph` · `factory-demo` · `colony` · `resume` · `soak` |
+| **Run** | `run` (the spine) · `up` · `run-demo` · `foreman` · `graph` · `factory-demo` · `colony` · `resume` · `soak` |
 | **Inspect** | `doctor` · `scribe` · `triangle` · `leverage-audit` · `dividend` · `recall` · `bench` · `telemetry` · `eval` · `selftest` |
 | **Operate** | `backup` · `restore` · `groom` · `storm` · `vault` · `save-proof` · `outbox` · `dashboard` · `console` · `stream` |
 | **Extend** | `sponsor` · `skills via factory` · `mcp` (client/serve/serve-http) · `otel` · `companions` · `federation-demo` · `hooks` · `holdout` · `standards` · `fleet` · `live-check` |
@@ -61,7 +67,7 @@ report, Phase D.)
 
 ## What is proven (reproduced in `evidence/`)
 
-- **579/579 tests passing** (+1 opt-in live smoke) — the chaos
+- **588/588 tests passing** (+1 opt-in live smoke) — the chaos
   storm runs inside the suite: SIGKILL mid-run ×3 with recovery,
   torn power-cut files quarantined, disk-full leaving evidence
   byte-intact, garbage inputs verdicted, a full run under 256MB,
@@ -103,16 +109,17 @@ spent human token.**
 | Real environments | v39.3–v39.4 | Field test (wheel verified on 3.10–3.12), the sealed holdout |
 | Composition era | v39.5–v39.7 | Hooks + recursion, declarative graph language, live shopfloor |
 | **The Reckoning** | **v39.7.1** | **The end-to-end audit: spine scored, latent defects fixed, hygiene zero, the integration plan** |
+| **The Spine** | **v39.8.0** | **One command end-to-end: operator graphs execute on the reference pipeline — real artifacts, live events, contract law at the door** |
 
 ## Repository layout
 
 ```
 src/aeos/            # 68 modules: kernel (v1) + platform (v2–v39)
-tests/               # 579 tests incl. adversarial + e2e + factory + federation + chaos storm
+tests/               # 588 tests incl. adversarial + e2e + factory + federation + chaos storm
 evidence/            # captured receipts: gauntlets, field test, holdout, shopfloor, save-proofs
 docs/                # STATE-OF-AEOS (the audit), architecture, security, runbook, dossier,
                      # principles charter, TAC audit, global benchmark, spec audit,
-                     # dark-factory validation, publishing guide, 54 ADRs
+                     # dark-factory validation, publishing guide, 55 ADRs
 examples/            # ship-graph.dot + routing.style (the declarative workflow)
 harness → /home/user/harness/   # the gauntlet programs (kept outside the repo)
 book/                # Volumes I–IV + v11 addendum, HTML + markdown

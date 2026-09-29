@@ -3,6 +3,45 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.8.0 — The Spine: one command end-to-end (588 tests)
+- ADR-055, the audit's Phase B: **an operator's graph now executes
+  on the REFERENCE pipeline.** `aeos run --graph plan.dot` compiles
+  the DOT and runs it through the same roster, handlers, gates,
+  bundle, leverage, learning and memory as the reference objective
+  — no demo roster anywhere in the path. `graph --run` delegates to
+  the same spine. The demo path's product responsibilities are
+  retired (`_demo_orchestrator` survives only for the hooks demo).
+- The integration exposed and fixed two more latent defects of the
+  disjointedness family:
+  1. the builder handler branched on the literal task name
+     `build-core` — any other builder task silently built the WRONG
+     artifact (a CLI module). Now: capability dispatch (`core`,
+     `cli`), and unknown capabilities REFUSE with the list, never
+     mis-build;
+  2. the example graph assigned WRITE work to the READ-only
+     executive — it only "worked" under the permissive demo roster.
+     Now: contract law at the spine's door (agent must be a
+     registered contract; the task's action class must lie inside
+     it), and the example names real contracts.
+- Events stream LIVE from the pipeline itself
+  (`live_events=True`): `<ws>/.aeos/runs/<ts>-events.jsonl` written
+  as the run happens — the one bus the shopfloor tails. Pipeline
+  runs and graph runs are indistinguishable to the viewer.
+- Nested harnesses count: learning, discovery and the bundle walk
+  into subplans — the graph's cluster tasks produce lessons and
+  bundle rows like any other task.
+- Bundles self-describe: `plan_origin` (reference |
+  operator-graph) and `live_events` on every bundle.
+- New front door: `aeos run` (--workspace, --intent, --graph,
+  --style, --profile). 37 commands.
+- 9 tests (test_v398_spine.py: composition, contract-law refusals,
+  the mis-build regression, live streaming, the front door);
+  579 → 588.
+- Honest state re-scored: end-to-end completeness ~39% → ~50%
+  (spine steps 2 and 7 now WORK; docs/STATE-OF-AEOS.md updated).
+  Remaining named gaps: First Light (a real model call — operator
+  opt-in) and closing the foreman loop.
+
 ## v39.7.1 — The Reckoning: the audit that stopped the treadmill (579 tests)
 - The operator's challenge, answered with evidence: "why is
   everything disjointed... less than 40% of what's supposed to

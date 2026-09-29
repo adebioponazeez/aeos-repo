@@ -15,7 +15,7 @@ digraph ship {
   research -> core;
 
   evaluate [label="Grade the evidence, not the narrative", agent="evaluator"];
-  release  [label="Ship the verified bundle", agent="executive", class="WRITE"];
+  release  [label="Ship the verified bundle", agent="release", class="WRITE"];
   cli -> evaluate;
   evaluate -> release;
 }

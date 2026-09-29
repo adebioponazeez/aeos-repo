@@ -291,9 +291,12 @@ class TestCLI:
                          "--workspace", str(tmp_path / "ws")])
         assert main() == 0
         out = capsys.readouterr().out
-        assert "GRAPH RUN — ACCEPTED" in out
+        # v39.8: graph --run executes on the REFERENCE pipeline (the
+        # spine, ADR-055) — no demo roster, real artifacts, live events
+        assert "SPINE RUN — ACCEPTED" in out
+        assert "plan:      operator-graph" in out
         assert "routing:" in out and "research->echo-fast" in out
-        assert "subplan.start" in out
+        assert (tmp_path / "ws" / "seed" / "core.py").exists()
 
 
 from pathlib import Path  # noqa: E402  (used above in test_run)
