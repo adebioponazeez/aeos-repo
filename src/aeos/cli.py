@@ -115,6 +115,10 @@ def _spine(workspace, intent=None, tasks=None, graph_file=None,
     print("SPINE RUN — ACCEPTED")
     print(f"  plan:      {bundle.get('plan_origin')}")
     print(f"  summary:   {bundle.get('summary')}")
+    mem = bundle.get("memory") or {}
+    print(f"  memory:    {len(mem.get('recalled_lessons') or [])} lesson(s) "
+          f"recalled from prior runs; "
+          f"{len(mem.get('applied_to_spec') or [])} cited in the spec")
     print(f"  leverage:  {bundle.get('leverage')} | governor: "
           f"{bundle.get('governor_level')} "
           f"(reliability {bundle.get('governor_reliability')})")

@@ -101,7 +101,8 @@ def build_roster() -> dict[str, AgentSpec]:
 # ------------------------------------------------------------------ handlers
 
 def build_handlers(model: EchoModel, harness: Harness, ctx: ContextOS,
-                   log: EventLog, roster: dict[str, AgentSpec]) -> dict:
+                   log: EventLog, roster: dict[str, AgentSpec],
+                   loop_state: dict | None = None) -> dict:
     """Handlers are the bounded nodes; the graph owns the control flow.
 
     Every writing handler is wrapped by `bounded`: checkpoint before,
@@ -157,6 +158,10 @@ def build_handlers(model: EchoModel, harness: Harness, ctx: ContextOS,
         return env
 
     def architect(task: TaskSpec, orch: Orchestrator) -> Envelope:
+        # v39.9: the planner CITES the lessons it is applying —
+        # prior experience reaches the spec or it reaches nothing
+        lessons = sorted(u.body for u in ctx.units.values()
+                         if u.authority == "memory")
         graph = {
             "module": "seed",
             "tasks": [
@@ -164,12 +169,19 @@ def build_handlers(model: EchoModel, harness: Harness, ctx: ContextOS,
                 {"name": "build-cli", "agent": "builder", "depends_on": ["build-core"]},
                 {"name": "evaluate", "agent": "evaluator", "depends_on": ["build-core", "build-cli"]},
             ],
+            "prior_lessons": lessons,
         }
         harness.write("spec/graph.json", json.dumps(graph, indent=2))
         env = Envelope(agent="architect", objective=task.description,
                        claims=["task graph produced and validated"],
                        artifacts=["spec/graph.json"])
         env.add_evidence("graph_validated", "no cycles; writers ordered")
+        if lessons:
+            if loop_state is not None:
+                loop_state["applied"] = lessons
+            env.add_evidence("prior_lessons",
+                             f"{len(lessons)} lesson(s) from prior runs "
+                             f"cited in this spec")
         return env
 
     def builder(task: TaskSpec, orch: Orchestrator) -> Envelope:
@@ -394,13 +406,40 @@ def _reference_run(workspace: Path, intent: str = "Ship a verified seed module",
                 value="build-core: SUCCEEDED via tests-first then "
                       "gate-check sequence" + (f" run {i}" if i else ""),
                 source="prior-run", confidence=0.6))
+    if tasks is None:
+        tasks = _reference_tasks()
+
+    # v39.9: CLOSE THE LOOP (ADR-056) — prior runs' lessons reach THIS
+    # plan. Recall is honest and named: lesson/proven/semantic records
+    # whose key names a task or agent in this plan, highest confidence
+    # first, capped at 8. They enter the context OS as memory-authority
+    # units; the architect must cite what it applied in the spec.
+    plan_terms: set[str] = set()
+    for t in _walk_tasks(tasks):
+        plan_terms.update((t.name, t.agent))
+    recalled = []
+    for key, rec in sorted(memory.records.items(),
+                           key=lambda kv: -kv[1].confidence):
+        if len(recalled) >= 8:
+            break
+        if not (key.startswith(("lesson::", "proven::", "semantic::"))):
+            continue
+        if any(term in key for term in plan_terms):
+            recalled.append(rec)
+    for i, rec in enumerate(recalled):
+        ctx.put(ContextUnit(key=f"memory/lesson/{i}",
+                            body=f"{rec.key}: {rec.value}",
+                            tier=ContextTier.USEFUL, authority="memory"))
+    loop_state = {"recalled": [r.key for r in recalled], "applied": []}
+
     governor = Governor(level=prof.autonomy_ceiling, log=log)
     evaluator = Evaluator()
     if prof.strict_gates:      # CONTROL: verification density goes up
         from .evaluation import Gate, tests_pass_gate
         evaluator.gates.append(Gate("tests_pass", tests_pass_gate))
     roster = build_roster()
-    handlers = build_handlers(model, harness, ctx, log, roster)
+    handlers = build_handlers(model, harness, ctx, log, roster,
+                              loop_state=loop_state)
 
     orch = Orchestrator(agents=roster, handlers=handlers, model=model,
                         governor=governor, evaluator=evaluator, log=log,
@@ -411,9 +450,6 @@ def _reference_run(workspace: Path, intent: str = "Ship a verified seed module",
         problems = spec.validate()
         if problems:
             raise ValueError(f"invalid agent spec '{name}': {problems}")
-
-    if tasks is None:
-        tasks = _reference_tasks()
 
     harness.snapshot("pre-run")
 
@@ -500,6 +536,8 @@ def _reference_run(workspace: Path, intent: str = "Ship a verified seed module",
         "accepted": report.accepted,
         "plan_origin": plan_origin,
         "live_events": bool(live_events),
+        "memory": {"recalled_lessons": loop_state["recalled"],
+                   "applied_to_spec": loop_state["applied"]},
         "summary": report.summary_line(),
         "states": {k: v.value for k, v in report.states.items()},
         "states_detail": [{"name": t.name, "agent": t.agent,
