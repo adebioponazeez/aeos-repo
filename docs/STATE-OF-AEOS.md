@@ -36,6 +36,15 @@ path an operator would actually take.*
 > (grouped menu, routing) + four surface modules, registration ==
 > menu == routing held by test. The README's "37 commands" was
 > drifted (real: 39) — now counted honestly.
+>
+> **FOREMAN-LOOP UPDATE (v40.1.0).** The last named loop gap is
+> closed (ADR-058): apply-mode foreman repairs land in workspace
+> memory; the next plan recalls them and its architect discloses
+> them in the spec's workspace_notes. Survey mode stays
+> non-mutating (pinned). Honest boundary: structural closure — notes
+> reach context and spec; changing what the plan DOES takes a real
+> model (First Light, opt-in). The four event ledgers are still not
+> one bus (open). End-to-end completeness **~53% → ~56%**.
 
 ---
 

@@ -1,0 +1,34 @@
+v40.1.0 — THE FOREMAN JOINS THE LOOP: receipt
+
+# setup: a workspace with 15 run files (retention finding)
+$ ls /tmp/fl-receipt/.aeos/runs | wc -l
+15
+
+$ aeos foreman --workspace /tmp/fl-receipt --apply
+  [mech] retention        15 run files kept (convention: 10)
+  [ok] groom          5 run(s) archived, 10 kept
+  verification: 1 finding(s) resolved, 0 remain
+  workspace root 4f87fc85129f -> 36cdf604672f
+  receipt: .aeos/foreman/foreman-0001.json
+FOREMAN — outcome: CLEAN (exit 0)
+
+$ grep lesson::foreman /tmp/fl-receipt/.aeos/memory.jsonl
+      1 lesson::foreman::retention
+
+$ aeos run --workspace /tmp/fl-receipt   (the NEXT plan)
+SPINE RUN — ACCEPTED
+  summary:   7/7 tasks succeeded in 7 waves, 0 repair cycle(s), 1.08s
+  memory:    0 lesson(s) recalled from prior runs; 0 cited in the spec; 1 foreman note(s)
+
+$ cat /tmp/fl-receipt/spec/graph.json | jq .workspace_notes
+  "lesson::foreman::retention: foreman resolved retention: 15 run files kept (convention: 10) (remedy: "
+
+The loop, closed twice over: the foreman's APPLY-MODE repair lands
+as lesson::foreman::retention in workspace memory (survey mode
+writes nothing — pinned by test), and the next plan recalls it and
+the architect discloses it in the spec's workspace_notes. Found by
+the G4 gauntlet on the way: a refused durable_write left tmp litter
+— fixed in vault.py (a refusal is not litter) and pinned by a
+regression test. Structural closure, disclosed: notes reach context
+and spec; changing what the plan DOES takes a real model (First
+Light, operator opt-in). Suite 605/605; gauntlets 27/27 + 20/20.

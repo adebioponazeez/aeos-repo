@@ -33,6 +33,25 @@ class TestDurableWrite:
                      if q.name.endswith(".tmp")]
         assert leftovers == []
 
+    def test_refused_write_leaves_no_litter(self, tmp_path, monkeypatch):
+        # v40.1.0, found by the G4 gauntlet (ulimit -f starvation):
+        # a REFUSED durable write must raise, keep the original, and
+        # remove its own partial tmp — a refusal is not litter
+        import os as _os
+        target = tmp_path / "f.json"
+        durable_write(target, "original\n")
+
+        def refuse(fd):
+            raise OSError("file too large")
+
+        monkeypatch.setattr(_os, "fsync", refuse)
+        with pytest.raises(OSError):
+            durable_write(target, "new content that must not land")
+        leftovers = [q.name for q in tmp_path.iterdir()
+                     if q.name.endswith(".tmp")]
+        assert leftovers == []
+        assert target.read_text(encoding="utf-8") == "original\n"
+
     def test_failed_rename_leaves_original_intact(self, tmp_path,
                                                   monkeypatch):
         import os as _os
