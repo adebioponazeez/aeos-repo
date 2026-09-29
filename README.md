@@ -1,13 +1,13 @@
 # AEOS — The AI Engineering OS
 
-**Version 39.8.0 — The Spine. A working, model-agnostic operating system for agentic engineering — one command end-to-end, with its remaining gaps on the front page.**
+**Version 39.9.0 — The Loop Closes. A working, model-agnostic operating system for agentic engineering — one command end-to-end, with its remaining gaps on the front page.**
 
 A typed-envelope kernel (contracts, orchestration, context,
 memory, skills, governance, evaluation, observability, harness,
 entropy, learning, discovery) plus the platform around it:
 factory, federation, live-model seam, companions, recall,
 durable plans, hooks, declarative graphs, sealed holdouts and a
-live shopfloor. **588 tests. Zero runtime dependencies.**
+live shopfloor. **592 tests. Zero runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models
 > are interchangeable slots; every reliability property is enforced
@@ -20,22 +20,26 @@ specifications is ~85% (machine-checked in
 [docs/SPEC-AUDIT.md](docs/SPEC-AUDIT.md),
 [docs/TAC-COMPLIANCE.md](docs/TAC-COMPLIANCE.md) and
 [docs/DARK-FACTORY-VALIDATION.md](docs/DARK-FACTORY-VALIDATION.md))
-— and, since v39.8.0, **end-to-end product completeness is ~50%**
+— and, since v39.8.0, **end-to-end product completeness is ~53%**
 (up from ~39% at the audit): one command (`aeos run --graph
-plan.dot`) now compiles an operator's workflow and executes it on
-the reference pipeline — real roster, real handlers, real evidence
-law, live events, accumulating memory, no demo path anywhere. What
-remains open is named in [docs/STATE-OF-AEOS.md](docs/STATE-OF-AEOS.md):
+plan.dot`) compiles an operator's workflow and executes it on the
+reference pipeline — real roster, real handlers, real evidence law,
+live events, no demo path anywhere — and, since v39.9.0, **the loop
+closes**: each run's evidence-validated lessons are recalled into
+the next run's plan (the architect cites what it applied in the
+spec). What remains open is named in
+[docs/STATE-OF-AEOS.md](docs/STATE-OF-AEOS.md):
 **no real model has ever executed a task through this system** (the
 live seam exists, metered and capped, awaiting the operator's
-explicit opt-in — "First Light"), and the foreman's lessons do not
-yet shape the next plan (closing the loop).
+explicit opt-in — "First Light"); lessons reach the plan's context
+and spec but cannot yet change executor *behavior* — that takes a
+real model; and the foreman's repairs do not yet feed the planner.
 
 ## Quick start
 
 ```bash
 pip install -e .                 # zero runtime dependencies
-python -m pytest                 # 588 proofs incl. the 9-scenario chaos storm, ~2 min
+python -m pytest                 # 592 proofs incl. the 9-scenario chaos storm, ~2 min
 
 # THE SPINE — one command, end to end
 aeos run --graph examples/ship-graph.dot --style examples/routing.style
@@ -67,7 +71,7 @@ report, Phase D.)
 
 ## What is proven (reproduced in `evidence/`)
 
-- **588/588 tests passing** (+1 opt-in live smoke) — the chaos
+- **592/592 tests passing** (+1 opt-in live smoke) — the chaos
   storm runs inside the suite: SIGKILL mid-run ×3 with recovery,
   torn power-cut files quarantined, disk-full leaving evidence
   byte-intact, garbage inputs verdicted, a full run under 256MB,
@@ -110,16 +114,17 @@ spent human token.**
 | Composition era | v39.5–v39.7 | Hooks + recursion, declarative graph language, live shopfloor |
 | **The Reckoning** | **v39.7.1** | **The end-to-end audit: spine scored, latent defects fixed, hygiene zero, the integration plan** |
 | **The Spine** | **v39.8.0** | **One command end-to-end: operator graphs execute on the reference pipeline — real artifacts, live events, contract law at the door** |
+| **The Loop Closes** | **v39.9.0** | **Runs recall their predecessor's validated lessons into the next plan; the architect cites what it applied** |
 
 ## Repository layout
 
 ```
 src/aeos/            # 68 modules: kernel (v1) + platform (v2–v39)
-tests/               # 588 tests incl. adversarial + e2e + factory + federation + chaos storm
+tests/               # 592 tests incl. adversarial + e2e + factory + federation + chaos storm
 evidence/            # captured receipts: gauntlets, field test, holdout, shopfloor, save-proofs
 docs/                # STATE-OF-AEOS (the audit), architecture, security, runbook, dossier,
                      # principles charter, TAC audit, global benchmark, spec audit,
-                     # dark-factory validation, publishing guide, 55 ADRs
+                     # dark-factory validation, publishing guide, 56 ADRs
 examples/            # ship-graph.dot + routing.style (the declarative workflow)
 harness → /home/user/harness/   # the gauntlet programs (kept outside the repo)
 book/                # Volumes I–IV + v11 addendum, HTML + markdown

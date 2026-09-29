@@ -1,6 +1,6 @@
 # DARK FACTORY VALIDATION — AEOS v39.3.0
 
-*Audited at v39.8.0 · 68 modules · 588 tests · 55 ADRs · zero runtime
+*Audited at v39.9.0 · 68 modules · 592 tests · 56 ADRs · zero runtime
 dependencies. References: IndyDevDan's public course listings and site
 (agenticengineer.com — no paid content accessed), the 2026 dark-software-
 factory literature (Fabro, BrainGu Guber, the BCG Plation report,

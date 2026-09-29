@@ -1,0 +1,22 @@
+v39.9.0 — THE LOOP CLOSES: receipt (two runs, one workspace)
+
+$ aeos run --workspace ws   (RUN 1 — fresh)
+SPINE RUN — ACCEPTED
+  summary:   7/7 tasks succeeded in 7 waves, 0 repair cycle(s), 1.00s
+  memory:    7 lesson(s) recalled from prior runs; 7 cited in the spec
+$ aeos run --workspace ws   (RUN 2 — same workspace)
+SPINE RUN — ACCEPTED
+  summary:   7/7 tasks succeeded in 7 waves, 0 repair cycle(s), 1.02s
+  memory:    8 lesson(s) recalled from prior runs; 8 cited in the spec
+$ cat ws/spec/graph.json | jq .prior_lessons   (run 2's spec)
+  "proven::architect: architect: SUCCEEDED via architect"
+  "proven::build-cli: build-cli: SUCCEEDED via builder"
+  "proven::build-core: build-core: SUCCEEDED via builder"
+  "proven::define-objective: define-objective: SUCCEEDED via executive"
+  "proven::evaluate: evaluate: SUCCEEDED via evaluator"
+
+Run 2 recalls run 1's evidence-validated proven::* lessons (they did
+not exist at run 1's recall time) and the architect cites them in
+the spec — the loop is closed, structurally. Behavioral closure
+(lessons changing executor behavior) requires a real model: First
+Light, operator opt-in, still open. Pinned by tests/test_v399_loop.py.

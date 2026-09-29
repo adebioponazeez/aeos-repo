@@ -19,11 +19,17 @@ path an operator would actually take.*
 > defects the audit had not found (the builder's literal-name
 > branching that silently mis-built; the example graph's WRITE task
 > on the READ-only executive) — both fixed, both regression-tested.
-> The two named gaps that remain: **step 4, First Light** (no real
-> model has yet executed a task — operator opt-in required) and
-> **step 9, closing the loop** (the foreman's lessons do not shape
-> the next plan). The matrix below is the v39.7.1 baseline, kept
-> as audited.
+> The matrix below is the v39.7.1 baseline, kept as audited.
+>
+> **LOOP-CLOSURE UPDATE (v39.9.0).** Spine step 9 now closes for
+> the pipeline (ADR-056): before a plan executes, prior runs'
+> evidence-validated lessons are recalled into its context, and the
+> architect cites what it applied in the spec. Two runs in one
+> workspace demonstrably compound. Honest boundary: under the
+> EchoModel this is structural closure — lessons reaching context
+> and spec; lessons changing executor BEHAVIOR takes a real model
+> (First Light, operator opt-in). The foreman's repairs still do
+> not feed the planner. End-to-end completeness **~50% → ~53%**.
 
 ---
 

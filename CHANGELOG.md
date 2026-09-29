@@ -3,6 +3,30 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v39.9.0 — The Loop Closes: lessons shape the next plan (592 tests)
+- ADR-056, the audit's spine step 9: **before a plan executes, the
+  pipeline recalls prior runs' lessons** — `lesson::`/`proven::`/
+  `semantic::` records whose keys name this plan's tasks or agents,
+  confidence-ordered, capped at 8 — into the ContextOS as
+  memory-authority units.
+- **The architect cites what it applied**: the spec artifact
+  (`spec/graph.json`) now carries `prior_lessons`, with envelope
+  evidence for the citation. Influence without citation is not
+  influence.
+- Every bundle records `memory.recalled_lessons` +
+  `memory.applied_to_spec`; `aeos run` prints both. Two runs in one
+  workspace demonstrably compound: run 2 recalls run 1's
+  evidence-validated `proven::*` lessons (which did not exist at
+  run 1's recall time) and cites them in its spec.
+- Honest boundary, disclosed in ADR-056 and the README: under the
+  EchoModel this is STRUCTURAL closure (lessons reach context and
+  spec); lessons changing executor behavior requires a real model —
+  First Light, operator opt-in, still open. The foreman's repairs
+  still do not feed the planner (named, open).
+- 4 tests (test_v399_loop.py: compounding across runs, graph runs
+  share the loop, recall scope/cap, front-door print);
+  588 → 592. End-to-end completeness re-scored ~50% → ~53%.
+
 ## v39.8.0 — The Spine: one command end-to-end (588 tests)
 - ADR-055, the audit's Phase B: **an operator's graph now executes
   on the REFERENCE pipeline.** `aeos run --graph plan.dot` compiles
