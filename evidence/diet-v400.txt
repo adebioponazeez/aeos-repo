@@ -20,16 +20,27 @@ $ wc -l src/aeos/cli.py src/aeos/cli_run.py src/aeos/cli_inspect.py src/aeos/cli
   295 src/aeos/cli_extend.py
  1185 total
 
-$ aeos run --graph examples/ship-graph.dot --style examples/routing.style \
-      --workspace /tmp/diet-receipt
-SPINE RUN — ACCEPTED — 5/5 tasks, leverage 5.0, governor L5
-  (the spine runs through the new door: real artifacts, live events)
+$ aeos run --graph examples/ship-graph.dot --style examples/routing.style --workspace /tmp/diet-receipt
+SPINE RUN — ACCEPTED
+  plan:      operator-graph
+  summary:   5/5 tasks succeeded in 5 waves, 0 repair cycle(s), 1.10s
+  memory:    7 lesson(s) recalled from prior runs; 0 cited in the spec
+  leverage:  5.0 | governor: L5_CONTINUOUS_AUTONOMY (reliability 1.0)
+  lessons:   7 | proposals: 6
+  evidence:  /tmp/diet-receipt/.aeos/evidence/bundle.json
+  events (live): /tmp/diet-receipt/.aeos/runs/1790702936-events.jsonl
+  shopfloor: aeos stream --workspace /tmp/diet-receipt
+  holdout:   aeos holdout --run --workspace /tmp/diet-receipt
 
-The split: cli.py was 1,129 lines (39 commands' registration and
-behavior in one main()); now a ~300-line declarative door + four
-surface modules (behavior moved verbatim). Registration, menu and
-routing share the surface tuples; test_v400_diet.py holds them
-equal (39 commands, no orphans, no phantoms, all --help green).
-The diet exposed the README's "37 commands" drift (real: 39) and a
-dead assignment the old single scope hid from pyflakes. Gauntlets
-27/27 + 20/20 through the new door; suite 599/599.
+All segments above are captured runs, not compositions. The split:
+cli.py was 1,129 lines (39 commands' registration and behavior in
+one main()); now a ~300-line declarative door + four surface
+modules (behavior moved verbatim). Registration, menu and routing
+share the surface tuples; test_v400_diet.py holds them equal (39
+commands, no orphans, no phantoms, all --help green). The diet
+exposed the README's "37 commands" drift (real: 39) and a dead
+assignment the old single scope hid from pyflakes. Gauntlets 27/27
++ 20/20 through the new door; suite 599/599 (CI x4 on the merge
+commit). Correction note: an earlier draft of this receipt
+composed the spine-run lines by hand; this version captures the
+real run — receipts are captured, never composed.
