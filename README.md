@@ -1,13 +1,13 @@
 # AEOS — The AI Engineering OS
 
-**Version 40.0.0 — The Front Door Diet. A working, model-agnostic operating system for agentic engineering — one command end-to-end, with its remaining gaps on the front page.**
+**Version 40.1.0 — The Foreman Joins the Loop. A working, model-agnostic operating system for agentic engineering — one command end-to-end, with its remaining gaps on the front page.**
 
 A typed-envelope kernel (contracts, orchestration, context,
 memory, skills, governance, evaluation, observability, harness,
 entropy, learning, discovery) plus the platform around it:
 factory, federation, live-model seam, companions, recall,
 durable plans, hooks, declarative graphs, sealed holdouts and a
-live shopfloor. **599 tests. Zero runtime dependencies.**
+live shopfloor. **605 tests. Zero runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models
 > are interchangeable slots; every reliability property is enforced
@@ -20,27 +20,29 @@ specifications is ~85% (machine-checked in
 [docs/SPEC-AUDIT.md](docs/SPEC-AUDIT.md),
 [docs/TAC-COMPLIANCE.md](docs/TAC-COMPLIANCE.md) and
 [docs/DARK-FACTORY-VALIDATION.md](docs/DARK-FACTORY-VALIDATION.md))
-— and, since v39.8.0, **end-to-end product completeness is ~53%**
+— and, since v39.8.0, **end-to-end product completeness is ~56%**
 (up from ~39% at the audit): one command (`aeos run --graph
 plan.dot`) compiles an operator's workflow and executes it on the
 reference pipeline — real roster, real handlers, real evidence law,
-live events, no demo path anywhere — and, since v39.9.0, **the loop
-closes**: each run's evidence-validated lessons are recalled into
-the next run's plan (the architect cites what it applied in the
-spec). What remains open is named in
+live events, no demo path anywhere; since v39.9.0, **the loop
+closes** (each run's evidence-validated lessons are recalled into
+the next run's plan, the architect citing what it applied); and
+since v40.1.0, **the foreman joins that loop** — its apply-mode
+repairs land in the same memory the pipeline recalls, and the next
+plan discloses them in its spec. What remains open is named in
 [docs/STATE-OF-AEOS.md](docs/STATE-OF-AEOS.md):
 **no real model has ever executed a task through this system** (the
 live seam exists, metered and capped, awaiting the operator's
 explicit opt-in — "First Light"); lessons reach the plan's context
 and spec but cannot yet change executor *behavior* — that takes a
-real model; and the foreman's repairs do not yet feed the planner.
+real model; and the four event ledgers are not yet one bus.
 
 ## Quick start
 
 ```bash
 pip install -e .                 # zero runtime dependencies
 aeos                             # the grouped menu: RUN · INSPECT · OPERATE · EXTEND
-python -m pytest                 # 599 proofs incl. the 9-scenario chaos storm, ~2 min
+python -m pytest                 # 605 proofs incl. the 9-scenario chaos storm, ~2 min
 
 # THE SPINE — one command, end to end
 aeos run --graph examples/ship-graph.dot --style examples/routing.style
@@ -80,7 +82,7 @@ confusion report rather than a builder's guess.)
 
 ## What is proven (reproduced in `evidence/`)
 
-- **599/599 tests passing** (+1 opt-in live smoke) — the chaos
+- **605/605 tests passing** (+1 opt-in live smoke) — the chaos
   storm runs inside the suite: SIGKILL mid-run ×3 with recovery,
   torn power-cut files quarantined, disk-full leaving evidence
   byte-intact, garbage inputs verdicted, a full run under 256MB,
@@ -125,16 +127,17 @@ spent human token.**
 | **The Spine** | **v39.8.0** | **One command end-to-end: operator graphs execute on the reference pipeline — real artifacts, live events, contract law at the door** |
 | **The Loop Closes** | **v39.9.0** | **Runs recall their predecessor's validated lessons into the next plan; the architect cites what it applied** |
 | **The Front Door Diet** | **v40.0.0** | **cli.py split: one thin door (grouped menu, routing) + four surface modules; registration, menu and routing held equal by test** |
+| **The Foreman Joins the Loop** | **v40.1.0** | **Apply-mode foreman repairs land in workspace memory; the next plan recalls and discloses them in its spec** |
 
 ## Repository layout
 
 ```
 src/aeos/            # 72 modules: kernel (v1) + platform (v2–v39) + cli front door + 4 surfaces
-tests/               # 599 tests incl. adversarial + e2e + factory + federation + chaos storm
+tests/               # 605 tests incl. adversarial + e2e + factory + federation + chaos storm
 evidence/            # captured receipts: gauntlets, field test, holdout, shopfloor, save-proofs
 docs/                # STATE-OF-AEOS (the audit), architecture, security, runbook, dossier,
                      # principles charter, TAC audit, global benchmark, spec audit,
-                     # dark-factory validation, publishing guide, 57 ADRs
+                     # dark-factory validation, publishing guide, 58 ADRs
 examples/            # ship-graph.dot + routing.style (the declarative workflow)
 harness → /home/user/harness/   # the gauntlet programs (kept outside the repo)
 book/                # Volumes I–IV + v11 addendum, HTML + markdown

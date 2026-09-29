@@ -365,6 +365,31 @@ def _run_locked(ws: Path, *, apply_mode: bool = False,
                                  {g.kind for g in post})
         result["remaining"] = len(post)
         result["post_root"] = snapshot(ws)["root"]
+        # v40.1: the foreman's repairs feed the next plan (ADR-058).
+        # Outcomes land in the SAME memory the pipeline recalls — not
+        # a private ledger. One record per finding kind, updated in
+        # place: the newest outcome replaces the stale one. Survey
+        # mode never writes here: a foreman that only LOOKED learned
+        # nothing; a foreman that ACTED owes the workspace its lesson.
+        try:
+            from .contracts import MemoryClass
+            from .memory import MemoryRecord, MemoryStore
+            mstore = MemoryStore(ws / ".aeos" / "memory.jsonl")
+            still = {g.kind for g in post}
+            for f in pre:
+                done = f.kind in fixed and f.kind not in still
+                mstore.write(MemoryRecord(
+                    key=f"lesson::foreman::{f.kind}",
+                    value=(f"foreman resolved {f.kind}: {f.detail} "
+                           f"(remedy: {f.remedy})" if done else
+                           f"foreman sees open {f.kind}: {f.detail} "
+                           f"— {f.remedy}"),
+                    mclass=MemoryClass.EPISODIC, source="foreman",
+                    confidence=0.7 if done else 0.5))
+        except OSError:
+            # the disk refusing a lesson must not take the verdict —
+            # the same law as remember(): best-effort by design
+            pass
     if result["post_root"] is None:
         # no actions ran: the receipt still carries both roots —
         # pre and post of the SAME state, evidence nothing moved

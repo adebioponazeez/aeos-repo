@@ -162,6 +162,10 @@ def build_handlers(model: EchoModel, harness: Harness, ctx: ContextOS,
         # prior experience reaches the spec or it reaches nothing
         lessons = sorted(u.body for u in ctx.units.values()
                          if u.authority == "memory")
+        # v40.1: and DISCLOSES the foreman's workspace notes — the
+        # repairs and open findings the last foreman act left behind
+        notes = sorted(u.body for u in ctx.units.values()
+                       if u.authority == "foreman")
         graph = {
             "module": "seed",
             "tasks": [
@@ -170,6 +174,7 @@ def build_handlers(model: EchoModel, harness: Harness, ctx: ContextOS,
                 {"name": "evaluate", "agent": "evaluator", "depends_on": ["build-core", "build-cli"]},
             ],
             "prior_lessons": lessons,
+            "workspace_notes": notes,
         }
         harness.write("spec/graph.json", json.dumps(graph, indent=2))
         env = Envelope(agent="architect", objective=task.description,
@@ -182,6 +187,12 @@ def build_handlers(model: EchoModel, harness: Harness, ctx: ContextOS,
             env.add_evidence("prior_lessons",
                              f"{len(lessons)} lesson(s) from prior runs "
                              f"cited in this spec")
+        if notes:
+            if loop_state is not None:
+                loop_state["foreman_applied"] = notes
+            env.add_evidence("foreman_notes",
+                             f"{len(notes)} foreman note(s) disclosed "
+                             f"in this spec")
         return env
 
     def builder(task: TaskSpec, orch: Orchestrator) -> Envelope:
@@ -430,7 +441,19 @@ def _reference_run(workspace: Path, intent: str = "Ship a verified seed module",
         ctx.put(ContextUnit(key=f"memory/lesson/{i}",
                             body=f"{rec.key}: {rec.value}",
                             tier=ContextTier.USEFUL, authority="memory"))
-    loop_state = {"recalled": [r.key for r in recalled], "applied": []}
+    # v40.1: the foreman's notes ride the same rail (ADR-058) — the
+    # most recent foreman lessons (workspace state, not plan terms:
+    # they match no task or agent) enter context as foreman-authority
+    # units; the architect discloses them in the spec's notes
+    foreman_notes = [rec for key, rec in memory.records.items()
+                     if key.startswith("lesson::foreman::")][-3:]
+    for i, rec in enumerate(foreman_notes):
+        ctx.put(ContextUnit(key=f"foreman/note/{i}",
+                            body=f"{rec.key}: {rec.value}",
+                            tier=ContextTier.USEFUL, authority="foreman"))
+    loop_state = {"recalled": [r.key for r in recalled], "applied": [],
+                  "foreman": [r.key for r in foreman_notes],
+                  "foreman_applied": []}
 
     governor = Governor(level=prof.autonomy_ceiling, log=log)
     evaluator = Evaluator()
@@ -537,7 +560,9 @@ def _reference_run(workspace: Path, intent: str = "Ship a verified seed module",
         "plan_origin": plan_origin,
         "live_events": bool(live_events),
         "memory": {"recalled_lessons": loop_state["recalled"],
-                   "applied_to_spec": loop_state["applied"]},
+                   "applied_to_spec": loop_state["applied"],
+                   "foreman_lessons": loop_state["foreman"],
+                   "foreman_notes_in_spec": loop_state["foreman_applied"]},
         "summary": report.summary_line(),
         "states": {k: v.value for k, v in report.states.items()},
         "states_detail": [{"name": t.name, "agent": t.agent,

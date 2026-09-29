@@ -3,6 +3,27 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v40.1.0 — The Foreman Joins the Loop: repairs feed the next plan (605 tests)
+- ADR-058, the audit's last named loop gap: **an apply-mode foreman
+  now writes its outcomes into workspace memory** — the same store
+  the pipeline recalls — as `lesson::foreman::<kind>` records
+  (confidence 0.7 resolved / 0.5 open; one record per finding kind,
+  the newest outcome replacing the stale one).
+- **Survey mode still writes nothing to memory** (pinned by test):
+  a foreman that only LOOKED learned nothing; a foreman that ACTED
+  owes the workspace its lesson.
+- **The next plan recalls and discloses**: the pipeline recalls the
+  three most recent foreman notes as foreman-authority context
+  units; the architect discloses them in the spec's new
+  `workspace_notes` (distinct from `prior_lessons`: workspace state
+  vs plan experience); bundles record `foreman_lessons` +
+  `foreman_notes_in_spec`; the spine prints the count.
+- 6 tests: 5 foreman-loop (test_v401_foreman_loop.py — resolved-lesson
+  write, survey read-only, update-not-duplicate, next-plan recall +
+  disclosure, no-foreman negative) + 1 vault regression found by the
+  G4 gauntlet (a refused durable write must leave no tmp litter);
+  599 → 605. End-to-end completeness re-scored ~53% → ~56%.
+
 ## v40.0.0 — The Front Door Diet: one door, four rooms (599 tests)
 - ADR-057, the audit's Phase D: **cli.py is no longer a god
   module.** The 1,129-line file is now a ~300-line front door —

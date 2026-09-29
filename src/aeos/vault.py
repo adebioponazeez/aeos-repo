@@ -29,14 +29,24 @@ except ImportError:                     # pragma: no cover
 def durable_write(path: Path, text: str) -> Path:
     """Atomic + durable: tmp file, fsync, rename, fsync the directory.
     A crash before rename leaves the ORIGINAL intact — never a torn
-    file. A full disk raises before touching the original."""
+    file. A full disk raises before touching the original — and
+    (v40.1.0, found by the G4 gauntlet) a REFUSED write leaves no
+    partial tmp behind either: the refusal is named, the workspace
+    is not littered."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
-    with tmp.open("w", encoding="utf-8") as fh:
-        fh.write(text)
-        fh.flush()
-        os.fsync(fh.fileno())
+    try:
+        with tmp.open("w", encoding="utf-8") as fh:
+            fh.write(text)
+            fh.flush()
+            os.fsync(fh.fileno())
+    except OSError:
+        try:
+            tmp.unlink(missing_ok=True)   # a refusal is not litter
+        except OSError:
+            pass                          # nothing more we can do
+        raise
     os.replace(tmp, path)      # explicit os-level atomic rename (3.10-proof)
     try:
         dir_fd = os.open(str(path.parent), os.O_RDONLY)
