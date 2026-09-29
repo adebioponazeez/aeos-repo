@@ -30,6 +30,12 @@ path an operator would actually take.*
 > and spec; lessons changing executor BEHAVIOR takes a real model
 > (First Light, operator opt-in). The foreman's repairs still do
 > not feed the planner. End-to-end completeness **~50% → ~53%**.
+>
+> **FRONT-DOOR-DIET UPDATE (v40.0.0).** The register's "cli.py is a
+> 1,129-line god module" entry is resolved (ADR-057): one thin door
+> (grouped menu, routing) + four surface modules, registration ==
+> menu == routing held by test. The README's "37 commands" was
+> drifted (real: 39) — now counted honestly.
 
 ---
 

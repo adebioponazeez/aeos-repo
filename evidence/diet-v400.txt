@@ -1,0 +1,35 @@
+v40.0.0 — THE FRONT DOOR DIET: receipt
+
+$ aeos                (bare — the grouped menu)
+AEOS — the AI Engineering OS (v40.0.0)
+  aeos COMMAND [options] — --help on any command
+
+  RUN       run  up  run-demo  foreman  graph  factory-demo  colony  resume  soak
+  INSPECT   doctor  scribe  triangle  leverage-audit  dividend  recall  bench  telemetry  eval  selftest
+  OPERATE   backup  restore  groom  storm  vault  save-proof  outbox  dashboard  console  stream
+  EXTEND    sponsor  mcp  otel  companions  federation-demo  hooks  holdout  standards  fleet  live-check
+
+  the spine: aeos run --graph plan.dot --style routing.style
+rc=2
+
+$ wc -l src/aeos/cli.py src/aeos/cli_run.py src/aeos/cli_inspect.py src/aeos/cli_operate.py src/aeos/cli_extend.py
+  305 src/aeos/cli.py
+  209 src/aeos/cli_run.py
+  154 src/aeos/cli_inspect.py
+  222 src/aeos/cli_operate.py
+  295 src/aeos/cli_extend.py
+ 1185 total
+
+$ aeos run --graph examples/ship-graph.dot --style examples/routing.style \
+      --workspace /tmp/diet-receipt
+SPINE RUN — ACCEPTED — 5/5 tasks, leverage 5.0, governor L5
+  (the spine runs through the new door: real artifacts, live events)
+
+The split: cli.py was 1,129 lines (39 commands' registration and
+behavior in one main()); now a ~300-line declarative door + four
+surface modules (behavior moved verbatim). Registration, menu and
+routing share the surface tuples; test_v400_diet.py holds them
+equal (39 commands, no orphans, no phantoms, all --help green).
+The diet exposed the README's "37 commands" drift (real: 39) and a
+dead assignment the old single scope hid from pyflakes. Gauntlets
+27/27 + 20/20 through the new door; suite 599/599.

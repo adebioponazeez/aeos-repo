@@ -3,6 +3,28 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v40.0.0 — The Front Door Diet: one door, four rooms (599 tests)
+- ADR-057, the audit's Phase D: **cli.py is no longer a god
+  module.** The 1,129-line file is now a ~300-line front door —
+  `_build_parser()` (declarative registration), `_menu()` (bare
+  `aeos` prints the grouped RUN/INSPECT/OPERATE/EXTEND menu instead
+  of argparse noise) and routing — with behavior moved VERBATIM to
+  four surface modules: `cli_run` (9 commands), `cli_inspect`
+  (10), `cli_operate` (10), `cli_extend` (10).
+- **Registration, menu and routing share one source of truth** (the
+  surface tuples), held equal by test: every command on the menu,
+  every menu entry routed, no orphans, no phantoms (39 commands).
+- The diet exposed and fixed two count/code warts: the README
+  claimed "37 commands" (real: 39 — nothing checked it before);
+  the single-scope split surfaced a pre-existing dead assignment
+  (`m = vault.init()`) that pyflakes could not see in the merged
+  scope.
+- `from aeos.cli import main` unchanged — all 27 test files and
+  every receipt keep working; every command's `--help` verified.
+- 7 tests (test_v400_diet.py: menu, registration==menu==routing,
+  all-39 --help, surface routing, the spine through the new door);
+  592 → 599. Modules 68 → 72.
+
 ## v39.9.0 — The Loop Closes: lessons shape the next plan (592 tests)
 - ADR-056, the audit's spine step 9: **before a plan executes, the
   pipeline recalls prior runs' lessons** — `lesson::`/`proven::`/

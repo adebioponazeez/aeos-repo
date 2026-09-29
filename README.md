@@ -1,13 +1,13 @@
 # AEOS — The AI Engineering OS
 
-**Version 39.9.0 — The Loop Closes. A working, model-agnostic operating system for agentic engineering — one command end-to-end, with its remaining gaps on the front page.**
+**Version 40.0.0 — The Front Door Diet. A working, model-agnostic operating system for agentic engineering — one command end-to-end, with its remaining gaps on the front page.**
 
 A typed-envelope kernel (contracts, orchestration, context,
 memory, skills, governance, evaluation, observability, harness,
 entropy, learning, discovery) plus the platform around it:
 factory, federation, live-model seam, companions, recall,
 durable plans, hooks, declarative graphs, sealed holdouts and a
-live shopfloor. **592 tests. Zero runtime dependencies.**
+live shopfloor. **599 tests. Zero runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models
 > are interchangeable slots; every reliability property is enforced
@@ -39,7 +39,8 @@ real model; and the foreman's repairs do not yet feed the planner.
 
 ```bash
 pip install -e .                 # zero runtime dependencies
-python -m pytest                 # 592 proofs incl. the 9-scenario chaos storm, ~2 min
+aeos                             # the grouped menu: RUN · INSPECT · OPERATE · EXTEND
+python -m pytest                 # 599 proofs incl. the 9-scenario chaos storm, ~2 min
 
 # THE SPINE — one command, end to end
 aeos run --graph examples/ship-graph.dot --style examples/routing.style
@@ -57,7 +58,13 @@ aeos holdout --init && aeos holdout --run --workspace ws
 aeos doctor                      # the system audits itself
 ```
 
-## The command surfaces (37 commands, grouped)
+## The command surfaces (39 commands, four modules)
+
+Since v40.0.0 the CLI is one door, four rooms: `cli.py` is a thin
+front door (registration + the grouped menu + routing) and behavior
+lives in `cli_run`, `cli_inspect`, `cli_operate`, `cli_extend`
+(ADR-057) — registration, menu and routing share one source of
+truth, held by test.
 
 | Surface | Commands |
 |---|---|
@@ -66,12 +73,14 @@ aeos doctor                      # the system audits itself
 | **Operate** | `backup` · `restore` · `groom` · `storm` · `vault` · `save-proof` · `outbox` · `dashboard` · `console` · `stream` |
 | **Extend** | `sponsor` · `skills via factory` · `mcp` (client/serve/serve-http) · `otel` · `companions` · `federation-demo` · `hooks` · `holdout` · `standards` · `fleet` · `live-check` |
 
-(Consolidation of these surfaces is planned — see the state
-report, Phase D.)
+(The Extend row lists `skills via factory` as a capability — the
+command is `factory-demo`. Retiring or merging commands remains
+open for the Outside-Eyes round, informed by a real operator's
+confusion report rather than a builder's guess.)
 
 ## What is proven (reproduced in `evidence/`)
 
-- **592/592 tests passing** (+1 opt-in live smoke) — the chaos
+- **599/599 tests passing** (+1 opt-in live smoke) — the chaos
   storm runs inside the suite: SIGKILL mid-run ×3 with recovery,
   torn power-cut files quarantined, disk-full leaving evidence
   byte-intact, garbage inputs verdicted, a full run under 256MB,
@@ -115,16 +124,17 @@ spent human token.**
 | **The Reckoning** | **v39.7.1** | **The end-to-end audit: spine scored, latent defects fixed, hygiene zero, the integration plan** |
 | **The Spine** | **v39.8.0** | **One command end-to-end: operator graphs execute on the reference pipeline — real artifacts, live events, contract law at the door** |
 | **The Loop Closes** | **v39.9.0** | **Runs recall their predecessor's validated lessons into the next plan; the architect cites what it applied** |
+| **The Front Door Diet** | **v40.0.0** | **cli.py split: one thin door (grouped menu, routing) + four surface modules; registration, menu and routing held equal by test** |
 
 ## Repository layout
 
 ```
-src/aeos/            # 68 modules: kernel (v1) + platform (v2–v39)
-tests/               # 592 tests incl. adversarial + e2e + factory + federation + chaos storm
+src/aeos/            # 72 modules: kernel (v1) + platform (v2–v39) + cli front door + 4 surfaces
+tests/               # 599 tests incl. adversarial + e2e + factory + federation + chaos storm
 evidence/            # captured receipts: gauntlets, field test, holdout, shopfloor, save-proofs
 docs/                # STATE-OF-AEOS (the audit), architecture, security, runbook, dossier,
                      # principles charter, TAC audit, global benchmark, spec audit,
-                     # dark-factory validation, publishing guide, 56 ADRs
+                     # dark-factory validation, publishing guide, 57 ADRs
 examples/            # ship-graph.dot + routing.style (the declarative workflow)
 harness → /home/user/harness/   # the gauntlet programs (kept outside the repo)
 book/                # Volumes I–IV + v11 addendum, HTML + markdown
