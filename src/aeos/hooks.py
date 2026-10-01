@@ -9,11 +9,12 @@ removing the danger). The pre-execution hook answers "is this safe to
 run?"; the post-execution hook answers "is this outcome safe to keep?".
 
 AEOS had the semantics scattered (the governor is an access+pre-exec
-hook; attach_persistence is a monkey-patch hook). This module makes
-the surface first-class: named points on the harness scaffold, ordered
-registrations, vetoes in plain language, observers that can never
-crash the run. The kernel stays readable (ADR-002): points are emitted
-from the orchestrator's existing seams, never inlined logic.
+hook; persistence used to be a monkey-patch — since v40.3 it is the
+orchestrator's official on_task_settled seam, ADR-060). This module
+makes the surface first-class: named points on the harness scaffold,
+ordered registrations, vetoes in plain language, observers that can
+never crash the run. The kernel stays readable (ADR-002): points are
+emitted from the orchestrator's existing seams, never inlined logic.
 
 Scope, honestly (ADR-051): hooks are in-process Python callables —
 the same trust boundary as the OS itself. They are guardrails against

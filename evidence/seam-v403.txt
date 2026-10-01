@@ -1,0 +1,20 @@
+v40.3.0 — THE OFFICIAL SEAM: receipt (captured)
+
+$ python3 - <<'PY'   (the seam fires on every settle path, in a finally)
+  accepted: True
+  seam: solo     -> SUCCEEDED
+  seam: child    -> SUCCEEDED
+  seam: parent   -> SUCCEEDED
+  (the sibling settles, then the nested child, then its parent - one seam)
+
+$ python3 -c 'from aeos.runtime import attach_persistence; import inspect; print(inspect.getsource(attach_persistence))'
+  attach_persistence sets the seam: True
+
+The audit's "persistence via monkey-patch (runtime.py)" line closes:
+Orchestrator owns a typed on_task_settled seam, fired in a finally
+on every settle path; subplan children inherit it (caught by this
+version's own tests: the first draft left children unseamed); an
+interrupt that blows past the handlers still records the attempt.
+attach_persistence keeps its signature but sets the public seam -
+pinned: no instance-dict wrapping. Resume suite unchanged. Suite
+620/620; gauntlets 27/27 + 20/20.

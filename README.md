@@ -1,13 +1,13 @@
 # AEOS — The AI Engineering OS
 
-**Version 40.2.0 — One Bus. A working, model-agnostic operating system for agentic engineering — one command end-to-end, with its remaining gaps on the front page.**
+**Version 40.3.0 — The Official Seam. A working, model-agnostic operating system for agentic engineering — one command end-to-end, with its remaining gaps on the front page.**
 
 A typed-envelope kernel (contracts, orchestration, context,
 memory, skills, governance, evaluation, observability, harness,
 entropy, learning, discovery) plus the platform around it:
 factory, federation, live-model seam, companions, recall,
 durable plans, hooks, declarative graphs, sealed holdouts and a
-live shopfloor. **612 tests. Zero runtime dependencies.**
+live shopfloor. **620 tests. Zero runtime dependencies.**
 
 > The law of this codebase: **the harness is the product.** Models
 > are interchangeable slots; every reliability property is enforced
@@ -47,7 +47,7 @@ stream).
 ```bash
 pip install -e .                 # zero runtime dependencies
 aeos                             # the grouped menu: RUN · INSPECT · OPERATE · EXTEND
-python -m pytest                 # 612 proofs incl. the 9-scenario chaos storm, ~2 min
+python -m pytest                 # 620 proofs incl. the 9-scenario chaos storm, ~2 min
 
 # THE SPINE — one command, end to end
 aeos run --graph examples/ship-graph.dot --style examples/routing.style
@@ -87,7 +87,7 @@ confusion report rather than a builder's guess.)
 
 ## What is proven (reproduced in `evidence/`)
 
-- **611/612 tests passing** (+1 opt-in live smoke) — the chaos
+- **611/620 tests passing** (+1 opt-in live smoke) — the chaos
   storm runs inside the suite: SIGKILL mid-run ×3 with recovery,
   torn power-cut files quarantined, disk-full leaving evidence
   byte-intact, garbage inputs verdicted, a full run under 256MB,
@@ -134,16 +134,17 @@ spent human token.**
 | **The Front Door Diet** | **v40.0.0** | **cli.py split: one thin door (grouped menu, routing) + four surface modules; registration, menu and routing held equal by test** |
 | **The Foreman Joins the Loop** | **v40.1.0** | **Apply-mode foreman repairs land in workspace memory; the next plan recalls and discloses them in its spec** |
 | **One Bus** | **v40.2.0** | **Foreman and boot stream their lifecycle onto the shopfloor's event bus — `aeos stream` shows every autonomous actor live** |
+| **The Official Seam** | **v40.3.0** | **Persistence becomes a typed orchestrator seam (`on_task_settled`), fired on every settle path — the monkey-patch retires** |
 
 ## Repository layout
 
 ```
 src/aeos/            # 72 modules: kernel (v1) + platform (v2–v39) + cli front door + 4 surfaces
-tests/               # 612 tests incl. adversarial + e2e + factory + federation + chaos storm
+tests/               # 620 tests incl. adversarial + e2e + factory + federation + chaos storm
 evidence/            # captured receipts: gauntlets, field test, holdout, shopfloor, save-proofs
 docs/                # STATE-OF-AEOS (the audit), architecture, security, runbook, dossier,
                      # principles charter, TAC audit, global benchmark, spec audit,
-                     # dark-factory validation, publishing guide, 59 ADRs
+                     # dark-factory validation, publishing guide, 60 ADRs
 examples/            # ship-graph.dot + routing.style (the declarative workflow)
 harness → /home/user/harness/   # the gauntlet programs (kept outside the repo)
 book/                # Volumes I–IV + v11 addendum, HTML + markdown

@@ -3,6 +3,26 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v40.3.0 — The Official Seam: persistence is typed, not monkey-patched (620 tests)
+- ADR-060, the audit's "persistence via monkey-patch (runtime.py)"
+  register item: the orchestrator now owns a first-class
+  `on_task_settled` seam, called in a `finally` after every task
+  transition — success, failure, escalation, veto, subplan parent.
+  `attach_persistence` (same signature) sets the public seam; no
+  private-method wrapping (pinned: no instance-dict entry).
+- **Nested harnesses inherit the seam** — caught by this version's
+  own tests before shipping: the first draft left subplan children
+  unseamed.
+- **A durability improvement the monkey-patch could not offer**: an
+  interrupt that blows past the handlers still records the attempt
+  (the seam runs in a finally) — pinned by test.
+- Resume behavior unchanged (the test_platform resume suite passes
+  untouched); hooks.py no longer documents persistence as a
+  monkey-patch.
+- 8 tests (test_v403_seam.py: the seam fires on all five settle
+  paths, interrupt-recording, no-private-wrap, states persist
+  through the seam, the spine runs unseamed); 612 → 620.
+
 ## v40.2.0 — One Bus: foreman and boot join the shopfloor's stream (612 tests)
 - ADR-059, the audit's "four event ledgers" register item: **the
   two autonomous operators now emit their lifecycle onto the same
