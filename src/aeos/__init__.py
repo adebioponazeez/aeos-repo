@@ -14,7 +14,7 @@ components (ADR-001); every reliability property in this package is
 implemented and enforced by deterministic code.
 """
 
-__version__ = "40.3.0"
+__version__ = "40.4.0"
 __all__ = [
     "contracts", "models", "observability", "context_os", "memory",
     "skills", "orchestrator", "governor", "evaluation", "harness",

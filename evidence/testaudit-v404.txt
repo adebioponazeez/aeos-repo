@@ -1,0 +1,39 @@
+v40.4.0 — THE SUITE MUST BITE: mutation-sweep receipt (captured)
+
+Method: one-line mutation -> FULL suite (--tb=no -q) -> failures counted -> git checkout (verified clean).
+
+M1  evaluation.py: 'for gate in self.gates:' -> 'for gate in []:'   (evidence gates off)
+    pytest rc=1
+    FAILED lines: 69
+
+M2  governor.py: force min_level=L0_HUMAN_ONLY, deny_by_default=False   (autonomy ladder open)
+    pytest rc=1
+    FAILED lines: 11
+
+M3  pipeline.py bounded(): 'reverted = harness.enforce_boundary(...)' -> 'reverted = None'
+    pytest rc=0
+    FAILED lines: 0   <-- THE HOLE: 0 failures
+
+M4  observability.py redact(): 'return dict(detail)' first line   (secrets leak)
+    pytest rc=1
+    FAILED lines: 2
+
+Sample of what M1 caught (the suite biting):
+    FAILED tests/test_e2e.py::test_reference_run_is_accepted - assert False is True
+    FAILED tests/test_e2e.py::test_reference_run_produces_real_artifacts - Assert...
+    FAILED tests/test_evaluation_memory_skills.py::TestEvaluator::test_claims_without_evidence_fail_the_gate
+    FAILED tests/test_evaluation_memory_skills.py::TestEvaluator::test_missing_artifact_fails
+    FAILED tests/test_evaluation_memory_skills.py::TestEvaluator::test_real_artifact_passes
+
+After the fixes:
+  623 passed, 1 skipped in 221.08s   (620 -> 623: the M3 wiring pin + control, the M4 bus pin)
+  gauntlet 27/27; field 20/20; scribe TRUTHFUL; pyflakes 0
+
+The audit's verdict (docs/TEST-AUDIT.md): 0 vacuous tests, demos
+are 2% of the suite — the theater risk is not empty tests, it is
+UNTESTED WIRING: a mechanism (harness.enforce_boundary) can be
+thoroughly tested while its composition into the product path
+(pipeline.bounded) is not. M3 proved it (0 failures); the new pin
+closes it (rogue-contract roster through the REAL wiring: violation
+named, write reverted, run refused). The four mutations are now a
+documented manual protocol (TEST-AUDIT.md section 5).
