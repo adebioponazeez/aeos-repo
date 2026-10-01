@@ -125,7 +125,7 @@ class TestBoot:
                                               monkeypatch):
         import aeos.pipeline as pipeline
 
-        def explode(ws, intent="x", profile="balanced"):
+        def explode(ws, intent="x", profile="balanced", **kwargs):
             raise RuntimeError("the model seam refused the envelope")
 
         monkeypatch.setattr(pipeline, "reference_run", explode)
@@ -144,7 +144,7 @@ class TestBoot:
                                                   monkeypatch):
         import aeos.pipeline as pipeline
 
-        def explode(ws, intent="x", profile="balanced"):
+        def explode(ws, intent="x", profile="balanced", **kwargs):
             raise RuntimeError("simulated production fault")
 
         monkeypatch.setattr(pipeline, "reference_run", explode)

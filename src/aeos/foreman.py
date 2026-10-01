@@ -40,6 +40,7 @@ import hashlib
 import json
 import shutil
 import tempfile
+import time
 from pathlib import Path
 
 from .backup import BackupError, create_backup, restore_backup
@@ -345,7 +346,38 @@ def run(ws: Path, *, apply_mode: bool = False,
 
 def _run_locked(ws: Path, *, apply_mode: bool = False,
                 repo: Path | None = None) -> dict:
+    # v40.2: ONE BUS (ADR-059) — the foreman's lifecycle streams onto
+    # the same runs-dir event bus the shopfloor tails: `aeos stream`
+    # shows the foreman working LIVE. Best-effort by law — observability
+    # must never take the verdict (the same law as remember()).
+    log = None
+    ev_path = None
+    try:
+        from .harness import Harness
+        from .observability import EventLog
+        ev_path = (Harness(ws).state_dir("runs")
+                   / f"{int(time.time())}-events.jsonl")
+        log = EventLog(sink=ev_path)
+    except OSError:
+        ev_path = None              # no bus; the run continues unwatched
+
+    def emit(kind: str, **detail) -> None:
+        nonlocal log
+        if log is None:
+            return
+        try:
+            log.emit(kind, **detail)
+        except OSError:
+            # the disk refused the event: close the sink — a partial
+            # buffer would raise again at interpreter exit (E4) — and
+            # continue unwatched, never a verdict change
+            log.close()
+            log = None
+
+    emit("foreman.start", mode="apply" if apply_mode else "survey")
     pre = survey(ws, repo=repo)
+    for f in pre:
+        emit("finding.filed", finding=f.kind, klass=f.klass)
     result = {"kind": "aeos-foreman", "mode": ("apply" if apply_mode
                                                else "survey"),
               "findings": [f.as_row() for f in pre],
@@ -354,7 +386,12 @@ def _run_locked(ws: Path, *, apply_mode: bool = False,
               "exit_code": EXIT_CLEAN}
 
     if apply_mode and any(f.klass == "mechanical" for f in pre):
+        emit("actions.start", names=sorted(
+            {ACTION_FOR[f.kind] for f in pre
+             if f.klass == "mechanical" and f.kind in ACTION_FOR}))
         result["actions"] = apply(ws, pre)
+        for a in result["actions"]:
+            emit("action.done", action=a["action"], ok=a["ok"])
         if any(not a["ok"] for a in result["actions"]):
             result.update(exit_code=EXIT_FAILED,
                           failure="an action failed — stopped, "
@@ -415,6 +452,10 @@ def _run_locked(ws: Path, *, apply_mode: bool = False,
         # the record now; say so honestly
         result["seq"] = result.get("seq", 0)
         result["receipt_unwritten"] = exc.strerror or str(exc)
+    emit("foreman.end", exit_code=result["exit_code"],
+         resolved=result["resolved"], remaining=result["remaining"])
+    if ev_path is not None:
+        result["events_file"] = str(ev_path)
     return result
 
 
@@ -457,6 +498,9 @@ def render(result: dict) -> str:
                          + (" (unchanged)" if pre == post else ""))
     lines.append(f"  receipt: .aeos/foreman/foreman-"
                  f"{result['seq']:04d}.json")
+    if result.get("events_file"):
+        lines.append(f"  events (live): {result['events_file']}")
+        lines.append("  shopfloor: aeos stream --workspace <ws>")
     verdict = {EXIT_CLEAN: "CLEAN", EXIT_ATTENTION: "ATTENTION",
                EXIT_FAILED: "FAILED"}[result["exit_code"]]
     lines.append(f"FOREMAN — outcome: {verdict} (exit "
