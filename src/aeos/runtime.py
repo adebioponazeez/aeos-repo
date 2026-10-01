@@ -81,20 +81,20 @@ class RunStore:
 
 def attach_persistence(orchestrator, run_id: str, store: RunStore,
                        objective: str, tasks: list[TaskSpec]) -> None:
-    """Hook a live orchestrator: persist after each task transition.
+    """Attach durable-plan persistence to a live orchestrator: persist
+    after each task settles — every transition, including failures,
+    escalations and vetoes (the official seam, ADR-060).
 
-    Implemented as a thin wrapper around the orchestrator's
-    _execute_task so the core loop stays untouched (ADR-002 spirit:
-    features compose, the kernel stays readable)."""
-    inner = orchestrator._execute_task
-
+    v40.3: this used to monkey-patch the orchestrator's private
+    _execute_task (flagged by the audit as structural debt). It now
+    sets the typed, public on_task_settled seam — same call sites,
+    same signature, no private wrapping."""
     def persisted(task: TaskSpec) -> None:
-        inner(task)
         state = RunState(run_id=run_id, objective=objective, tasks=tasks,
                          accepted=None)
         store.save(state)
 
-    orchestrator._execute_task = persisted
+    orchestrator.on_task_settled = persisted
 
 
 def resume_plan(state: RunState) -> tuple[list[str], list[str]]:

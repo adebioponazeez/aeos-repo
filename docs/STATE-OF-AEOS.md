@@ -55,6 +55,15 @@ path an operator would actually take.*
 > the bus, named: the foreman's history.jsonl bookkeeping and the
 > fleet demo's in-memory EventBus. End-to-end completeness
 > **~56% → ~58%**.
+>
+> **OFFICIAL-SEAM UPDATE (v40.3.0).** The register's "persistence
+> via monkey-patch (runtime.py)" line is resolved (ADR-060): the
+> orchestrator owns a typed `on_task_settled` seam, fired in a
+> finally on every settle path (success, failure, escalation, veto,
+> subplan — children inherit it; interrupts still record the
+> attempt). Remaining register lines, named: the colony engine
+> (bench-wired; retirement is its own ADR) and the wording pins
+> (accepted as the cost of pinned user-facing contracts).
 
 ---
 

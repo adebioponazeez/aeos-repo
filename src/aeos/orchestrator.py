@@ -57,7 +57,9 @@ class Orchestrator:
                  governor: Governor, evaluator: Evaluator,
                  log: EventLog, workspace: Path,
                  max_workers: int = 4,
-                 hooks: HookBus | None = None, depth: int = 0) -> None:
+                 hooks: HookBus | None = None, depth: int = 0,
+                 on_task_settled: "Callable[[TaskSpec], None] | None" = None
+                 ) -> None:
         self.agents = agents
         self.handlers = handlers
         self.model = model
@@ -69,6 +71,9 @@ class Orchestrator:
         self.runs: list[RunReport] = []
         self.hooks = hooks if hooks is not None else BUS
         self.depth = depth
+        # v40.3 (ADR-060): the official persistence seam — called
+        # after EVERY task settles (see _execute_task)
+        self.on_task_settled = on_task_settled
 
     # ---------------------------------------------------------------- plan
     def validate_graph(self, tasks: list[TaskSpec]) -> list[str]:
@@ -163,6 +168,20 @@ class Orchestrator:
         return report
 
     def _execute_task(self, task: TaskSpec) -> None:
+        """Settle wrapper: the OFFICIAL persistence seam (ADR-060).
+        After every task transition — success, failure, escalation,
+        veto, subplan — the on_task_settled callback (if any) sees
+        the settled task, in a finally: a raise past the handlers
+        still records the attempt. This replaces the runtime.py
+        monkey-patch the audit flagged: persistence is a typed,
+        public seam — not a private method wrapped from outside."""
+        try:
+            self._execute_task_inner(task)
+        finally:
+            if self.on_task_settled is not None:
+                self.on_task_settled(task)
+
+    def _execute_task_inner(self, task: TaskSpec) -> None:
         task.started_at = time.time()
         task.attempts += 1
         # ---- v39.5 hook seam (ADR-051): pre-execution interception.
@@ -290,7 +309,8 @@ class Orchestrator:
                              evaluator=self.evaluator, log=self.log,
                              workspace=self.workspace,
                              max_workers=self.max_workers,
-                             hooks=self.hooks, depth=self.depth + 1)
+                             hooks=self.hooks, depth=self.depth + 1,
+                             on_task_settled=self.on_task_settled)
         self.log.emit("subplan.start", parent=task.name,
                       depth=self.depth + 1,
                       children=[c.name for c in task.subplan])
