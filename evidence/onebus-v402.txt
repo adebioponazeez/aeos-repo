@@ -1,0 +1,39 @@
+v40.2.0 — ONE BUS: receipt (foreman + boot, shopfloor watching)
+
+# setup: a workspace with 15 run files (a retention finding)
+$ aeos foreman --workspace /tmp/ob-r --apply
+  [ok] groom          6 run(s) archived, 10 kept
+  verification: 1 finding(s) resolved, 0 remain
+  workspace root b7b05d97dacf -> 7aa0f736e5c1
+  receipt: .aeos/foreman/foreman-0001.json
+  events (live): /tmp/ob-r/.aeos/runs/1790855831-events.jsonl
+  shopfloor: aeos stream --workspace <ws>
+FOREMAN — outcome: CLEAN (exit 0)
+
+$ cat /tmp/ob-r/.aeos/runs/*-events.jsonl | jq .kind   (the foreman's bus segment)
+  foreman.start
+  finding.filed
+  actions.start
+  action.done
+  foreman.end
+
+$ curl :8771/health   (stream --workspace /tmp/ob-r)
+{"ok": true, "workspace": "/tmp/ob-r", "events_file": "1790855831-events.jsonl", "events": 5, "uptime_s": 1.4}
+
+$ aeos up --workspace /tmp/ob-r2   (the boot climbs on the same bus)
+  [3/4] WORK        accepted — leverage 7.0, evidence bundle written
+  [4/4] SHUTDOWN    boot receipt -> /tmp/ob-r2/.aeos/boots/boot-0001.json
+BOOT — outcome: OK (wall 1.17s)
+  1790855833-events.jsonl: boot.start .. boot.end (43 events)
+
+The audit's "four event ledgers" closes to ONE BUS + two disclosed
+exceptions: the foreman and the boot stream their lifecycle onto
+the runs-dir bus the shopfloor tails, and the boot's work stage
+runs the pipeline live — above, a same-second boot and work run
+SHARE one bus file: 43 events, boot.start through boot.end,
+including the work run's own task events (a later work run would
+roll the bus forward instead; both are the one bus working).
+Field-caught by E4 (real 256K tmpfs) and fixed: preflight is a
+pure look (early boot events buffer in memory, attach after the
+workspace stage); a refused emit closes the sink (no 'Exception
+ignored' at exit). Suite 612/612; gauntlets 27/27 + 20/20.

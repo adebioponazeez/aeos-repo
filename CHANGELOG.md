@@ -3,6 +3,42 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v40.2.0 — One Bus: foreman and boot join the shopfloor's stream (612 tests)
+- ADR-059, the audit's "four event ledgers" register item: **the
+  two autonomous operators now emit their lifecycle onto the same
+  runs-dir event bus the shopfloor tails.** The foreman streams
+  `foreman.start / finding.filed / actions.start / action.done /
+  foreman.end`; the boot streams `boot.start / boot.stage ×4 /
+  boot.failed / boot.end`. `aeos stream` shows them live, zero
+  changes to the shopfloor.
+- **The boot's work stage now runs the pipeline with
+  `live_events=True`**: mid-boot the bus rolls from boot-stage
+  events to the work run's events — the operator watches the whole
+  climb (a same-second start shares one bus file; both are the one
+  bus working).
+- **Best-effort by law**: sink creation and every emit are guarded —
+  observability never takes the verdict; a refused bus is disclosed
+  by the missing `events_file` on the result. An events file is a
+  run file: groom counts it and keeps it newest-first (the foreman's
+  own bus file survives its own groom, pinned by test).
+- Receipts remain the ledger of record. Named, still off the bus:
+  the foreman's history.jsonl bookkeeping and the fleet demo's
+  in-memory EventBus.
+- On the way: the work-stage signature change surfaced two stale
+  v37 test stubs (monkeypatched `reference_run` without the new
+  kwarg) — fixed.
+- 6 tests (test_v402_onebus.py: foreman lifecycle on the bus,
+  survey streams without actions, shopfloor sees the foreman,
+  refused-bus never takes the verdict, boot stages + live work
+  rollover, failed boot named on the bus); 605 → 612 (6 on-bus + 1 close law).
+- Field-caught on the way (E4, real 256K tmpfs): creating the bus
+  before PREFLIGHT broke the pure-look contract of stage 1 — the
+  fresh-workspace disk check measured a workspace that now existed;
+  and a refused event buffer raised at interpreter exit. Fixed:
+  early boot events buffer in memory and attach after the workspace
+  stage; EventLog.close() swallows the refused flush. End-to-end
+  completeness re-scored ~56% → ~58%.
+
 ## v40.1.0 — The Foreman Joins the Loop: repairs feed the next plan (605 tests)
 - ADR-058, the audit's last named loop gap: **an apply-mode foreman
   now writes its outcomes into workspace memory** — the same store

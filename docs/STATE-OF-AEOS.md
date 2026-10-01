@@ -45,6 +45,16 @@ path an operator would actually take.*
 > reach context and spec; changing what the plan DOES takes a real
 > model (First Light, opt-in). The four event ledgers are still not
 > one bus (open). End-to-end completeness **~53% → ~56%**.
+>
+> **ONE-BUS UPDATE (v40.2.0).** The "four event ledgers" register
+> item closes to ONE BUS + two disclosed exceptions (ADR-059): the
+> foreman and the boot stream their lifecycle onto the same
+> runs-dir bus the shopfloor tails, and the boot's work stage runs
+> the pipeline live — `aeos stream` shows every autonomous actor.
+> Best-effort by law: observability never takes the verdict. Off
+> the bus, named: the foreman's history.jsonl bookkeeping and the
+> fleet demo's in-memory EventBus. End-to-end completeness
+> **~56% → ~58%**.
 
 ---
 

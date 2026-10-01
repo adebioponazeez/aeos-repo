@@ -258,10 +258,53 @@ def boot(ws: Path, intent: str = "Ship a verified seed module",
     checks: list[Check] = []
     notes: list[str] = []
 
+    # v40.2: ONE BUS (ADR-059) — the boot's stages stream onto the
+    # same runs-dir event bus the shopfloor tails. But PREFLIGHT IS
+    # A PURE LOOK: stage 1 must not touch the workspace (found by
+    # the E4 field test — creating the sink before preflight made
+    # the fresh-workspace disk check measure a workspace that now
+    # existed). So early events buffer in memory and attach to the
+    # file bus once the workspace stage has prepared it. Best-effort
+    # by law: observability must never take the verdict.
+    from .observability import EventLog
+    log = EventLog()                      # memory until the ws is ours
+    bus = None                            # file-backed log, once attached
+    ev_path = None
+
+    def emit(kind: str, **detail) -> None:
+        nonlocal bus
+        try:
+            log.emit(kind, **detail)
+            if bus is not None:
+                bus.emit(kind, **detail)
+        except OSError:
+            # the disk refused the event: close the sink — a partial
+            # buffer would raise again at interpreter exit (E4) — and
+            # continue unwatched, never a boot failure
+            if bus is not None:
+                bus.close()
+                bus = None
+
+    def attach_bus() -> None:
+        nonlocal bus, ev_path
+        try:
+            from .harness import Harness
+            ev_path = (Harness(ws).state_dir("runs")
+                       / f"{int(time.time())}-events.jsonl")
+            replay = EventLog(sink=ev_path)
+            for e in log.events():        # the buffered climb, in order
+                replay.emit(e.kind, **e.detail)
+            bus = replay
+        except OSError:
+            ev_path = None              # no bus; the boot continues unwatched
+
     def fail(stage: str, exc: BootFailure, code: int) -> dict:
+        emit("boot.failed", stage=stage, what=exc.what)
         result.update(outcome=f"{stage}-failed", failed_stage=stage,
                       exit_code=code, what=exc.what, remedy=exc.remedy)
         return result
+
+    emit("boot.start")
 
     # -- stage 1: preflight ------------------------------------------
     try:
@@ -281,12 +324,15 @@ def boot(ws: Path, intent: str = "Ship a verified seed module",
             fail("preflight", b, EXIT_PREFLIGHT)
         else:
             result["stages"].append("preflight")
+            emit("boot.stage", stage="preflight")
 
             # -- stage 2: workspace ----------------------------------
             try:
                 notes = prepare(ws)
                 result["notes"] = notes
                 result["stages"].append("workspace")
+                emit("boot.stage", stage="workspace")
+                attach_bus()    # the workspace is ours: the bus begins
             except OSError as exc:
                 fail("workspace",
                      BootFailure("workspace",
@@ -299,7 +345,8 @@ def boot(ws: Path, intent: str = "Ship a verified seed module",
                 try:
                     from .pipeline import reference_run
                     run = reference_run(ws, intent=intent,
-                                        profile=profile)
+                                        profile=profile,
+                                        live_events=True)
                     if run.get("accepted") is False:
                         # found by the v39.2 production gauntlet: a
                         # refused run (e.g. the workspace lock is
@@ -312,6 +359,7 @@ def boot(ws: Path, intent: str = "Ship a verified seed module",
                                      "evidence": run["evidence_file"],
                                      "events": run["events_file"]}
                     result["stages"].append("work")
+                    emit("boot.stage", stage="work")
                 except Exception as exc:        # named, never traceback
                     fail("work",
                          BootFailure("work",
@@ -328,6 +376,7 @@ def boot(ws: Path, intent: str = "Ship a verified seed module",
         result["wall_s"] = round(time.time() - t0, 2)
         if result["outcome"] == "ok":
             result["stages"].append("shutdown")
+            emit("boot.stage", stage="shutdown")
         receipt = _write_receipt(ws, result)
         result["receipt"] = str(receipt)
         if save_proof:
@@ -360,6 +409,10 @@ def boot(ws: Path, intent: str = "Ship a verified seed module",
                 what=f"receipt would not write: {exc}",
                 remedy="check disk space and permissions on the "
                        "workspace — the work itself already finished")
+    emit("boot.end", outcome=result["outcome"],
+         exit_code=result["exit_code"], wall_s=result.get("wall_s"))
+    if ev_path is not None:
+        result["events_file"] = str(ev_path)
     return result
 
 

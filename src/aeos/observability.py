@@ -70,6 +70,19 @@ class EventLog:
             self._sink.write(line + "\n")
         return event
 
+    def close(self) -> None:
+        """Close the sink, best-effort. A refused flush at close must
+        not raise at interpreter exit (found by the E4 field test:
+        full disk + buffered events -> 'Exception ignored' traceback
+        at shutdown). After close, emit records to memory only."""
+        if self._file is not None:
+            try:
+                self._file.close()
+            except OSError:
+                pass
+            self._file = None
+            self._sink = None
+
     def events(self, kind_prefix: str | None = None) -> list[Event]:
         if kind_prefix is None:
             return list(self._memory)
