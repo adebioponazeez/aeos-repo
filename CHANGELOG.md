@@ -3,6 +3,26 @@
 Every version below is earned by shipped, tested capability
 (ADR-008). Test counts are at tag time.
 
+## v40.4.0 — The Suite Must Bite: the test-quality audit (623 tests)
+- ADR-061, the register's "test-count theater risk" line, answered
+  mechanically (docs/TEST-AUDIT.md): **AST classification** — 73%
+  product-surface, 24% kernel-law, 2% demo, 68 refusal tests, **0
+  vacuous**; and a **mutation sweep** — four one-line mutations
+  neutering load-bearing laws, full suite each:
+  gates-off → 69 failures; autonomy-off → 11;
+  **boundary-wiring-off → 0 (a real hole)**; redaction-off → 2.
+- **The hole, fixed and pinned**: the write-boundary law (invariant
+  #2) was tested at the mechanism level but not through the
+  reference pipeline's `bounded()` wrapper — disconnecting it would
+  have shipped silently. New pin: a rogue-contract roster drives the
+  REAL wiring (violation named on the event log, write reverted,
+  run refused), with an honest control (the real roster's build
+  still succeeds). Redaction additionally pinned at the bus surface.
+- **The honest verdict**: not empty tests — untested wiring. The
+  count is not the proof; the bite is. The four mutations are a
+  documented manual protocol (docs/TEST-AUDIT.md §5), not CI.
+- 3 tests (620 → 623).
+
 ## v40.3.0 — The Official Seam: persistence is typed, not monkey-patched (620 tests)
 - ADR-060, the audit's "persistence via monkey-patch (runtime.py)"
   register item: the orchestrator now owns a first-class

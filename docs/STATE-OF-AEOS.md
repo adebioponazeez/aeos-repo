@@ -64,6 +64,14 @@ path an operator would actually take.*
 > attempt). Remaining register lines, named: the colony engine
 > (bench-wired; retirement is its own ADR) and the wording pins
 > (accepted as the cost of pinned user-facing contracts).
+>
+> **TEST-QUALITY UPDATE (v40.4.0).** The "test-count theater risk"
+> line is answered (ADR-061, docs/TEST-AUDIT.md): 0 vacuous tests,
+> 2% demo coverage — but a mutation sweep found the real risk is
+> UNTESTED WIRING, not empty tests: the boundary-wiring mutation
+> shipped 0 failures. Fixed and pinned; mutation-mirroring tests
+> are now law for wiring-level behavior. Remaining register lines:
+> the colony engine, the wording pins.
 
 ---
 
