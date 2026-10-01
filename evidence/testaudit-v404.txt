@@ -37,3 +37,27 @@ thoroughly tested while its composition into the product path
 closes it (rogue-contract roster through the REAL wiring: violation
 named, write reverted, run refused). The four mutations are now a
 documented manual protocol (TEST-AUDIT.md section 5).
+
+--- POST-FIX RE-SWEEP (the retry's verification, captured) ---
+The release claimed "the M3 hole cannot silently regress" — but the
+pin tests were added AFTER the sweep, and the mutation had never
+been re-run against the pinned tree. The project's own law: prove
+it. Re-applied M3 (pipeline.py bounded() -> reverted = None) to the
+tree WITH the pin:
+
+  $ python3 -m pytest tests/test_v404_testaudit.py --tb=line -q
+  FAILED test_m3_the_pipelines_boundary_wiring_bites   (assert True is False)
+
+  $ python3 -m pytest --tb=no -q          (full suite under M3)
+  pytest rc=1
+  FAILED lines: 1
+    -> tests/test_v404_testaudit.py::TestMutationSensitivityPins::
+       test_m3_the_pipelines_boundary_wiring_bites
+
+  $ git checkout src/aeos/pipeline.py    (reverted, mutation count: 0)
+  $ python3 -m pytest tests/test_v404_testaudit.py -q
+  3 passed
+
+M3 sensitivity: 0 failures (pre-fix) -> 1 failure (post-fix, the pin
+itself). The hole is closed — proven by re-running the mutation,
+not assumed from a passing test.

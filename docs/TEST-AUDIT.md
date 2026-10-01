@@ -46,16 +46,19 @@ mutation was then reverted (git checkout, verified clean):
 
 ## 3. Findings and fixes (this release)
 
-1. **M3 was a real hole, now fixed and pinned.** The boundary law
-   (invariant #2: "no authority without a boundary") was tested at
-   the MECHANISM level (`harness.enforce_boundary`, test_harness.py)
-   and in the companions' wiring — but not through the reference
-   pipeline's `bounded()` wrapper. Disconnecting the wrapper would
-   have shipped silently. Pinned by
+1. **M3 was a real hole, now fixed, pinned AND re-proven.** The
+   boundary law (invariant #2: "no authority without a boundary")
+   was tested at the MECHANISM level (`harness.enforce_boundary`,
+   test_harness.py) and in the companions' wiring — but not through
+   the reference pipeline's `bounded()` wrapper. Disconnecting the
+   wrapper would have shipped silently. Pinned by
    `test_v404_testaudit.py::test_m3_the_pipelines_boundary_wiring_bites`
    (a rogue-contract roster drives the REAL wiring: violation named
    on the event log, write reverted, run refused) plus an honest
    control (the real roster's legitimate build still succeeds).
+   **Post-fix re-sweep (captured): M3 re-applied to the pinned tree
+   → the full suite fails with exactly 1 failure — the pin itself
+   (0 → 1; the hole is closed, proven, not assumed).**
 2. **M4 was thin (2), now thickened.** Redaction is additionally
    pinned at the BUS surface — the file the shopfloor streams must
    never carry a secret (`test_m4_secret_redaction_pinned_through_
